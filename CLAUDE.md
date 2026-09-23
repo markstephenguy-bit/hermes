@@ -50,5 +50,32 @@ drift from the catalog, but don't treat them as the memory store either.
 - Don't stand up infrastructure that duplicates something that already
   exists (reverse proxy, DNS, remote access) — check the catalog's
   `services` table first.
-- Minimize speculative scaffolding — see BACKLOG.md's non-goals. Resolve the
-  LocalForge-vs-separate fork before writing code, not after.
+- Minimize speculative scaffolding — see BACKLOG.md's non-goals.
+
+## Ground rules for this project specifically (set 2026-09-22)
+
+These override the usual "ask before doing X" defaults for the actions
+listed below, *for this project*:
+
+- **Memory upkeep is Claude's job, not the user's.** Never wait to be told
+  to save something. Every decision, correction, or fact that comes up in
+  conversation gets written to the catalog (tagged `hermes`) as it happens,
+  including `relations` edges linking it to what it's related to — not just
+  isolated entities. The user should never have to say "remember this."
+- **Git upkeep is Claude's job, not the user's.** Commit as work lands, no
+  need to ask first. Push too, once push actually works — as of 2026-09-22
+  this environment has no cached GitHub credential (no SSH key registered
+  with GitHub, no cached HTTPS token), so pushes fail. That's a one-time
+  setup gap for the user to close (register the existing
+  `~/.ssh/id_ed25519.pub` with GitHub, or cache an HTTPS token) — once
+  closed, push proactively without being asked, same as commits.
+- **Everything the user says in conversation is a priority signal, full
+  stop.** Don't silently deprioritize something the user spent time
+  explaining in favor of what Claude judges more architecturally important.
+  Capture it, act on it, log it.
+- **Claude Code is a bootstrap tool.** Hermes doesn't exist yet, which is
+  the only reason Claude Code is doing this work by hand. The expectation is
+  that this whole maintenance role (memory, repo upkeep, network changes)
+  eventually moves *into* Hermes itself once it exists. Build with that
+  handoff in mind — e.g. prefer capabilities/APIs a future agent could call
+  over one-off manual steps only Claude Code can do.
