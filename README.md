@@ -7,18 +7,18 @@ account (for frontier-model fallback) instead of two.
 
 ## Relationship to LocalForge
 
-There is a separate, narrower project already running: `LocalForge`
-(`Home Claude/LocalForge` on the shared drive), which bridges **Claude Code**
-to LM Studio on `w_workstation` as a single-purpose MCP tool
-(`delegate_task`, `embed_text`, `check_local_llm_status`). That project's
-explicit non-goal is "building a general-purpose multi-agent framework."
+Hermes is a standalone project — a personal agent + chat UI meant to be used
+directly (browser, phone), not a tool inside a Claude Code session. It is
+**not** bound by the scope limits of `LocalForge` (`Home Claude/LocalForge`
+on the shared drive), a separate, narrower project that bridges Claude Code
+to the same LM Studio instance. That project's "stay minimal, single-purpose"
+charter was written for its own use case and does not constrain Hermes.
 
-Hermes *is* that general-purpose thing — a standalone agent + chat UI meant to
-be used directly (browser, phone), not as a tool inside a Claude Code session.
-Where both projects want the same underlying resource (LM Studio on
-`w_workstation`), Hermes should reuse it rather than standing up a second
-inference server that fights the first for VRAM. See
-[ARCHITECTURE.md](ARCHITECTURE.md) for how that boundary is meant to work.
+Where it's useful, Hermes should reuse what LocalForge already proved out —
+same underlying hardware (LM Studio on `w_workstation`), same HTTP contract,
+maybe the same connection code — but as prior art to borrow from, not a
+boundary to respect. See [ARCHITECTURE.md](ARCHITECTURE.md) for the current
+thinking on how much to share vs. build separately.
 
 ## Status
 

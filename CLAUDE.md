@@ -21,14 +21,29 @@ Secrets (API keys, tokens) go in the catalog's `secrets` table
 (`pgp_sym_encrypt`-backed), never hardcoded here or committed to this repo.
 See the shared `CLAUDE.md` for the exact `secret_set`/`secret_get` calls.
 
-## Logging progress
+## Logging progress — this project's actual memory
 
-Log real decisions and events (architecture choices made, hardware/software
-state discovered, problems hit and solved) to the catalog as `entities`
-(`type=log-entry` / `type=decision`), the same convention used for the rest
-of the home lab — not as new markdown files in this repo. Keep this repo's
-own docs (README/ARCHITECTURE/BACKLOG) as the current-state summary, and
-update them in place rather than letting them drift from the catalog.
+Hermes-specific memory (decisions, live inventory snapshots, progress) lives
+in the catalog as `entities` tagged `hermes`, not as new markdown files in
+this repo or as prose dumped into a chat session. This is deliberate: an
+edge-based store you query on demand costs far less session context than a
+growing pile of markdown, and it survives across every future session/tool
+(Claude Code, Antigravity) without re-explaining itself.
+
+- Query everything tagged for this project:
+  `curl "http://192.168.40.250:3003/entities?tags=cs.%7Bhermes%7D"`
+- Add new context the same way any home-lab entity gets added (see shared
+  `CLAUDE.md`'s "How to log new context"), always including `"tags": ["hermes", ...]`.
+- Link related entities via the `relations` table (subject/predicate/object)
+  as they come up — e.g. `hermes` entities relating to `host` w_workstation,
+  or to `entity` LocalForge decisions — so `graph_recall` gets more useful
+  as the project grows instead of staying a pile of disconnected rows.
+- Use `search_similar` (semantic) when you don't have an exact keyword, `fts`
+  tag search when you do.
+
+Keep this repo's own docs (README/ARCHITECTURE/BACKLOG) as a *current-state
+summary* a human can read at a glance — update them in place, don't let them
+drift from the catalog, but don't treat them as the memory store either.
 
 ## Standing rules inherited from the home lab
 

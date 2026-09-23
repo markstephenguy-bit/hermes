@@ -2,13 +2,15 @@
 
 ## The fork that needs deciding first
 
-- **(a) Extend LocalForge** — grow its existing bridge to also serve Hermes,
-  reusing the same LM Studio connection and whatever code already works
-  (`delegate_task` plumbing, `finish_reason` handling, etc.), accepting that
-  LocalForge's "stay minimal, single-purpose" charter has to bend.
-- **(b) Stand up Hermes separately** — a new process alongside LocalForge,
-  accepting duplicated LM Studio client code but keeping LocalForge
-  untouched and single-purpose.
+Hermes is independent of LocalForge (decided 2026-09-22 — see catalog entity
+`hermes-independent-of-localforge-2026-09-22`), so this is now a pure code-
+reuse question, not a scope-boundary one:
+
+- **(a) Share code with LocalForge** — reuse its existing LM Studio
+  connection code / HTTP contract (`delegate_task` plumbing, `finish_reason`
+  handling, etc.) as a starting point.
+- **(b) Build Hermes's own client from scratch** — accept some duplication,
+  keep LocalForge completely untouched.
 
 Nothing else below should really be worked until this is picked, since it
 determines where the code lives and what gets reused.
