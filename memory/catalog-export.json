@@ -1,0 +1,221 @@
+{
+  "entities": [
+    {
+      "attributes": {},
+      "body": "User requirement: consistent access to the Hermes UI from this laptop regardless of location (home, Georgia Pacific work, hotels), plus eventually any device. Hard constraint: employer (Georgia Pacific) is actively averse to unusual network activity on company-managed devices, so nothing may require installing a VPN/tunnel client. Decision: reuse the existing DuckDNS domain (theguylab.duckdns.org) and Nginx Proxy Manager on server, adding a new path-based Custom Location (matching the existing /wp, /beszel pattern), e.g. theguylab.duckdns.org/hermes, password-gated. Explicitly rejected: Tailscale (dormant container on server), MeshCentral (no agents installed), Cloudflare Tunnel (nothing set up) - all three require a client on the connecting device, which is the opposite of the requirement. A password wall behind a normal HTTPS domain requires installing nothing and is indistinguishable from browsing any other site.",
+      "created_at": "2026-09-23T03:29:41.147735+00:00",
+      "id": "3ad7d927-0b5b-4f40-a066-dcf42b1f0090",
+      "key": "hermes-remote-access-decision-2026-09-22",
+      "name": "Remote access: password-gated web UI via existing DuckDNS + NPM, no client install",
+      "tags": [
+        "hermes",
+        "architecture",
+        "remote-access"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-23T03:29:41.147735+00:00"
+    },
+    {
+      "attributes": {
+        "fileserver": {
+          "cpus": 4,
+          "os": "Ubuntu 24.04",
+          "product": "Dell Vostro 270s",
+          "ram_mb": 5799
+        },
+        "laptop": {
+          "cpus": 12,
+          "os": "Ubuntu 24.04",
+          "product": "HP ZBook 15 G5",
+          "ram_mb": 31935
+        },
+        "server": {
+          "cpus": 6,
+          "disk_free": "152G/231G (31% used)",
+          "os": "Ubuntu 24.04",
+          "product": "HP ProDesk 600 G5 Mini",
+          "ram_mb": 15764
+        },
+        "w_desktop": {
+          "cpus": 4,
+          "os": "Windows 10 Pro",
+          "product": "Dell OptiPlex 3040",
+          "ram_mb": 16285
+        },
+        "w_laptop": {
+          "cpus": 4,
+          "os": "Windows 10 Pro",
+          "product": "HP EliteBook 840 G4",
+          "ram_mb": 16263
+        },
+        "w_workstation": {
+          "cpus": 8,
+          "gpu": "NVIDIA RTX A4000 (confirmed via Get-CimInstance Win32_VideoController)",
+          "lm_studio": "reachable at :1234, models available: gemma-4-12b-it@q4_k_m, gemma-4-12b-it@q8_0, nomic-embed-text-v1.5",
+          "os": "Windows 11 Enterprise",
+          "product": "HP Z4 G4 Workstation",
+          "ram_mb": 65263
+        }
+      },
+      "body": "Fresh ground-truth inventory pulled via Salt (test.ping + grains.item across tgt=*) at the start of Hermes project work, so future Hermes sessions do not need to re-derive hardware state. All 6 minions responded live. Key correction vs. an earlier draft planning doc that assumed w_workstation had 128GB RAM: actual is 64GB (65263MB), still HP Z4 G4 Workstation with confirmed NVIDIA RTX A4000 GPU (4GB AdapterRAM reported by WMI is the driver-reported aperture size, not full VRAM - 16GB is the card spec and matches prior LM Studio load observations of ~12GB used). LM Studio on w_workstation is up and serving 4 models over its OpenAI-compatible API at :1234, directly reachable from laptop over LAN without needing Salt as a relay. server has 152GB free disk - plenty of headroom for new Hermes-related Docker services without capacity concerns.",
+      "created_at": "2026-09-23T03:05:47.32844+00:00",
+      "id": "e5a48e2d-a69a-43ca-a49c-62dd478bb964",
+      "key": "hermes-network-inventory-2026-09-22",
+      "name": "Live Salt inventory of all 6 LAN hosts for Hermes project start",
+      "tags": [
+        "hermes",
+        "network-snapshot",
+        "salt"
+      ],
+      "type": "network-snapshot",
+      "updated_at": "2026-09-23T03:05:47.32844+00:00"
+    },
+    {
+      "attributes": {},
+      "body": "User decided Hermes (personal AI agent + chat UI, meant to replace paid ChatGPT Plus/Claude Pro subscriptions) should NOT be treated as bound by LocalForge non-goal of avoiding a general-purpose multi-agent framework - that constraint was written for a different, narrower project (Claude Code offload tool) and does not apply to Hermes. Hermes may still reuse LM Studio on w_workstation as the underlying local-inference resource (same hardware, same RTX A4000/LM Studio server), and may reference LocalForge bridge code as prior art, but is scoped and decided independently. Repo scaffolded at /home/mark/projects/Hermes, remote https://github.com/markstephenguy-bit/hermes (not yet pushed - needs user auth).",
+      "created_at": "2026-09-23T03:05:50.930463+00:00",
+      "id": "2b90ae2b-9ca0-4a9a-8038-aec280e00efd",
+      "key": "hermes-independent-of-localforge-2026-09-22",
+      "name": "Hermes is a standalone project, not constrained by LocalForge scope",
+      "tags": [
+        "hermes",
+        "localforge",
+        "decision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-23T03:05:50.930463+00:00"
+    },
+    {
+      "attributes": {},
+      "body": "User set standing operating rules for the Hermes project, overriding the usual ask-first defaults for these specific actions: (1) Memory upkeep is Claude's responsibility, not the user's - never wait to be told to save something, capture decisions/corrections/facts as they happen including relations/edges linking entities together, not just isolated notes. (2) Git upkeep is Claude's responsibility - commit as work lands without asking; push too, once push actually works (blocked as of 2026-09-22 by missing GitHub credential in this environment - no SSH key registered with GitHub, no cached HTTPS token; user needs to register ~/.ssh/id_ed25519.pub with GitHub or cache a token, one-time setup). (3) Everything the user says in conversation is a priority signal - do not silently deprioritize what the user explicitly discussed in favor of what Claude judges more important. (4) Claude Code is understood as a bootstrap tool only - Hermes does not exist yet, which is the sole reason Claude Code is doing this work by hand; the expectation is this whole maintenance role (memory, repo upkeep, network changes) eventually moves into Hermes itself once it exists, so prefer building capabilities/APIs a future agent could call over one-off manual steps only Claude Code can perform.",
+      "created_at": "2026-09-23T03:29:41.108375+00:00",
+      "id": "47f8bda4-1871-41cb-887e-36abb7fc6960",
+      "key": "hermes-operating-ground-rules-2026-09-22",
+      "name": "Hermes project operating ground rules set by user",
+      "tags": [
+        "hermes",
+        "ground-rules"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-23T03:29:41.108375+00:00"
+    },
+    {
+      "attributes": {},
+      "body": "User framed the core scope of Hermes: it is not just a chat UI backed by a local model. Existing home network resources (compute, storage, the ability to host a web page, etc.) are meant to become capabilities the agent itself can use and eventually control, implementation-agnostic. Users example: the ability to host web pages the personal agent constructs counts as a web server capability regardless of what software or host actually implements it - what matters is that it is under the agent's control, not the specific implementation. Applies to future design decisions: prefer designs where a capability is something Hermes can invoke/control, not just something Claude Code wired up once by hand.",
+      "created_at": "2026-09-23T03:29:41.133163+00:00",
+      "id": "b5281927-b4a9-4b25-b61b-cd7f3db5f450",
+      "key": "hermes-network-resources-as-capabilities-2026-09-22",
+      "name": "Core design principle: home network resources become agent capabilities",
+      "tags": [
+        "hermes",
+        "architecture"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-23T03:29:41.133163+00:00"
+    }
+  ],
+  "exported_at": "2026-09-23T03:50:02.744194+00:00",
+  "relations": [
+    {
+      "attributes": {},
+      "created_at": "2026-09-23T03:29:52.6672+00:00",
+      "id": "5b1abe23-801a-413e-8f71-ca044367e9cf",
+      "object_key": "hermes-independent-of-localforge-2026-09-22",
+      "object_type": "entity",
+      "predicate": "governs",
+      "subject_key": "hermes-operating-ground-rules-2026-09-22",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-23T03:29:52.686859+00:00",
+      "id": "24dc5cea-ba56-433a-9e67-3d2b6d7a9eae",
+      "object_key": "hermes-network-resources-as-capabilities-2026-09-22",
+      "object_type": "entity",
+      "predicate": "governs",
+      "subject_key": "hermes-operating-ground-rules-2026-09-22",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-23T03:29:52.695903+00:00",
+      "id": "31ca5e9f-fe6e-44e2-8517-a4df5886371a",
+      "object_key": "hermes-remote-access-decision-2026-09-22",
+      "object_type": "entity",
+      "predicate": "governs",
+      "subject_key": "hermes-operating-ground-rules-2026-09-22",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-23T03:29:52.706011+00:00",
+      "id": "55239524-02b2-44bc-afa3-b4b053e2d366",
+      "object_key": "hermes-network-inventory-2026-09-22",
+      "object_type": "entity",
+      "predicate": "depends_on",
+      "subject_key": "hermes-remote-access-decision-2026-09-22",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-23T03:29:52.716334+00:00",
+      "id": "1f4ab24a-c9d7-471d-beab-9812ecba1363",
+      "object_key": "server",
+      "object_type": "host",
+      "predicate": "implemented_on",
+      "subject_key": "hermes-remote-access-decision-2026-09-22",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-23T03:29:52.728447+00:00",
+      "id": "65732b55-d020-49bf-88ce-c867ad434462",
+      "object_key": "Nginx Proxy Manager",
+      "object_type": "service",
+      "predicate": "reuses",
+      "subject_key": "hermes-remote-access-decision-2026-09-22",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-23T03:29:52.741279+00:00",
+      "id": "7606569d-b000-4eea-ad59-bf3fd12dc73c",
+      "object_key": "DuckDNS updater",
+      "object_type": "service",
+      "predicate": "reuses",
+      "subject_key": "hermes-remote-access-decision-2026-09-22",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-23T03:29:52.753791+00:00",
+      "id": "d2b9fbe9-fd57-4a38-8551-ad0178af021a",
+      "object_key": "hermes-independent-of-localforge-2026-09-22",
+      "object_type": "entity",
+      "predicate": "broader_framing_for",
+      "subject_key": "hermes-network-resources-as-capabilities-2026-09-22",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-23T03:29:52.778765+00:00",
+      "id": "9c38d575-9eed-4267-bf4b-09f892e4a8d9",
+      "object_key": "hermes-network-inventory-2026-09-22",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-independent-of-localforge-2026-09-22",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-23T03:29:52.800987+00:00",
+      "id": "51358495-eb27-454c-867d-3cc1edfb5de7",
+      "object_key": "w_workstation",
+      "object_type": "host",
+      "predicate": "describes",
+      "subject_key": "hermes-network-inventory-2026-09-22",
+      "subject_type": "entity"
+    }
+  ],
+  "source": "http://192.168.40.250:3003 (Postgres+PostgREST on `server`, live copy is authoritative)"
+}

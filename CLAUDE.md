@@ -45,6 +45,17 @@ Keep this repo's own docs (README/ARCHITECTURE/BACKLOG) as a *current-state
 summary* a human can read at a glance — update them in place, don't let them
 drift from the catalog, but don't treat them as the memory store either.
 
+### Backup: catalog memory is a single point of failure
+
+The catalog only exists on `server` (Postgres) — nothing else backs it up.
+`scripts/export_catalog_memory.py` dumps all `hermes`-tagged entities and
+their relations to `memory/catalog-export.json`, which gets committed and
+pushed like any other change. Run it (`python3 scripts/export_catalog_memory.py`)
+and commit the result whenever new `hermes`-tagged entities/relations are
+added to the catalog — treat it as part of the same "log this to the
+catalog" step, not a separate chore. This file is a dead backup only, never
+read *from* it while the catalog is reachable.
+
 ## Standing rules inherited from the home lab
 
 - Don't stand up infrastructure that duplicates something that already
@@ -62,13 +73,11 @@ listed below, *for this project*:
   conversation gets written to the catalog (tagged `hermes`) as it happens,
   including `relations` edges linking it to what it's related to — not just
   isolated entities. The user should never have to say "remember this."
-- **Git upkeep is Claude's job, not the user's.** Commit as work lands, no
-  need to ask first. Push too, once push actually works — as of 2026-09-22
-  this environment has no cached GitHub credential (no SSH key registered
-  with GitHub, no cached HTTPS token), so pushes fail. That's a one-time
-  setup gap for the user to close (register the existing
-  `~/.ssh/id_ed25519.pub` with GitHub, or cache an HTTPS token) — once
-  closed, push proactively without being asked, same as commits.
+- **Git upkeep is Claude's job, not the user's.** Commit as work lands and
+  push too, no need to ask first. SSH access was set up 2026-09-23 (key
+  registered with GitHub, remote `git@github.com:markstephenguy-bit/hermes.git`)
+  — push works. If a push ever fails, verify with `ssh -T git@github.com`
+  before assuming credentials broke.
 - **Everything the user says in conversation is a priority signal, full
   stop.** Don't silently deprioritize something the user spent time
   explaining in favor of what Claude judges more architecturally important.
