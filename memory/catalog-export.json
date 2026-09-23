@@ -112,9 +112,23 @@
       ],
       "type": "decision",
       "updated_at": "2026-09-23T03:29:41.133163+00:00"
+    },
+    {
+      "attributes": {},
+      "body": "User correction: the underlying model powering the Hermes agent is not an open design question to be evaluated (tool-calling benchmarks, comparing gemma vs other options, etc.) - it is specifically the Hermes model line from Nous Research, chosen because the user considers it best-in-class for this purpose currently. This resolves the previously-open BACKLOG.md \"Model choice\" item. Specific version/size (e.g. Hermes 3 vs a newer release, parameter count that fits w_workstation RTX A4000 16GB VRAM) not yet pinned down - Claude's knowledge cutoff is Jan 2026 and Nous ships new Hermes versions periodically, so verify current release before downloading rather than assuming.",
+      "created_at": "2026-09-23T03:52:00.828037+00:00",
+      "id": "5a8f7e86-ba99-45a8-941a-b60179e32613",
+      "key": "hermes-agent-model-is-hermes-2026-09-23",
+      "name": "The agent model is Hermes (Nous Research), not a from-scratch evaluation",
+      "tags": [
+        "hermes",
+        "architecture"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-23T03:52:00.828037+00:00"
     }
   ],
-  "exported_at": "2026-09-23T03:50:02.744194+00:00",
+  "exported_at": "2026-09-23T03:52:10.647222+00:00",
   "relations": [
     {
       "attributes": {},

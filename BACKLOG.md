@@ -22,13 +22,14 @@ determines where the code lives and what gets reused.
   client on the connecting device — see ARCHITECTURE.md for the reasoning
   (Georgia Pacific laptop constraint) and catalog entity
   `hermes-remote-access-decision-2026-09-22`.
+- **Model choice (2026-09-23):** the agent's model is **Hermes** (Nous
+  Research's model line) — not an open evaluation, chosen because the user
+  considers it best-in-class for this. Specific version/size not yet pinned
+  down (Claude's knowledge cutoff is Jan 2026; verify the current Nous
+  release rather than assuming one). Needs to fit `w_workstation`'s RTX
+  A4000 16GB VRAM. See catalog entity `hermes-agent-model-is-hermes-2026-09-23`.
 
 ## Other open decisions
-
-- **Model choice** — keep `gemma-4-12b-it` (already loaded, already proven
-  for LocalForge's use) vs. a model chosen specifically for chat-agent /
-  tool-calling use. Needs an actual tool-calling capability check, not a
-  guess.
 - **Cloud fallback provider** — whether a single-account router (e.g.
   OpenRouter) is worth the complexity vs. calling one cloud API directly
   when local capability isn't enough.
