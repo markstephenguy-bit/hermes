@@ -126,9 +126,23 @@
       ],
       "type": "decision",
       "updated_at": "2026-09-23T03:52:00.828037+00:00"
+    },
+    {
+      "attributes": {},
+      "body": "User referred to Hermes Desktop as the interface, prompting web research (this postdates Claude's Jan 2026 knowledge cutoff). Findings: Nous Research released Hermes Agent (open-source, self-improving agent framework, MIT licensed, first released 2026-02-25) with an official native desktop app, Hermes Desktop (public preview v0.15.2, released 2026-06-02, macOS/Windows/Linux). Architecture: hermes serve is the headless backend (API + dashboard, port 9119, REST handshake GET /api/status then WebSocket for chat/events), config/memory/skills/sessions live in ~/.hermes/. Desktop client supports Settings -> Gateways -> Remote gateway to point at a self-run hermes serve backend instead of spawning one locally (env vars HERMES_DESKTOP_REMOTE_URL / HERMES_DESKTOP_REMOTE_TOKEN also supported), with multiple saved backend profiles. Documented security guidance: keep the remote backend behind a trusted reverse proxy/VPN/SSH tunnel rather than exposed raw - directly compatible with the already-decided remote-access architecture (DuckDNS + Nginx Proxy Manager + password wall on server, catalog entity hermes-remote-access-decision-2026-09-22). Five sandboxed execution backends available (local, Docker, SSH, Singularity, Modal); Nous Portal offers 300+ models (free/paid). Not yet a locked decision - user has not confirmed moving from research to committed design.",
+      "created_at": "2026-09-23T03:54:16.791665+00:00",
+      "id": "942dd7fe-9276-4e75-af6b-ea5a13eac883",
+      "key": "hermes-agent-product-research-2026-09-23",
+      "name": "Research: Nous Research ships a real Hermes Agent product with a desktop client/server architecture",
+      "tags": [
+        "hermes",
+        "research"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-23T03:54:16.791665+00:00"
     }
   ],
-  "exported_at": "2026-09-23T03:52:10.647222+00:00",
+  "exported_at": "2026-09-23T03:54:20.651099+00:00",
   "relations": [
     {
       "attributes": {},
@@ -228,6 +242,26 @@
       "object_type": "host",
       "predicate": "describes",
       "subject_key": "hermes-network-inventory-2026-09-22",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-23T03:54:20.494463+00:00",
+      "id": "cf675b38-7255-4efd-8571-df556a5fada5",
+      "object_key": "hermes-remote-access-decision-2026-09-22",
+      "object_type": "entity",
+      "predicate": "validates",
+      "subject_key": "hermes-agent-product-research-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-23T03:54:20.527443+00:00",
+      "id": "ac1b4135-c689-4ed5-9137-f28f4b6b31bc",
+      "object_key": "hermes-agent-model-is-hermes-2026-09-23",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-agent-product-research-2026-09-23",
       "subject_type": "entity"
     }
   ],
