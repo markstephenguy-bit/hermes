@@ -140,9 +140,28 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-23T03:54:16.791665+00:00"
+    },
+    {
+      "attributes": {
+        "claude_code_role": "long-term: a delegate Hermes can invoke for agentic work, same category as what Claude Code does today - not the daily interface",
+        "gateway_role": "routes agentic/coding work to other AI backends (e.g. a Claude-equivalent) when the local model needs help",
+        "primary_interface": "Hermes Desktop, talking to local LLM via LM Studio on w_workstation"
+      },
+      "body": "User wants Hermes to be their master AI harness - they talk to Hermes, not Claude Code directly, with a local LLM (LM Studio on w_workstation) as the default brain and an AI gateway routing heavier agentic/coding work to other AI backends on demand.",
+      "created_at": "2026-09-23T04:01:56.264047+00:00",
+      "id": "fb34d61c-9caf-4ef6-b62c-05a08289da99",
+      "key": "hermes-master-harness-role-2026-09-23",
+      "name": "Hermes is the master harness; Claude Code is a delegate, not the front door",
+      "tags": [
+        "hermes",
+        "architecture",
+        "vision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-23T04:01:56.264047+00:00"
     }
   ],
-  "exported_at": "2026-09-23T03:54:20.651099+00:00",
+  "exported_at": "2026-09-23T04:02:00.011618+00:00",
   "relations": [
     {
       "attributes": {},
@@ -262,6 +281,36 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-agent-product-research-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-23T04:01:59.81702+00:00",
+      "id": "fa1deb03-fca1-40c8-bb94-9db02a5d305a",
+      "object_key": "hermes-agent-model-is-hermes-2026-09-23",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-master-harness-role-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-23T04:01:59.874974+00:00",
+      "id": "7db21902-dd40-420c-a961-1b4034f4d07e",
+      "object_key": "hermes-agent-product-research-2026-09-23",
+      "object_type": "entity",
+      "predicate": "satisfied_by",
+      "subject_key": "hermes-master-harness-role-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-23T04:01:59.893841+00:00",
+      "id": "3b214aaf-55f6-4b07-9dab-7c63c4da4cdd",
+      "object_key": "hermes-operating-ground-rules-2026-09-22",
+      "object_type": "entity",
+      "predicate": "extends",
+      "subject_key": "hermes-master-harness-role-2026-09-23",
       "subject_type": "entity"
     }
   ],

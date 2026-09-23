@@ -41,6 +41,24 @@ growing pile of markdown, and it survives across every future session/tool
 - Use `search_similar` (semantic) when you don't have an exact keyword, `fts`
   tag search when you do.
 
+### Format: atomic entities, not narrative paragraphs (set 2026-09-23)
+
+Earlier entities in this project were written as full prose paragraphs
+(~200-300 tokens each) — human-readable, but expensive: pulling back a
+handful via `graph_recall` costs real context. Going forward, write entities
+atomically instead:
+
+- `body`: **one sentence, maybe two.** The fact/decision itself, not the
+  reasoning narrative around it.
+- `attributes`: structured JSON key-values for the specifics (numbers,
+  names, paths, config) — not prose.
+- `relations`: do the work of connecting facts to each other and to
+  why/context (`informed_by`, `refines`, `supersedes`, `governs`, etc.)
+  instead of restating that context inline in the body.
+- Tags stay as-is for categorical retrieval.
+
+Existing pre-2026-09-23 entities are left as prose (not worth the churn to
+convert retroactively) — this format applies from here forward.
 Keep this repo's own docs (README/ARCHITECTURE/BACKLOG) as a *current-state
 summary* a human can read at a glance — update them in place, don't let them
 drift from the catalog, but don't treat them as the memory store either.
