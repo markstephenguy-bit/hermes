@@ -58,6 +58,23 @@
       "updated_at": "2026-09-24T01:48:29.760237+00:00"
     },
     {
+      "attributes": {
+        "actual_tier": "ChatGPT Plus ($20/mo)",
+        "codex_access": "included at base usage cap, not the boosted 5x/20x limits Pro tiers get"
+      },
+      "body": "User pays $20/month for OpenAI, which is the ChatGPT Plus tier (not Pro) - still qualifies for Codex CLIs subscription sign-in, just at base usage limits.",
+      "created_at": "2026-09-24T04:18:03.205408+00:00",
+      "id": "94911728-2d78-42ea-8a08-9806f26a91c3",
+      "key": "hermes-user-openai-plan-is-plus-not-pro-2026-09-23",
+      "name": "Users $20/mo OpenAI plan is ChatGPT Plus, not Pro",
+      "tags": [
+        "hermes",
+        "cost"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-24T04:18:03.205408+00:00"
+    },
+    {
       "attributes": {},
       "body": "User requirement: consistent access to the Hermes UI from this laptop regardless of location (home, Georgia Pacific work, hotels), plus eventually any device. Hard constraint: employer (Georgia Pacific) is actively averse to unusual network activity on company-managed devices, so nothing may require installing a VPN/tunnel client. Decision: reuse the existing DuckDNS domain (theguylab.duckdns.org) and Nginx Proxy Manager on server, adding a new path-based Custom Location (matching the existing /wp, /beszel pattern), e.g. theguylab.duckdns.org/hermes, password-gated. Explicitly rejected: Tailscale (dormant container on server), MeshCentral (no agents installed), Cloudflare Tunnel (nothing set up) - all three require a client on the connecting device, which is the opposite of the requirement. A password wall behind a normal HTTPS domain requires installing nothing and is indistinguishable from browsing any other site.",
       "created_at": "2026-09-23T03:29:41.147735+00:00",
@@ -529,7 +546,7 @@
       "updated_at": "2026-09-24T04:15:47.69745+00:00"
     }
   ],
-  "exported_at": "2026-09-24T04:15:51.458433+00:00",
+  "exported_at": "2026-09-24T04:18:07.243743+00:00",
   "relations": [
     {
       "attributes": {},
@@ -1019,6 +1036,26 @@
       "object_type": "entity",
       "predicate": "relates_to",
       "subject_key": "hermes-codex-subscription-correction-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:18:06.916758+00:00",
+      "id": "bb998ed9-36db-4530-a824-1dd1122c1a31",
+      "object_key": "hermes-codex-subscription-correction-2026-09-23",
+      "object_type": "entity",
+      "predicate": "clarifies",
+      "subject_key": "hermes-user-openai-plan-is-plus-not-pro-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:18:06.935492+00:00",
+      "id": "c6bf8ec2-5d49-4371-88b8-0e6ae1c0f6b2",
+      "object_key": "hermes-subscription-consolidation-2026-09-23",
+      "object_type": "entity",
+      "predicate": "clarifies",
+      "subject_key": "hermes-user-openai-plan-is-plus-not-pro-2026-09-23",
       "subject_type": "entity"
     }
   ],
