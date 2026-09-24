@@ -2,6 +2,23 @@
   "entities": [
     {
       "attributes": {
+        "goal": "unify home compute/storage/capability into one accessible pool, identical experience regardless of location"
+      },
+      "body": "User wants to transform all home network resources into a unified, supercomputer-like pool of capability, reachable with the same experience from anywhere.",
+      "created_at": "2026-09-24T02:12:39.369626+00:00",
+      "id": "d2d7184c-5e88-46a5-b8a2-ede11728302e",
+      "key": "hermes-home-as-supercomputer-2026-09-23",
+      "name": "Turn all home resources into one supercomputer-like pool, same experience anywhere",
+      "tags": [
+        "hermes",
+        "architecture",
+        "vision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-24T02:12:39.369626+00:00"
+    },
+    {
+      "attributes": {
         "cancel": [
           "ChatGPT Plus",
           "Claude Pro"
@@ -347,9 +364,59 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-24T02:01:55.674975+00:00"
+    },
+    {
+      "attributes": {
+        "reason": "user has heard OpenClaw is in a downward spiral; considers Hermes the correct choice"
+      },
+      "body": "User confirmed Hermes Agent over its closest rival OpenClaw as the platform choice, citing reports that OpenClaw is declining.",
+      "created_at": "2026-09-24T02:12:39.319759+00:00",
+      "id": "60daf3f0-b316-47e3-896f-a1ecd2152ebf",
+      "key": "hermes-vs-openclaw-confirmed-2026-09-23",
+      "name": "Hermes confirmed over OpenClaw",
+      "tags": [
+        "hermes",
+        "architecture"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-24T02:12:39.319759+00:00"
+    },
+    {
+      "attributes": {
+        "motivation": "avoid recurring/unbounded AI spend, not just a technical local-vs-cloud preference"
+      },
+      "body": "The free-first local-LLM routing strategy is explicitly motivated by not wanting to fall into an ongoing-cost money pit.",
+      "created_at": "2026-09-24T02:12:39.341686+00:00",
+      "id": "62381668-552c-42b1-b36d-2fbfb0c39ab8",
+      "key": "hermes-avoid-money-pit-motivation-2026-09-23",
+      "name": "Local-first strategy is explicitly about avoiding an ongoing-cost money pit",
+      "tags": [
+        "hermes",
+        "cost"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-24T02:12:39.341686+00:00"
+    },
+    {
+      "attributes": {
+        "desired": "one continuous environment to jump back into and continue work, spanning all AI project work, not just home-lab ops",
+        "pain_point": "currently sets up a new memory/context system and a new GitHub repo for every new AI project"
+      },
+      "body": "User is tired of standing up new memory context and a new GitHub repo for every AI project and wants Hermes to be one persistent environment they can jump back into across all their AI work.",
+      "created_at": "2026-09-24T02:12:39.354641+00:00",
+      "id": "60586825-1da6-4754-8847-cd6b955f512f",
+      "key": "hermes-unified-persistent-environment-2026-09-23",
+      "name": "One persistent environment across all AI project work, not per-project setup",
+      "tags": [
+        "hermes",
+        "architecture",
+        "vision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-24T02:12:39.354641+00:00"
     }
   ],
-  "exported_at": "2026-09-24T02:02:40.359046+00:00",
+  "exported_at": "2026-09-24T02:12:47.625803+00:00",
   "relations": [
     {
       "attributes": {},
@@ -689,6 +756,56 @@
       "object_type": "host",
       "predicate": "considers",
       "subject_key": "hermes-backend-host-recommendation-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T02:12:47.376855+00:00",
+      "id": "4356b8a0-bb9e-44df-9b3c-cd45c9cbdb4d",
+      "object_key": "hermes-agent-model-is-hermes-2026-09-23",
+      "object_type": "entity",
+      "predicate": "reinforces",
+      "subject_key": "hermes-vs-openclaw-confirmed-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T02:12:47.448137+00:00",
+      "id": "695b4919-2dc6-4f8f-850d-a3ae01d7e9fb",
+      "object_key": "hermes-cost-based-routing-free-first-2026-09-23",
+      "object_type": "entity",
+      "predicate": "explains",
+      "subject_key": "hermes-avoid-money-pit-motivation-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T02:12:47.472872+00:00",
+      "id": "d4c41fd3-cba6-41a6-b3e0-c2c97ba1bcd6",
+      "object_key": "hermes-master-harness-role-2026-09-23",
+      "object_type": "entity",
+      "predicate": "extends",
+      "subject_key": "hermes-unified-persistent-environment-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T02:12:47.497553+00:00",
+      "id": "6152b326-2346-414c-b950-2584e1a0449d",
+      "object_key": "hermes-network-resources-as-capabilities-2026-09-22",
+      "object_type": "entity",
+      "predicate": "extends",
+      "subject_key": "hermes-home-as-supercomputer-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T02:12:47.522679+00:00",
+      "id": "5c921a0b-2b55-4c00-baf1-9282896af0fb",
+      "object_key": "hermes-interface-strategy-refined-2026-09-23",
+      "object_type": "entity",
+      "predicate": "relates_to",
+      "subject_key": "hermes-home-as-supercomputer-2026-09-23",
       "subject_type": "entity"
     }
   ],
