@@ -452,9 +452,64 @@
       ],
       "type": "decision",
       "updated_at": "2026-09-24T04:05:15.898335+00:00"
+    },
+    {
+      "attributes": {
+        "api_billing": "fully separate, per-token product, no API credits or discount from the Pro subscription",
+        "chatgpt_pro_cost": "$100-200/month, consumer chat-interface subscription only",
+        "implication": "the already-decided paid LLM gateway path covers OpenAI-model access under one subscription without needing a separate OpenAI API account at all"
+      },
+      "body": "ChatGPT Pro is a consumer subscription with no API access included - using OpenAI models programmatically through Hermes would require a separate, separately-billed OpenAI API key, not the Pro subscription itself.",
+      "created_at": "2026-09-24T04:12:27.956298+00:00",
+      "id": "5e01bb55-3771-4fe8-8112-336df020cc1d",
+      "key": "hermes-openai-pro-no-api-access-2026-09-23",
+      "name": "ChatGPT Pro subscription cannot power Hermes - API billing is entirely separate",
+      "tags": [
+        "hermes",
+        "research",
+        "cost"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-24T04:12:27.956298+00:00"
+    },
+    {
+      "attributes": {
+        "config": "config.yaml, or interactively via `hermes fallback`",
+        "tiers": "local, cloud-burst, fallback - profile-based, configurable per request or per subagent",
+        "trigger_caveat": "documented trigger is route unavailability/capacity failure, not confirmed to be automatic prompt-complexity judging - that nuance is still open"
+      },
+      "body": "Hermes Agent natively supports a three-tier local/cloud-burst/fallback routing scheme via config.yaml, resolving whether this needs to be built separately - though whether it auto-judges prompt complexity (vs. just failing over on error) is still unconfirmed.",
+      "created_at": "2026-09-24T04:12:27.986388+00:00",
+      "id": "9212eb9d-8311-4325-92b6-5f21be296d23",
+      "key": "hermes-agent-native-tiered-routing-confirmed-2026-09-23",
+      "name": "Hermes Agent has native local -> cloud-burst -> fallback routing, resolving the earlier open question",
+      "tags": [
+        "hermes",
+        "research",
+        "gateway"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-24T04:12:27.986388+00:00"
+    },
+    {
+      "attributes": {
+        "scope": "LM Studio on w_workstation, plus Salt API access to manage other home network systems"
+      },
+      "body": "User wants the VPS-to-home VPN tunnel to also carry Salt connectivity to other home network systems, not just LM Studio access.",
+      "created_at": "2026-09-24T04:12:27.997476+00:00",
+      "id": "2c8f7028-0a79-4909-ab4c-80c66b6fef73",
+      "key": "hermes-vpn-scope-includes-salt-2026-09-23",
+      "name": "The VPS-to-home VPN should also carry Salt connectivity, not just LM Studio",
+      "tags": [
+        "hermes",
+        "network",
+        "architecture"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-24T04:12:27.997476+00:00"
     }
   ],
-  "exported_at": "2026-09-24T04:05:18.857079+00:00",
+  "exported_at": "2026-09-24T04:12:32.949860+00:00",
   "relations": [
     {
       "attributes": {},
@@ -884,6 +939,46 @@
       "object_type": "entity",
       "predicate": "explains",
       "subject_key": "hermes-vps-preference-reasons-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:12:32.736515+00:00",
+      "id": "43f1c234-a950-4ebf-bb19-9bfeda3c7135",
+      "object_key": "hermes-subscription-consolidation-2026-09-23",
+      "object_type": "entity",
+      "predicate": "clarifies",
+      "subject_key": "hermes-openai-pro-no-api-access-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:12:32.797312+00:00",
+      "id": "1587d1fc-2431-4aa0-a797-806a8c3f120b",
+      "object_key": "hermes-llm-routing-research-2026-09-23",
+      "object_type": "entity",
+      "predicate": "resolves",
+      "subject_key": "hermes-agent-native-tiered-routing-confirmed-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:12:32.815065+00:00",
+      "id": "3bb6031b-6c83-4e05-a0fa-8624af5237ea",
+      "object_key": "hermes-cost-based-routing-free-first-2026-09-23",
+      "object_type": "entity",
+      "predicate": "relates_to",
+      "subject_key": "hermes-agent-native-tiered-routing-confirmed-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:12:32.835998+00:00",
+      "id": "08a757e2-0d60-439e-a68d-1a321a9facd6",
+      "object_key": "hermes-vps-backend-with-home-vpn-2026-09-23",
+      "object_type": "entity",
+      "predicate": "extends",
+      "subject_key": "hermes-vpn-scope-includes-salt-2026-09-23",
       "subject_type": "entity"
     }
   ],
