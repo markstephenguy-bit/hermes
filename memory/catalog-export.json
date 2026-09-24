@@ -57,6 +57,25 @@
     },
     {
       "attributes": {
+        "gateways_aggregation": "LiteLLM (self-hosted, MIT, 100+ APIs), Portkey (self-hosted, MIT), OpenRouter (hosted), Nous Portal (Hermes Agents native gateway - proxies a curated model catalog + separate Tool Gateway for web search/image gen/TTS/browser automation, billed under one subscription)",
+        "open_question": "unclear whether Nous Portal / Hermes Agent has built-in complexity-based auto-routing (local vs frontier by prompt difficulty) or only provides unified model access/billing - needs follow-up research before this can be locked in as the answer to hermes-tiered-routing-by-complexity-2026-09-23",
+        "routing_decision_techniques": "RouteLLM (LMSYS/Berkeley binary complexity classifier, 85 percent cost reduction at 95 percent GPT-4 quality on MT-Bench), Semantic Router/vLLM Semantic Router (embedding-based intent routing, not difficulty-based), ICL-Router (2026 research, in-context capability vectors, no retraining needed for new models)"
+      },
+      "body": "LLM routing splits into two layers: gateways that aggregate many models under one API/subscription (LiteLLM, Portkey, OpenRouter, Nous Portal), and separate routing-decision techniques that pick which model tier to use per prompt (RouteLLM-style complexity classifiers, semantic/intent routers).",
+      "created_at": "2026-09-24T01:50:55.534647+00:00",
+      "id": "676a96dd-91b1-4134-91fc-31ae6baf9510",
+      "key": "hermes-llm-routing-research-2026-09-23",
+      "name": "Research: LLM routing has two distinct layers - gateway/aggregation vs. routing-decision",
+      "tags": [
+        "hermes",
+        "research",
+        "gateway"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-24T01:50:55.534647+00:00"
+    },
+    {
+      "attributes": {
         "fileserver": {
           "cpus": 4,
           "os": "Ubuntu 24.04",
@@ -255,7 +274,7 @@
       "updated_at": "2026-09-24T00:35:05.545052+00:00"
     }
   ],
-  "exported_at": "2026-09-24T01:48:34.308616+00:00",
+  "exported_at": "2026-09-24T01:50:59.299919+00:00",
   "relations": [
     {
       "attributes": {},
@@ -485,6 +504,36 @@
       "object_type": "entity",
       "predicate": "relates_to",
       "subject_key": "hermes-subscription-consolidation-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T01:50:59.183638+00:00",
+      "id": "dd02365b-b2e9-4326-90fc-9b36e2dd4e99",
+      "object_key": "hermes-tiered-routing-by-complexity-2026-09-23",
+      "object_type": "entity",
+      "predicate": "informs",
+      "subject_key": "hermes-llm-routing-research-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T01:50:59.202925+00:00",
+      "id": "b56106b9-39fb-4585-8c88-e5fd4f4c3aef",
+      "object_key": "hermes-agent-product-research-2026-09-23",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-llm-routing-research-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T01:50:59.211734+00:00",
+      "id": "6ffe47f9-9212-4ffe-b541-6e1128a315fe",
+      "object_key": "hermes-subscription-consolidation-2026-09-23",
+      "object_type": "entity",
+      "predicate": "informs",
+      "subject_key": "hermes-llm-routing-research-2026-09-23",
       "subject_type": "entity"
     }
   ],
