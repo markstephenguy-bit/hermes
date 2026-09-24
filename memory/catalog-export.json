@@ -638,9 +638,28 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-24T04:33:05.896669+00:00"
+    },
+    {
+      "attributes": {
+        "on_demand_compute": "Modal - already a native Hermes Agent execution backend, serverless/on-demand (not idle 24/7), including GPU jobs - complementary to Dokploy, not a replacement",
+        "reason": "avoid exposing ports/resources on the home network for anything other than LM Studio",
+        "result": "home network involvement shrinks to just the VPN-accessed LM Studio; web presence and container hosting live entirely on the VPS",
+        "web_and_docker_tool": "Dokploy - open-source, free, self-hosted on the same VPS, exposes an MCP server for agent-driven deploys/Docker/app management"
+      },
+      "body": "User wants Hermes web-presence and Docker-hosting capability to live on the VPS rather than exposing home network ports - Dokploy (free, self-hosted, MCP-native) on the same VPS covers both, with Modal (already a native Hermes execution backend) for on-demand heavier compute.",
+      "created_at": "2026-09-24T04:37:38.137375+00:00",
+      "id": "aedb0d63-2e08-4b57-b2ee-834a4300c8f1",
+      "key": "hermes-web-and-docker-presence-shifts-to-vps-2026-09-23",
+      "name": "Web presence and Docker hosting move to the VPS, not the home network",
+      "tags": [
+        "hermes",
+        "architecture"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-24T04:37:38.137375+00:00"
     }
   ],
-  "exported_at": "2026-09-24T04:33:09.472413+00:00",
+  "exported_at": "2026-09-24T04:37:43.252167+00:00",
   "relations": [
     {
       "attributes": {},
@@ -1250,6 +1269,26 @@
       "object_type": "entity",
       "predicate": "relates_to",
       "subject_key": "hermes-vps-real-cost-research-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:37:42.537859+00:00",
+      "id": "b528793b-546d-463b-b18c-2cb6890de867",
+      "object_key": "hermes-network-resources-as-capabilities-2026-09-22",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-web-and-docker-presence-shifts-to-vps-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:37:42.597345+00:00",
+      "id": "fc439e03-f84e-4c1c-a273-eb6b5f5d6eac",
+      "object_key": "hermes-agents-execute-on-vps-2026-09-23",
+      "object_type": "entity",
+      "predicate": "extends",
+      "subject_key": "hermes-web-and-docker-presence-shifts-to-vps-2026-09-23",
       "subject_type": "entity"
     }
   ],
