@@ -507,9 +507,29 @@
       ],
       "type": "decision",
       "updated_at": "2026-09-24T04:12:27.997476+00:00"
+    },
+    {
+      "attributes": {
+        "codex_auth": "sign in with ChatGPT Plus/Pro instead of an API key - flat monthly fee, capped usage, shared allowance across CLI/web/IDE",
+        "general_api_still_separate": "true - this correction applies specifically to Codex, not general OpenAI API access",
+        "possible_integration": "a Hermes sub-agent could shell out to the codex CLI as a tool, using subscription quota, rather than Hermes treating OpenAI as a metered LLM provider - not yet confirmed how well this integrates",
+        "pro_tiers": "$100/mo = 5x limit, $200/mo = 20x limit"
+      },
+      "body": "Correction to hermes-openai-pro-no-api-access-2026-09-23: OpenAIs Codex CLI specifically can authenticate with a ChatGPT Plus/Pro subscription (flat fee, capped usage) instead of a metered API key, unlike the general OpenAI API which remains separately billed.",
+      "created_at": "2026-09-24T04:15:47.69745+00:00",
+      "id": "068ce020-3464-4731-83d9-e9b7a8ecf4b0",
+      "key": "hermes-codex-subscription-correction-2026-09-23",
+      "name": "Correction: Codex CLI can use ChatGPT Plus/Pro subscription flat-fee, unlike the general OpenAI API",
+      "tags": [
+        "hermes",
+        "research",
+        "cost"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-24T04:15:47.69745+00:00"
     }
   ],
-  "exported_at": "2026-09-24T04:12:32.949860+00:00",
+  "exported_at": "2026-09-24T04:15:51.458433+00:00",
   "relations": [
     {
       "attributes": {},
@@ -979,6 +999,26 @@
       "object_type": "entity",
       "predicate": "extends",
       "subject_key": "hermes-vpn-scope-includes-salt-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:15:51.026409+00:00",
+      "id": "09652b82-e949-4c80-9b55-1de4c29ce026",
+      "object_key": "hermes-openai-pro-no-api-access-2026-09-23",
+      "object_type": "entity",
+      "predicate": "corrects",
+      "subject_key": "hermes-codex-subscription-correction-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:15:51.102021+00:00",
+      "id": "99f91aa7-499a-413d-a6d5-cf74194409e6",
+      "object_key": "hermes-subscription-consolidation-2026-09-23",
+      "object_type": "entity",
+      "predicate": "relates_to",
+      "subject_key": "hermes-codex-subscription-correction-2026-09-23",
       "subject_type": "entity"
     }
   ],
