@@ -1,6 +1,46 @@
 {
   "entities": [
     {
+      "attributes": {
+        "cancel": [
+          "ChatGPT Plus",
+          "Claude Pro"
+        ],
+        "keep": "Google One (Gemini, Antigravity)",
+        "replace_with": "paid LLM gateway subscription for frontier-model access"
+      },
+      "body": "User will cancel ChatGPT Plus and Claude Pro, keep Google One, and use a paid LLM gateway to supplement frontier LLMs instead of separate subscriptions.",
+      "created_at": "2026-09-24T01:48:29.693422+00:00",
+      "id": "1cf1e88a-c653-449c-b26c-7401e2c2fc8d",
+      "key": "hermes-subscription-consolidation-2026-09-23",
+      "name": "Cancel ChatGPT Plus and Claude Pro; replace with a paid LLM gateway",
+      "tags": [
+        "hermes",
+        "cost",
+        "gateway"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-24T01:48:29.693422+00:00"
+    },
+    {
+      "attributes": {
+        "tier_1": "local LLMs via LM Studio - default/most basic tier",
+        "tier_2": "paid LM gateway picks the frontier model, used when prompt/task exceeds local capability"
+      },
+      "body": "Hermes should default to local LLMs for most prompts and escalate through the paid gateway, which selects the frontier model, only when the prompt/task level requires it.",
+      "created_at": "2026-09-24T01:48:29.760237+00:00",
+      "id": "da94a04c-da7f-4ba8-850a-b7898870a68b",
+      "key": "hermes-tiered-routing-by-complexity-2026-09-23",
+      "name": "Hermes routes by need: local LLMs first, gateway-selected frontier model beyond that",
+      "tags": [
+        "hermes",
+        "gateway",
+        "architecture"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-24T01:48:29.760237+00:00"
+    },
+    {
       "attributes": {},
       "body": "User requirement: consistent access to the Hermes UI from this laptop regardless of location (home, Georgia Pacific work, hotels), plus eventually any device. Hard constraint: employer (Georgia Pacific) is actively averse to unusual network activity on company-managed devices, so nothing may require installing a VPN/tunnel client. Decision: reuse the existing DuckDNS domain (theguylab.duckdns.org) and Nginx Proxy Manager on server, adding a new path-based Custom Location (matching the existing /wp, /beszel pattern), e.g. theguylab.duckdns.org/hermes, password-gated. Explicitly rejected: Tailscale (dormant container on server), MeshCentral (no agents installed), Cloudflare Tunnel (nothing set up) - all three require a client on the connecting device, which is the opposite of the requirement. A password wall behind a normal HTTPS domain requires installing nothing and is indistinguishable from browsing any other site.",
       "created_at": "2026-09-23T03:29:41.147735+00:00",
@@ -215,7 +255,7 @@
       "updated_at": "2026-09-24T00:35:05.545052+00:00"
     }
   ],
-  "exported_at": "2026-09-24T00:35:11.711614+00:00",
+  "exported_at": "2026-09-24T01:48:34.308616+00:00",
   "relations": [
     {
       "attributes": {},
@@ -405,6 +445,46 @@
       "object_type": "entity",
       "predicate": "relates_to",
       "subject_key": "hermes-backend-host-selection-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T01:48:33.914343+00:00",
+      "id": "a9774e43-7510-4030-a1ed-e927d5ace124",
+      "object_key": "hermes-subscription-consolidation-2026-09-23",
+      "object_type": "entity",
+      "predicate": "relates_to",
+      "subject_key": "hermes-tiered-routing-by-complexity-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T01:48:33.933778+00:00",
+      "id": "353835c7-38e4-4a7c-b41d-e819a3be2f61",
+      "object_key": "hermes-lmstudio-multi-model-2026-09-23",
+      "object_type": "entity",
+      "predicate": "relates_to",
+      "subject_key": "hermes-tiered-routing-by-complexity-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T01:48:34.165573+00:00",
+      "id": "c141c9e9-1c80-4db3-a22b-0fe4908da633",
+      "object_key": "hermes-master-harness-role-2026-09-23",
+      "object_type": "entity",
+      "predicate": "relates_to",
+      "subject_key": "hermes-tiered-routing-by-complexity-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T01:48:34.199753+00:00",
+      "id": "e0cd6cda-797d-49bd-9eeb-bd0638334160",
+      "object_key": "hermes-agent-product-research-2026-09-23",
+      "object_type": "entity",
+      "predicate": "relates_to",
+      "subject_key": "hermes-subscription-consolidation-2026-09-23",
       "subject_type": "entity"
     }
   ],
