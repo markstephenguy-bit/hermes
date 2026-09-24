@@ -434,9 +434,27 @@
       ],
       "type": "decision",
       "updated_at": "2026-09-24T04:03:26.965245+00:00"
+    },
+    {
+      "attributes": {
+        "reason_1": "a VPS can be preconfigured/purpose-built specifically to maximize the Hermes install, not shared with servers other existing duties",
+        "reason_2": "guaranteed always-on, no dependency on home power/uptime/sleep behavior",
+        "reason_3": "remote-native by default - reachable from anywhere without home-network-specific plumbing"
+      },
+      "body": "User prefers a VPS over server for three reasons: a clean, purpose-built environment to maximize the Hermes install, guaranteed always-on uptime, and remote reachability from anywhere by default.",
+      "created_at": "2026-09-24T04:05:15.898335+00:00",
+      "id": "93ff8d34-6051-47f6-8b03-20fc5e93d83a",
+      "key": "hermes-vps-preference-reasons-2026-09-23",
+      "name": "Why VPS over server: preconfigured install, guaranteed always-on, remote-native",
+      "tags": [
+        "hermes",
+        "architecture"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-24T04:05:15.898335+00:00"
     }
   ],
-  "exported_at": "2026-09-24T04:03:31.665462+00:00",
+  "exported_at": "2026-09-24T04:05:18.857079+00:00",
   "relations": [
     {
       "attributes": {},
@@ -856,6 +874,16 @@
       "object_type": "entity",
       "predicate": "tension_with",
       "subject_key": "hermes-vps-backend-with-home-vpn-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:05:18.761014+00:00",
+      "id": "93b895e5-1c70-41a6-bf36-c1e1d8ba74d5",
+      "object_key": "hermes-vps-backend-with-home-vpn-2026-09-23",
+      "object_type": "entity",
+      "predicate": "explains",
+      "subject_key": "hermes-vps-preference-reasons-2026-09-23",
       "subject_type": "entity"
     }
   ],
