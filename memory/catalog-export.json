@@ -291,9 +291,29 @@
       ],
       "type": "decision",
       "updated_at": "2026-09-24T01:54:39.541098+00:00"
+    },
+    {
+      "attributes": {
+        "fallback_remote": "password-gated web UI landing page (DuckDNS + NPM, already decided) for when remote",
+        "native_use": "Hermes Desktop app used directly when practical, e.g. at home",
+        "preferred_remote": "Signal and/or Telegram messaging - looks like normal traffic anywhere, no proxy/network setup needed",
+        "status": "leaning, not fully decided"
+      },
+      "body": "User is leaning toward Signal/Telegram as the primary remote interface over the web UI, keeping a web UI landing page as a secondary option when remote, and using Hermes Desktop natively when practical.",
+      "created_at": "2026-09-24T01:58:20.593162+00:00",
+      "id": "d5784cb7-2694-4842-8118-6c1b6f0cfcfa",
+      "key": "hermes-interface-strategy-refined-2026-09-23",
+      "name": "Interface leaning: Signal/Telegram primary, web UI as remote landing page, Hermes Desktop when practical",
+      "tags": [
+        "hermes",
+        "architecture",
+        "interface"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-24T01:58:20.593162+00:00"
     }
   ],
-  "exported_at": "2026-09-24T01:54:42.895494+00:00",
+  "exported_at": "2026-09-24T01:58:24.090860+00:00",
   "relations": [
     {
       "attributes": {},
@@ -573,6 +593,26 @@
       "object_type": "entity",
       "predicate": "informed_by",
       "subject_key": "hermes-cost-based-routing-free-first-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T01:58:23.94596+00:00",
+      "id": "6edf5675-f70e-4b95-9beb-92279a55f651",
+      "object_key": "hermes-remote-access-decision-2026-09-22",
+      "object_type": "entity",
+      "predicate": "revises",
+      "subject_key": "hermes-interface-strategy-refined-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T01:58:23.996493+00:00",
+      "id": "79ee0d6e-cde5-4009-be09-33c2df6f018b",
+      "object_key": "hermes-master-harness-role-2026-09-23",
+      "object_type": "entity",
+      "predicate": "relates_to",
+      "subject_key": "hermes-interface-strategy-refined-2026-09-23",
       "subject_type": "entity"
     }
   ],
