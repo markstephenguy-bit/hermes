@@ -414,9 +414,29 @@
       ],
       "type": "decision",
       "updated_at": "2026-09-24T02:12:39.354641+00:00"
+    },
+    {
+      "attributes": {
+        "cost_tradeoff": "introduces a small, fixed, predictable recurring VPS cost - a different category from the unbounded per-usage AI-cost money pit the user wants to avoid, but still a new recurring expense worth naming",
+        "reason": "a VPS sidesteps home power/uptime/sleep concerns entirely - always up by default",
+        "requires": "a direct VPN tunnel from the VPS to the home network so it can reach LM Studio (w_workstation) and other home resources",
+        "security_note": "a VPN from a rented VPS into the home LAN adds a new path into the home network if that VPS is ever compromised",
+        "status": "leaning, not fully locked"
+      },
+      "body": "User is leaning toward running hermes serve on a VPS instead of server, with a direct VPN tunnel from the VPS back to the home network so it can reach LM Studio and other home resources.",
+      "created_at": "2026-09-24T04:03:26.965245+00:00",
+      "id": "e56e62fb-f2ee-4efb-b8fb-3d3eaa482c93",
+      "key": "hermes-vps-backend-with-home-vpn-2026-09-23",
+      "name": "Host hermes serve on a VPS instead of server, with a VPN back to the home network",
+      "tags": [
+        "hermes",
+        "architecture"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-24T04:03:26.965245+00:00"
     }
   ],
-  "exported_at": "2026-09-24T02:12:47.625803+00:00",
+  "exported_at": "2026-09-24T04:03:31.665462+00:00",
   "relations": [
     {
       "attributes": {},
@@ -806,6 +826,36 @@
       "object_type": "entity",
       "predicate": "relates_to",
       "subject_key": "hermes-home-as-supercomputer-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:03:31.407133+00:00",
+      "id": "24802add-0aed-4add-beef-883090b8c581",
+      "object_key": "hermes-backend-host-recommendation-2026-09-23",
+      "object_type": "entity",
+      "predicate": "revises",
+      "subject_key": "hermes-vps-backend-with-home-vpn-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:03:31.463578+00:00",
+      "id": "f250e460-9e9a-4065-a8f5-726cc4887490",
+      "object_key": "hermes-remote-access-decision-2026-09-22",
+      "object_type": "entity",
+      "predicate": "revises",
+      "subject_key": "hermes-vps-backend-with-home-vpn-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:03:31.475279+00:00",
+      "id": "84ea36c6-527a-4d32-9d23-703bd166e701",
+      "object_key": "hermes-avoid-money-pit-motivation-2026-09-23",
+      "object_type": "entity",
+      "predicate": "tension_with",
+      "subject_key": "hermes-vps-backend-with-home-vpn-2026-09-23",
       "subject_type": "entity"
     }
   ],
