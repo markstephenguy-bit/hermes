@@ -710,9 +710,28 @@
       ],
       "type": "decision",
       "updated_at": "2026-09-24T04:43:03.767004+00:00"
+    },
+    {
+      "attributes": {
+        "conclusion": "no direct integration exists or is needed between them - they sit side by side in Hermes config, not layered on each other",
+        "dokploy_mechanism": "MCP server, configured under mcp_servers in ~/.hermes/config.yaml - gives Hermes capabilities/tools to invoke (deploy an app, manage containers/databases)",
+        "modal_mechanism": "execution backend, alongside local/Docker/SSH/Singularity - where Hermess own sandboxed tool-calls/scripts actually run, especially for serverless GPU jobs via nousresearch/hermes-modal"
+      },
+      "body": "Researched Dokploy vs Modal integration: no direct connection exists between them. Dokploy is an MCP server (gives Hermes capabilities to invoke), Modal is an execution backend (where Hermess own code runs) - two separate, parallel integration points, not a combined stack.",
+      "created_at": "2026-09-24T04:45:22.589357+00:00",
+      "id": "ba186628-f2c9-430b-ba63-9ff31c9d8b67",
+      "key": "hermes-modal-dokploy-not-integrated-2026-09-23",
+      "name": "Modal and Dokploy are not integrated with each other - two separate Hermes integration mechanisms",
+      "tags": [
+        "hermes",
+        "research",
+        "architecture"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-24T04:45:22.589357+00:00"
     }
   ],
-  "exported_at": "2026-09-24T04:43:08.892557+00:00",
+  "exported_at": "2026-09-24T04:45:26.127544+00:00",
   "relations": [
     {
       "attributes": {},
@@ -1382,6 +1401,16 @@
       "object_type": "entity",
       "predicate": "relates_to",
       "subject_key": "hermes-plex-workflow-stays-home-via-vpn-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:45:25.482263+00:00",
+      "id": "81f04cff-b777-4e13-bc0d-42d2b9c238d9",
+      "object_key": "hermes-web-and-docker-presence-shifts-to-vps-2026-09-23",
+      "object_type": "entity",
+      "predicate": "clarifies",
+      "subject_key": "hermes-modal-dokploy-not-integrated-2026-09-23",
       "subject_type": "entity"
     }
   ],
