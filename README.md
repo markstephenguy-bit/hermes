@@ -25,11 +25,12 @@ thinking on how much to share vs. build separately.
 
 ## Status
 
-Scaffolding only — no code yet. See [ARCHITECTURE.md](ARCHITECTURE.md) for
-current design thinking and [BACKLOG.md](BACKLOG.md) for the open decisions
-that need to be made before writing code, starting with the biggest one:
-whether Hermes extends LocalForge's existing bridge or stands up separately
-alongside it.
+Infrastructure deployed (2026-09-24) — `hermes-vps` provisioned on Vultr
+High Performance AMD (Dallas, TX) running the official Nous Research `HermesAgent`
+Ubuntu 24.04 image. Next step is linking the user's existing $20/mo ChatGPT Plus
+subscription via native link+code flow, followed by transitioning to Hermes
+self-configuring Dokploy and the WireGuard home subnet tunnel back to `server`.
+See [ARCHITECTURE.md](ARCHITECTURE.md) and [BACKLOG.md](BACKLOG.md).
 
 ## Source of truth
 

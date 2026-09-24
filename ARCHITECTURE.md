@@ -17,6 +17,10 @@ something Claude Code wired up once by hand.
 
 ## What's real right now
 
+- **`hermes-vps`** (Vultr High Performance AMD, Dallas TX): Dedicated 2 vCPU,
+  4GB RAM, 100GB NVMe. Runs the official Nous Research `HermesAgent` Ubuntu 24.04
+  marketplace image. Hosts `hermes serve` and acts as the central hub and web
+  presence, with full KVM root access to run Dokploy and the WireGuard home tunnel.
 - **`w_workstation`** (192.168.40.100, Windows 11) has the actual GPU: an
   NVIDIA RTX A4000, 16GB VRAM. LM Studio is already running there with
   `gemma-4-12b-it@q8_0` loaded (~12GB) plus `nomic-embed-text-v1.5` for
@@ -24,55 +28,48 @@ something Claude Code wired up once by hand.
   loaded alongside it.
 - **`server`** (192.168.40.250, Ubuntu 24.04) is the existing Docker host —
   already runs Nginx Proxy Manager, AdGuard (LAN DNS), Portainer, the
-  catalog (`catalog-db`/`catalog-api`), and other public/internal services.
-  Any new Hermes container work should join this host's existing patterns
-  (see the catalog `services` table) rather than reinventing reverse-proxy
-  or DNS handling.
+  catalog (`catalog-db`/`catalog-api`), and persistent home services.
+  Acts as the home-side WireGuard gateway endpoint to route `192.168.40.0/24`
+  traffic from the VPS to `w_workstation` and Salt.
 - **Remote access — decided (2026-09-22):** password-gated web UI behind the
-  existing DuckDNS domain (`theguylab.duckdns.org`) and Nginx Proxy Manager,
-  as a new path-based Custom Location (matching the existing `/wp`, `/beszel`
-  pattern) — e.g. `theguylab.duckdns.org/hermes`. Deliberately **not**
-  Tailscale (dormant container on `server`) or MeshCentral (no agents
-  installed) or Cloudflare Tunnel — all three require installing a client on
-  whatever device is connecting, which is the opposite of the actual
-  requirement: this needs to work unmodified on a company-managed laptop
-  (Georgia Pacific) where installing VPN/tunnel clients would itself look
-  like the "strange goings-on" the user is explicitly trying to avoid. A
-  password wall behind a normal HTTPS domain requires installing nothing —
-  it's indistinguishable from browsing any other site. Same URL, same login,
-  from this laptop at home, this laptop at work, or this laptop at a hotel.
-  See catalog entity `hermes-remote-access-decision-2026-09-22`.
+  existing DuckDNS domain (`theguylab.duckdns.org`) or direct authenticated
+  Hermes web interface / Telegram / Signal interface.
 - `LocalForge`'s bridge already proves out the core idea (Claude Code / an
   agent process talking to LM Studio's OpenAI-compatible API over LAN) —
   the code at `Home Claude/LocalForge/bridge/server.py` is a working
   reference for the HTTP contract, timeouts, and `finish_reason == "length"`
   gotchas already discovered there.
 
-## Open architectural question: one bridge or two?
+## Network Topology & Subnet Tunnel
 
-LocalForge's bridge talks to LM Studio for Claude Code's benefit. Hermes
-needs something that talks to LM Studio for a human's benefit (chat UI,
-possibly tool-calling agent loops). Two credible shapes:
+The VPS connects to the home fileserver via a site-to-site WireGuard tunnel,
+enabling subnet routing so Hermes can address any LAN IP directly:
 
-1. **Extend LocalForge's bridge** to also serve a Hermes-facing API, so
-   there's one process owning the LM Studio connection.
-2. **Separate Hermes gateway process**, accepting that both talk to LM
-   Studio's `:1234` independently (LM Studio can serve multiple concurrent
-   clients; the actual constraint is VRAM/one-model-at-a-time, not
-   connection count).
+```
+[VPS: Hermes + Dokploy] (Vultr Dallas)
+         │
+         │  Encrypted WireGuard Subnet Tunnel
+         ▼
+[Home Fileserver: 192.168.40.250] (server)
+   ├── net.ipv4.ip_forward = 1
+   └── iptables NAT / IP Forwarding enabled
+         │
+         ├──► 192.168.40.100:1234  (w_workstation / LM Studio)
+         ├──► 192.168.40.x         (Salt / Storage / Home Services)
+         └──► Entire 192.168.40.0/24 Home Subnet
+```
 
-Not decided yet — see [BACKLOG.md](BACKLOG.md).
+Torrents, heavy media, and storage stay 100% on the home network via console/scripts,
+ensuring zero bandwidth penalties on the VPS.
 
-## Routing tiers (concept, not yet built)
+## Execution & Routing Tiers
 
-The rough shape carried over from initial brainstorming — tiers, not a
-committed design:
-
-1. **Local (free):** LM Studio on `w_workstation` for the bulk of requests.
-2. **Cloud fallback (paid, one account):** a single OpenRouter-style account
-   for requests that exceed local capability or when the workstation is
-   offline — model and routing mechanism (hand-rolled vs. LiteLLM or
-   similar) not yet chosen.
-
-No gateway software (LiteLLM or otherwise) is installed anywhere yet — this
-is a design sketch, not a deployed component.
+1. **Always-On Hub (VPS - Vultr High Performance AMD):** Runs `hermes serve`,
+   Dokploy (for managing web services and Docker containers via MCP), and CLI/chat interfaces.
+2. **Free Local Inference (Home LAN):** LM Studio on `w_workstation` (RTX A4000) reached
+   over the WireGuard tunnel for the bulk of agent queries.
+3. **Frontier Model Fallback (Flat Subscription):** User's existing $20/mo ChatGPT Plus
+   subscription linked directly via Hermes's native link+code flow.
+4. **On-Demand Burst Compute & Sandboxing (Modal):** Serverless compute tier
+   ($0 idle cost, pay-per-second) for heavy agent batch scripts, compilation, or untrusted
+   code execution via `nousresearch/hermes-modal`.
