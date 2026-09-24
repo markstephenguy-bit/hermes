@@ -598,9 +598,28 @@
       ],
       "type": "decision",
       "updated_at": "2026-09-24T04:21:52.877885+00:00"
+    },
+    {
+      "attributes": {
+        "execution_location": "VPS (local/Docker execution backend), not delegated elsewhere",
+        "model_calls_only": "LM Studio via VPN (primary) or Codex (as needed) - only the inference call leaves the VPS",
+        "sizing_implication": "VPS CPU/RAM directly gates concurrent-agent capacity and non-LLM task speed, unlike a pure relay design",
+        "start_size": "start at the ~$5/mo tier (2 vCPU/4GB), resize later since providers support vertical scaling without a rebuild"
+      },
+      "body": "User wants all Hermes sub-agents to execute on the VPS itself, calling out over the VPN to LM Studio (primarily) or to Codex only for the model-inference step - meaning VPS CPU/RAM genuinely gates agent capacity, unlike a pure orchestration-relay design.",
+      "created_at": "2026-09-24T04:29:35.929763+00:00",
+      "id": "052f57eb-c864-4934-b627-d42b80b886cf",
+      "key": "hermes-agents-execute-on-vps-2026-09-23",
+      "name": "All sub-agents execute on the VPS itself, calling out to LM Studio/Codex only for model inference",
+      "tags": [
+        "hermes",
+        "architecture"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-24T04:29:35.929763+00:00"
     }
   ],
-  "exported_at": "2026-09-24T04:21:56.869830+00:00",
+  "exported_at": "2026-09-24T04:29:39.924693+00:00",
   "relations": [
     {
       "attributes": {},
@@ -1170,6 +1189,26 @@
       "object_type": "entity",
       "predicate": "satisfies",
       "subject_key": "hermes-inexpensive-starting-point-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:29:39.809043+00:00",
+      "id": "bb0ab1b0-91e2-46a6-8956-ad03c1ad3c14",
+      "object_key": "hermes-vps-combines-vpn-and-codex-2026-09-23",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-agents-execute-on-vps-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:29:39.828213+00:00",
+      "id": "f77a015a-ea68-45fb-8989-9bd318d86095",
+      "object_key": "hermes-vps-preference-reasons-2026-09-23",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-agents-execute-on-vps-2026-09-23",
       "subject_type": "entity"
     }
   ],
