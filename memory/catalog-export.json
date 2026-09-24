@@ -159,9 +159,63 @@
       ],
       "type": "decision",
       "updated_at": "2026-09-23T04:01:56.264047+00:00"
+    },
+    {
+      "attributes": {
+        "host_candidate": "one of the home Linux machines (server/laptop/fileserver)",
+        "primary_client_app": "LM Studio",
+        "status": "open"
+      },
+      "body": "User wants a proxy on a home Linux machine so the GP-issued work computer (primarily LM Studio running on it) can reach the internet/home network without going through Zscaler.",
+      "created_at": "2026-09-24T00:35:05.445418+00:00",
+      "id": "1486c234-1220-4087-a738-fbc0d15fb7b9",
+      "key": "hermes-zscaler-bypass-proxy-2026-09-23",
+      "name": "Home Linux proxy to route around Zscaler on the GP workstation",
+      "tags": [
+        "hermes",
+        "network",
+        "risk"
+      ],
+      "type": "open-item",
+      "updated_at": "2026-09-24T00:35:05.445418+00:00"
+    },
+    {
+      "attributes": {
+        "status": "open"
+      },
+      "body": "User wants LM Studio to run multiple local LLMs concurrently/as-needed rather than a single fixed chat model.",
+      "created_at": "2026-09-24T00:35:05.519951+00:00",
+      "id": "57381e88-a83b-4b3e-ba22-25f766fc9770",
+      "key": "hermes-lmstudio-multi-model-2026-09-23",
+      "name": "LM Studio should host as many local LLMs as needed, not one fixed model",
+      "tags": [
+        "hermes",
+        "lm-studio"
+      ],
+      "type": "open-item",
+      "updated_at": "2026-09-24T00:35:05.519951+00:00"
+    },
+    {
+      "attributes": {
+        "candidates": "a home machine, or the GP-issued work computer itself",
+        "hard_constraint": "host machine must never sleep",
+        "status": "open"
+      },
+      "body": "User wants to pick whichever machine is best to run the Hermes (hermes serve) backend, open to using the GP-issued work computer itself, with a hard constraint that it must never sleep.",
+      "created_at": "2026-09-24T00:35:05.545052+00:00",
+      "id": "e20c3c1f-5597-4893-a19a-f517df05e92d",
+      "key": "hermes-backend-host-selection-2026-09-23",
+      "name": "Pick the best machine to run the Hermes backend; GP workstation is a candidate",
+      "tags": [
+        "hermes",
+        "architecture",
+        "risk"
+      ],
+      "type": "open-item",
+      "updated_at": "2026-09-24T00:35:05.545052+00:00"
     }
   ],
-  "exported_at": "2026-09-23T04:02:00.011618+00:00",
+  "exported_at": "2026-09-24T00:35:11.711614+00:00",
   "relations": [
     {
       "attributes": {},
@@ -311,6 +365,46 @@
       "object_type": "entity",
       "predicate": "extends",
       "subject_key": "hermes-master-harness-role-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T00:35:11.501823+00:00",
+      "id": "c7d6557a-7895-4e72-b41f-55d13fb28d88",
+      "object_key": "hermes-remote-access-decision-2026-09-22",
+      "object_type": "entity",
+      "predicate": "relates_to",
+      "subject_key": "hermes-zscaler-bypass-proxy-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T00:35:11.574145+00:00",
+      "id": "16722a1b-1ea2-4440-a3fa-a51120e64cb2",
+      "object_key": "w_workstation",
+      "object_type": "host",
+      "predicate": "relates_to",
+      "subject_key": "hermes-lmstudio-multi-model-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T00:35:11.601766+00:00",
+      "id": "a0dee71d-9978-4ad3-967d-06227a92fd91",
+      "object_key": "hermes-master-harness-role-2026-09-23",
+      "object_type": "entity",
+      "predicate": "relates_to",
+      "subject_key": "hermes-backend-host-selection-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T00:35:11.619036+00:00",
+      "id": "e03c3218-c487-49f2-9e7d-5d4a213420d2",
+      "object_key": "hermes-agent-product-research-2026-09-23",
+      "object_type": "entity",
+      "predicate": "relates_to",
+      "subject_key": "hermes-backend-host-selection-2026-09-23",
       "subject_type": "entity"
     }
   ],
