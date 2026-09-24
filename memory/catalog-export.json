@@ -110,6 +110,41 @@
     },
     {
       "attributes": {
+        "example": "download a torrent, drop into a watched folder, Plex library picks it up"
+      },
+      "body": "Plex/fileserver-related tasks (e.g. torrent downloads landing in a watched folder) stay home-network-based and are reached via the VPN, not moved to the VPS.",
+      "created_at": "2026-09-24T04:43:03.731693+00:00",
+      "id": "ba6d182b-96db-461c-9547-f5626e854349",
+      "key": "hermes-plex-workflow-stays-home-via-vpn-2026-09-23",
+      "name": "Plex-related tasks stay home-based, reached via VPN",
+      "tags": [
+        "hermes",
+        "architecture"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-24T04:43:03.731693+00:00"
+    },
+    {
+      "attributes": {
+        "concern": "migrating a live WordPress site (content, MariaDB db, DNS routing) is a bigger change than adding a new capability - not a trivial move",
+        "current_location": "server (home), via Nginx Proxy Manager",
+        "status": "open, not decided"
+      },
+      "body": "User is weighing whether the existing WordPress site should move off server to a hosting service Hermes can directly manipulate, to reduce hops - not decided, and migrating a live site is more disruptive than adding a new capability.",
+      "created_at": "2026-09-24T04:43:03.755083+00:00",
+      "id": "377bd278-1964-4410-a48f-413945eb717d",
+      "key": "hermes-wordpress-migration-consideration-2026-09-23",
+      "name": "Consider moving the existing WordPress site off server to a Hermes-manipulable host",
+      "tags": [
+        "hermes",
+        "architecture",
+        "risk"
+      ],
+      "type": "open-item",
+      "updated_at": "2026-09-24T04:43:03.755083+00:00"
+    },
+    {
+      "attributes": {
         "fileserver": {
           "cpus": 4,
           "os": "Ubuntu 24.04",
@@ -657,9 +692,27 @@
       ],
       "type": "decision",
       "updated_at": "2026-09-24T04:37:38.137375+00:00"
+    },
+    {
+      "attributes": {
+        "implication": "a provider offering VPS + web hosting + other services under one account/API is preferred over stitching best-of-breed point solutions across multiple providers",
+        "principle": "minimize the number of distinct systems/providers Hermes has to coordinate across to have power over its own capabilities"
+      },
+      "body": "User prioritizes minimizing hops/complications for Hermes to have power over its capabilities - prefers one provider offering multiple integrated services over best-of-breed point solutions scattered across providers.",
+      "created_at": "2026-09-24T04:43:03.767004+00:00",
+      "id": "d505a685-ee84-4ea9-bd47-47309baed719",
+      "key": "hermes-prefer-unified-provider-2026-09-23",
+      "name": "Fewer hops matter more than best-of-breed: prefer one unified provider over scattered services",
+      "tags": [
+        "hermes",
+        "architecture",
+        "cost"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-24T04:43:03.767004+00:00"
     }
   ],
-  "exported_at": "2026-09-24T04:37:43.252167+00:00",
+  "exported_at": "2026-09-24T04:43:08.892557+00:00",
   "relations": [
     {
       "attributes": {},
@@ -1289,6 +1342,46 @@
       "object_type": "entity",
       "predicate": "extends",
       "subject_key": "hermes-web-and-docker-presence-shifts-to-vps-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:43:08.745276+00:00",
+      "id": "7e708ed1-5ddf-4c90-a588-dc792f752816",
+      "object_key": "hermes-web-and-docker-presence-shifts-to-vps-2026-09-23",
+      "object_type": "entity",
+      "predicate": "relates_to",
+      "subject_key": "hermes-wordpress-migration-consideration-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:43:08.764159+00:00",
+      "id": "238358d8-0982-4343-880e-b44205a2fcfa",
+      "object_key": "hermes-web-and-docker-presence-shifts-to-vps-2026-09-23",
+      "object_type": "entity",
+      "predicate": "informs",
+      "subject_key": "hermes-prefer-unified-provider-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:43:08.773752+00:00",
+      "id": "f173fece-b74e-4b34-a9fe-70889fac6909",
+      "object_key": "hermes-vps-real-cost-research-2026-09-23",
+      "object_type": "entity",
+      "predicate": "revises",
+      "subject_key": "hermes-prefer-unified-provider-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:43:08.789235+00:00",
+      "id": "a42b12e8-2316-40f8-9d30-fce34fda7129",
+      "object_key": "hermes-vpn-scope-includes-salt-2026-09-23",
+      "object_type": "entity",
+      "predicate": "relates_to",
+      "subject_key": "hermes-plex-workflow-stays-home-via-vpn-2026-09-23",
       "subject_type": "entity"
     }
   ],
