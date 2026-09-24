@@ -311,9 +311,45 @@
       ],
       "type": "decision",
       "updated_at": "2026-09-24T01:58:20.593162+00:00"
+    },
+    {
+      "attributes": {
+        "approach": "let Hermes reach for network resources as it needs them post-spinup, do not pre-build a list of integrations"
+      },
+      "body": "Home network appliance/resource integrations are expected to emerge naturally once Hermes exists and reaches for them, not a punch list to build proactively now.",
+      "created_at": "2026-09-24T02:01:55.602405+00:00",
+      "id": "a716f657-9ed1-4f47-8dd2-3ab0c61b530c",
+      "key": "hermes-appliance-integration-is-emergent-2026-09-23",
+      "name": "Network appliance integrations are emergent, not a proactive build list",
+      "tags": [
+        "hermes",
+        "architecture"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-24T02:01:55.602405+00:00"
+    },
+    {
+      "attributes": {
+        "gp_workstation_note": "not recommended as backend host - power management is IT-managed/outside user control, and it already carries flagged corporate-policy risk (see hermes-zscaler-bypass-proxy-2026-09-23, hermes-backend-host-selection-2026-09-23)",
+        "reasoning": "already always-on 24/7, already hosts persistent services (NPM, AdGuard, catalog, Portainer), no dependency on any user session, 152GB free disk",
+        "recommended_host": "server (192.168.40.250)",
+        "w_workstation_note": "stays the free GPU/LM Studio resource hermes serve calls out to - separate open question whether its own sleep/power settings need reconfiguring"
+      },
+      "body": "Recommendation for hermes-backend-host-selection-2026-09-23: run hermes serve on server (always-on, matches the existing pattern for persistent home-lab services), not on w_workstation (needed as the free LM Studio/GPU resource instead) or the GP workstation (uncontrollable sleep policy plus already-flagged risk). Not yet confirmed by user.",
+      "created_at": "2026-09-24T02:01:55.674975+00:00",
+      "id": "6ad75c0d-5b77-4a85-86b4-cd3d72a82bcc",
+      "key": "hermes-backend-host-recommendation-2026-09-23",
+      "name": "Recommendation: run hermes serve on server, not w_workstation or the GP workstation",
+      "tags": [
+        "hermes",
+        "architecture",
+        "recommendation"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-24T02:01:55.674975+00:00"
     }
   ],
-  "exported_at": "2026-09-24T01:58:24.090860+00:00",
+  "exported_at": "2026-09-24T02:02:40.359046+00:00",
   "relations": [
     {
       "attributes": {},
@@ -613,6 +649,46 @@
       "object_type": "entity",
       "predicate": "relates_to",
       "subject_key": "hermes-interface-strategy-refined-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T02:02:01.284534+00:00",
+      "id": "6e651b6b-1c9a-405c-95b8-bc4a788cf7f1",
+      "object_key": "hermes-network-resources-as-capabilities-2026-09-22",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-appliance-integration-is-emergent-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T02:02:01.343758+00:00",
+      "id": "d887ca5e-7292-4d69-9f8a-caf9572d9cde",
+      "object_key": "hermes-backend-host-selection-2026-09-23",
+      "object_type": "entity",
+      "predicate": "proposes_resolution_for",
+      "subject_key": "hermes-backend-host-recommendation-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T02:02:01.354089+00:00",
+      "id": "318b651c-e850-421a-b7c4-e8f1bf601b58",
+      "object_key": "server",
+      "object_type": "host",
+      "predicate": "considers",
+      "subject_key": "hermes-backend-host-recommendation-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T02:02:01.381505+00:00",
+      "id": "a33947c8-5ce7-45c7-a7fc-61ffc3d4fe15",
+      "object_key": "w_workstation",
+      "object_type": "host",
+      "predicate": "considers",
+      "subject_key": "hermes-backend-host-recommendation-2026-09-23",
       "subject_type": "entity"
     }
   ],

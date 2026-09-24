@@ -3,7 +3,10 @@
 A self-hosted personal AI agent + inference gateway for the home network — the
 long-term goal is to replace paid ChatGPT Plus / Claude Pro subscriptions with
 something built on hardware already in the house, with a single paid cloud
-account (for frontier-model fallback) instead of two.
+account (for frontier-model fallback) instead of two. See
+[VISION.md](VISION.md) for the current state of that vision in plain
+language, [ARCHITECTURE.md](ARCHITECTURE.md) for technical detail, and
+[BACKLOG.md](BACKLOG.md) for what's still undecided.
 
 ## Relationship to LocalForge
 
