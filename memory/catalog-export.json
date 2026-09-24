@@ -544,9 +544,28 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-24T04:15:47.69745+00:00"
+    },
+    {
+      "attributes": {
+        "codex_leg": "VPS authenticates directly to OpenAI via ChatGPT Plus subscription for Codex, unrelated to the VPN",
+        "setup_caveat": "Codex subscription sign-in is normally an interactive browser login - first-time auth on a headless VPS will likely need a manual one-time step, similar to the GitHub SSH key setup",
+        "vpn_leg": "VPS to home LAN, for LM Studio and Salt access - reaches users own infrastructure"
+      },
+      "body": "Confirmed: the VPS-hosted Hermes backend can combine a home-network VPN (for LM Studio and Salt) with Codex-via-ChatGPT-Plus subscription access, as two independent legs on the same box.",
+      "created_at": "2026-09-24T04:19:43.32043+00:00",
+      "id": "a84900e0-4fa6-45f7-a5b1-a76e4f88e443",
+      "key": "hermes-vps-combines-vpn-and-codex-2026-09-23",
+      "name": "VPS Hermes combines home-VPN (LM Studio/Salt) with Codex-via-ChatGPT-Plus, independently",
+      "tags": [
+        "hermes",
+        "architecture",
+        "gateway"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-24T04:19:43.32043+00:00"
     }
   ],
-  "exported_at": "2026-09-24T04:18:07.243743+00:00",
+  "exported_at": "2026-09-24T04:19:47.567541+00:00",
   "relations": [
     {
       "attributes": {},
@@ -1056,6 +1075,36 @@
       "object_type": "entity",
       "predicate": "clarifies",
       "subject_key": "hermes-user-openai-plan-is-plus-not-pro-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:19:47.174097+00:00",
+      "id": "eccdab38-04cb-4ea1-8eaa-0fa8d4d13a81",
+      "object_key": "hermes-vps-backend-with-home-vpn-2026-09-23",
+      "object_type": "entity",
+      "predicate": "synthesizes",
+      "subject_key": "hermes-vps-combines-vpn-and-codex-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:19:47.229838+00:00",
+      "id": "fdc019c2-632c-416c-a4f5-8b0a25b4423b",
+      "object_key": "hermes-codex-subscription-correction-2026-09-23",
+      "object_type": "entity",
+      "predicate": "synthesizes",
+      "subject_key": "hermes-vps-combines-vpn-and-codex-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:19:47.241437+00:00",
+      "id": "220aacf1-9728-445b-9532-3510f3f43f37",
+      "object_key": "hermes-vpn-scope-includes-salt-2026-09-23",
+      "object_type": "entity",
+      "predicate": "extends",
+      "subject_key": "hermes-vps-combines-vpn-and-codex-2026-09-23",
       "subject_type": "entity"
     }
   ],
