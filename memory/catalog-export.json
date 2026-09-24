@@ -617,9 +617,30 @@
       ],
       "type": "decision",
       "updated_at": "2026-09-24T04:29:35.929763+00:00"
+    },
+    {
+      "attributes": {
+        "digitalocean": "higher real cost, bandwidth overage $0.01/GB past 1TB is a real exposure",
+        "hetzner_cx22": "$4.35-4.90/mo headline, backups are +20% extra (not included), 20TB bandwidth is generous",
+        "hostinger_kvm1": "$4.99/mo flat, dedicated IP + weekly backups already included",
+        "relevance": "given agents execute directly on the VPS (hermes-agents-execute-on-vps-2026-09-23), sustained/concurrent agent workloads are exactly the pattern that triggers shared-vCPU throttling - expect this as the natural next spend if usage grows, not a surprise",
+        "throttling_mechanism": "entry tiers use shared/burstable vCPU - full speed only in bursts, throttled back to baseline under sustained load; dedicated vCPU (2-3x price) removes this, and is the real/legitimate upgrade path, not an artificial upsell"
+      },
+      "body": "Researched real VPS cost vs headline price: Hostinger KVM1 ($4.99/mo flat, backups+IP included) is closer to its true cost than Hetzner CX22 (backups are +20% extra). The entry-tier constraint mechanism is shared/burstable vCPU throttling under sustained load - a real limitation, and given Hermes agents execute on the VPS itself, sustained agent workloads are exactly what would trigger it, making dedicated vCPU a predictable (not deceptive) future upgrade.",
+      "created_at": "2026-09-24T04:33:05.896669+00:00",
+      "id": "2f325380-e036-40cb-b37f-1d1ec8d62506",
+      "key": "hermes-vps-real-cost-research-2026-09-23",
+      "name": "Research: entry-tier VPS real cost vs headline price, and the shared-vCPU throttling mechanism",
+      "tags": [
+        "hermes",
+        "research",
+        "cost"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-24T04:33:05.896669+00:00"
     }
   ],
-  "exported_at": "2026-09-24T04:29:39.924693+00:00",
+  "exported_at": "2026-09-24T04:33:09.472413+00:00",
   "relations": [
     {
       "attributes": {},
@@ -1209,6 +1230,26 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-agents-execute-on-vps-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:33:09.351629+00:00",
+      "id": "45b988a6-ba87-4982-917f-342d493c525c",
+      "object_key": "hermes-agents-execute-on-vps-2026-09-23",
+      "object_type": "entity",
+      "predicate": "informs",
+      "subject_key": "hermes-vps-real-cost-research-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:33:09.373924+00:00",
+      "id": "fd19a1df-0cf5-41de-8b43-a7c0e5d04f2c",
+      "object_key": "hermes-avoid-money-pit-motivation-2026-09-23",
+      "object_type": "entity",
+      "predicate": "relates_to",
+      "subject_key": "hermes-vps-real-cost-research-2026-09-23",
       "subject_type": "entity"
     }
   ],
