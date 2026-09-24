@@ -729,9 +729,46 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-24T04:45:22.589357+00:00"
+    },
+    {
+      "attributes": {
+        "product_maturity": "Cloudways and DO Managed Agents both launched within the last 1-2 days - brand new, no track record",
+        "reasoning": "MCP tool capability is fully portable to any VPS - managed hosting only reduces setup friction, it does not unlock anything a self-configured VPS cannot also do",
+        "user_philosophy": "prefers proven workhorse infrastructure over shiny/hype-driven new products - consistent with the earlier OpenClaw-decline skepticism and the money-pit-avoidance motivation"
+      },
+      "body": "User is skeptical that Cloudways/DO Managed AI Agents premium buys real capability rather than just setup convenience, given the small dollar difference vs. a properly-sized self-configured VPS and the products being only days old.",
+      "created_at": "2026-09-24T05:06:21.562296+00:00",
+      "id": "da2cebfe-c2e4-4d98-be20-f8034bfff086",
+      "key": "hermes-managed-ai-hosting-skepticism-2026-09-24",
+      "name": "Managed AI Agent hosting (Cloudways/DO) is setup convenience, not real capability - skeptical of the premium",
+      "tags": [
+        "hermes",
+        "cost",
+        "architecture"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-24T05:06:21.562296+00:00"
+    },
+    {
+      "attributes": {
+        "approach": "Hetzner or Hostinger, a mid-tier plan (not the bare minimum), Dokploy + MCP tools configured directly - same end capability as the managed products, no brand premium",
+        "status": "leaning, supersedes the earlier lean toward Cloudways Managed AI Agents"
+      },
+      "body": "Given the managed-AI-hosting skepticism, the user is leaning back toward a plain properly-sized VPS with self-configured Dokploy and MCP tools, rather than paying a premium for the newly-launched Cloudways/DO managed branding.",
+      "created_at": "2026-09-24T05:06:21.582338+00:00",
+      "id": "118aeb2f-72bc-47b8-b848-f2cdb70854ef",
+      "key": "hermes-hosting-lean-back-to-plain-vps-2026-09-24",
+      "name": "Lean back toward a plain, properly-sized VPS with self-configured MCP tools, not a managed AI-hosting brand",
+      "tags": [
+        "hermes",
+        "architecture",
+        "cost"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-24T05:06:21.582338+00:00"
     }
   ],
-  "exported_at": "2026-09-24T04:45:26.127544+00:00",
+  "exported_at": "2026-09-24T05:06:27.413251+00:00",
   "relations": [
     {
       "attributes": {},
@@ -1411,6 +1448,56 @@
       "object_type": "entity",
       "predicate": "clarifies",
       "subject_key": "hermes-modal-dokploy-not-integrated-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T05:06:27.056613+00:00",
+      "id": "ceb6f320-f2f7-4cb0-8d6f-aeb5b25f3803",
+      "object_key": "hermes-managed-ai-hosting-skepticism-2026-09-24",
+      "object_type": "entity",
+      "predicate": "explained_by",
+      "subject_key": "hermes-hosting-lean-back-to-plain-vps-2026-09-24",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T05:06:27.081141+00:00",
+      "id": "994c3d9a-1631-478e-83dc-7c54ab00bc06",
+      "object_key": "hermes-web-and-docker-presence-shifts-to-vps-2026-09-23",
+      "object_type": "entity",
+      "predicate": "revises",
+      "subject_key": "hermes-hosting-lean-back-to-plain-vps-2026-09-24",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T05:06:27.089971+00:00",
+      "id": "594eae81-0cef-40c4-8703-1143e3e9cc5b",
+      "object_key": "hermes-prefer-unified-provider-2026-09-23",
+      "object_type": "entity",
+      "predicate": "relates_to",
+      "subject_key": "hermes-hosting-lean-back-to-plain-vps-2026-09-24",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T05:06:27.099357+00:00",
+      "id": "c94e2278-f7d5-4978-879a-baacea3f25df",
+      "object_key": "hermes-vs-openclaw-confirmed-2026-09-23",
+      "object_type": "entity",
+      "predicate": "reinforces",
+      "subject_key": "hermes-managed-ai-hosting-skepticism-2026-09-24",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T05:06:27.108325+00:00",
+      "id": "1b82514c-4012-4689-83b0-36f381e973e4",
+      "object_key": "hermes-avoid-money-pit-motivation-2026-09-23",
+      "object_type": "entity",
+      "predicate": "relates_to",
+      "subject_key": "hermes-managed-ai-hosting-skepticism-2026-09-24",
       "subject_type": "entity"
     }
   ],
