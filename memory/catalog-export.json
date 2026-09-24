@@ -563,9 +563,44 @@
       ],
       "type": "decision",
       "updated_at": "2026-09-24T04:19:43.32043+00:00"
+    },
+    {
+      "attributes": {
+        "flow": "device-authorization style - Hermes shows a link and a code, user completes login in a browser once"
+      },
+      "body": "User observed (via a YouTube demo) that Hermes has a native onboarding flow (link + code) for linking an OpenAI/ChatGPT subscription, resolving the earlier headless-VPS auth caveat without custom scripting.",
+      "created_at": "2026-09-24T04:21:52.846405+00:00",
+      "id": "398bbbfc-6909-4b9c-a0d8-a85f163f3775",
+      "key": "hermes-native-openai-linking-flow-confirmed-2026-09-23",
+      "name": "Hermes has a native link+code flow to connect an OpenAI/ChatGPT subscription",
+      "tags": [
+        "hermes",
+        "research",
+        "gateway"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-24T04:21:52.846405+00:00"
+    },
+    {
+      "attributes": {
+        "components": "LM Studio (free, local-first), VPS-hosted hermes serve, existing ChatGPT Plus linked via Hermes native code flow",
+        "status": "leaning toward this as the actual first build"
+      },
+      "body": "User considers local LM Studio plus a VPS-hosted Hermes plus their existing $20 ChatGPT Plus (linked via Hermes native code flow) a good, inexpensive starting point for the actual Hermes rollout.",
+      "created_at": "2026-09-24T04:21:52.877885+00:00",
+      "id": "39a92431-c8ef-4339-bc83-df29805e4456",
+      "key": "hermes-inexpensive-starting-point-2026-09-23",
+      "name": "Local LM Studio + VPS Hermes + existing $20 ChatGPT Plus is the planned inexpensive starting point",
+      "tags": [
+        "hermes",
+        "cost",
+        "architecture"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-24T04:21:52.877885+00:00"
     }
   ],
-  "exported_at": "2026-09-24T04:19:47.567541+00:00",
+  "exported_at": "2026-09-24T04:21:56.869830+00:00",
   "relations": [
     {
       "attributes": {},
@@ -1105,6 +1140,36 @@
       "object_type": "entity",
       "predicate": "extends",
       "subject_key": "hermes-vps-combines-vpn-and-codex-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:21:56.72878+00:00",
+      "id": "3e97a69f-0cc4-475a-aeab-db784e3e46ea",
+      "object_key": "hermes-vps-combines-vpn-and-codex-2026-09-23",
+      "object_type": "entity",
+      "predicate": "resolves",
+      "subject_key": "hermes-native-openai-linking-flow-confirmed-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:21:56.749773+00:00",
+      "id": "3c3e246d-3713-47b1-a45a-89ae3a7f7d2b",
+      "object_key": "hermes-vps-combines-vpn-and-codex-2026-09-23",
+      "object_type": "entity",
+      "predicate": "synthesizes",
+      "subject_key": "hermes-inexpensive-starting-point-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T04:21:56.761759+00:00",
+      "id": "36b0afcb-6779-4af3-93e3-e4f2e8610750",
+      "object_key": "hermes-avoid-money-pit-motivation-2026-09-23",
+      "object_type": "entity",
+      "predicate": "satisfies",
+      "subject_key": "hermes-inexpensive-starting-point-2026-09-23",
       "subject_type": "entity"
     }
   ],
