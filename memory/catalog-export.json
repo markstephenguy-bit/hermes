@@ -272,9 +272,28 @@
       ],
       "type": "open-item",
       "updated_at": "2026-09-24T00:35:05.545052+00:00"
+    },
+    {
+      "attributes": {
+        "routing_decision_location": "the local LLM in LM Studio should act as its own router/judge (RouteLLM-style self-assessment), so the decision of whether to escalate also costs nothing",
+        "tier_1": "LM Studio local model - free, always the first attempt",
+        "tier_2": "paid gateway - only reached when tier 1 cannot handle it"
+      },
+      "body": "The tiering criterion is free-vs-paid: LM Studio local model runs first because it costs nothing, and it should also perform the routing decision itself (judge whether it can handle the prompt or must escalate) so that step stays free too.",
+      "created_at": "2026-09-24T01:54:39.541098+00:00",
+      "id": "ceec86fc-6a0e-430c-93a8-f9ded609d338",
+      "key": "hermes-cost-based-routing-free-first-2026-09-23",
+      "name": "Routing criterion is free-vs-paid: local LM Studio is always tried first, and should self-route",
+      "tags": [
+        "hermes",
+        "gateway",
+        "architecture"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-24T01:54:39.541098+00:00"
     }
   ],
-  "exported_at": "2026-09-24T01:50:59.299919+00:00",
+  "exported_at": "2026-09-24T01:54:42.895494+00:00",
   "relations": [
     {
       "attributes": {},
@@ -534,6 +553,26 @@
       "object_type": "entity",
       "predicate": "informs",
       "subject_key": "hermes-llm-routing-research-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T01:54:42.746248+00:00",
+      "id": "a9b31e2a-a9c6-4927-a0bd-8f3b7b9f9d8e",
+      "object_key": "hermes-tiered-routing-by-complexity-2026-09-23",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-cost-based-routing-free-first-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-24T01:54:42.80297+00:00",
+      "id": "9219d9d8-1743-4b44-a263-f04b1e38ff4a",
+      "object_key": "hermes-llm-routing-research-2026-09-23",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-cost-based-routing-free-first-2026-09-23",
       "subject_type": "entity"
     }
   ],
