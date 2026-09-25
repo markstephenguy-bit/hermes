@@ -1009,25 +1009,6 @@
     },
     {
       "attributes": {
-        "criterion": "VPN from VPS to home LAN up, both LM Studio and Salt reachable through it",
-        "phase": 2,
-        "points": 20,
-        "status": "not_started"
-      },
-      "body": "G4 (20 pts, Phase 2): not started - decision pending between Tailscale (reactivate dormant container on server) vs hand-rolled WireGuard.",
-      "created_at": "2026-09-25T00:47:28.164861+00:00",
-      "id": "65e100e2-8999-437f-8401-bb1524c91b77",
-      "key": "hermes-goal-g4-2026-09-23",
-      "name": "G4: VPN from VPS to home LAN, LM Studio and Salt reachable",
-      "tags": [
-        "hermes",
-        "goal"
-      ],
-      "type": "goal",
-      "updated_at": "2026-09-25T00:47:28.164861+00:00"
-    },
-    {
-      "attributes": {
         "criterion": "Hermes Desktop on this laptop, pointed at the VPS backend, same experience confirmed from two different locations",
         "phase": 4,
         "points": 10,
@@ -1063,6 +1044,25 @@
       ],
       "type": "goal",
       "updated_at": "2026-09-25T00:47:28.196651+00:00"
+    },
+    {
+      "attributes": {
+        "criterion": "VPN from VPS to home LAN, LM Studio and Salt reachable",
+        "phase": 3,
+        "points": 20,
+        "status": "done"
+      },
+      "body": "G4 done: WireGuard site-to-site tunnel live between hermes-vps and server; verified reachability to server, w_workstation (LM Studio host), the catalog API, and Salt master ports (4505/4506) all through the tunnel.",
+      "created_at": "2026-09-25T00:47:28.164861+00:00",
+      "id": "65e100e2-8999-437f-8401-bb1524c91b77",
+      "key": "hermes-goal-g4-2026-09-23",
+      "name": "G4: VPN from VPS to home LAN, LM Studio and Salt reachable",
+      "tags": [
+        "hermes",
+        "goal"
+      ],
+      "type": "goal",
+      "updated_at": "2026-09-25T00:47:28.164861+00:00"
     },
     {
       "attributes": {
@@ -1365,9 +1365,58 @@
       ],
       "type": "decision",
       "updated_at": "2026-09-25T02:29:16.977717+00:00"
+    },
+    {
+      "attributes": {
+        "configured_by": "Claude Code directly via SSH, not handed off to Hermes agent itself, per explicit user request given prior Desktop-app friction",
+        "host": "hermes-vps",
+        "interface": "wg0",
+        "listen_port": 51820,
+        "peer": "server (192.168.40.250), AllowedIPs 10.60.0.2/32 + 192.168.40.0/24, no static endpoint (server dials in)",
+        "public_key": "lNAIGDoth7QeAVAos3rfx22EwqbD35yiyZWEzbGKkjU=",
+        "tunnel_address": "10.60.0.1/24",
+        "verified": "handshake confirmed within seconds; ping to 10.60.0.2, 192.168.40.250, and 192.168.40.100 (w_workstation) all succeed from hermes-vps; catalog API (192.168.40.250:3003) returns 200 through the tunnel; Salt ports 4505/4506 reachable after widening server's firewall rule"
+      },
+      "body": "Site-to-site WireGuard tunnel between hermes-vps and the home LAN is live and verified: hermes-vps can reach server, w_workstation, the catalog API, and the Salt master ports over the tunnel.",
+      "created_at": "2026-09-25T02:48:14.074603+00:00",
+      "id": "cc729301-14b7-4585-aa5a-e5a5133159cf",
+      "key": "hermes-vps-wireguard-configured-2026-09-25",
+      "name": "WireGuard configured on hermes-vps and linked to server, tunnel verified end to end",
+      "tags": [
+        "hermes",
+        "vps",
+        "server",
+        "vpn",
+        "wireguard",
+        "decision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-25T02:48:14.074603+00:00"
+    },
+    {
+      "attributes": {
+        "fix": "added an explicit iptables/ip6tables allowlist (loopback, established/related, tcp 22/80/443, udp 51820) plus a trailing default-deny rule on INPUT; verified SSH and the public dashboard still work, then persisted via netfilter-persistent save",
+        "host": "hermes-vps",
+        "impact": "every listening port was reachable from the public internet prior to this fix, including the hermes dashboard's raw HTTP port 9119 (bypassing Caddy's TLS) and an internal port 8642; protected only by each services own application-level auth, not network-level",
+        "root_cause": "ufw package was never installed on this box (uses iptables-persistent instead, same as later discovered on server); the ufw-named iptables chains present were empty pass-throughs with no actual rules, and INPUT policy was ACCEPT with no catch-all deny",
+        "verified": "ports 9119 and 8642 now time out externally; 80/443/22/51820 still reachable; SSH access confirmed intact before and after"
+      },
+      "body": "Discovered hermes-vps had zero host-level or cloud-level firewall enforcement despite a stale catalog fact claiming otherwise; fixed with an explicit allowlist + default-deny, verified nothing broke.",
+      "created_at": "2026-09-25T02:48:14.13328+00:00",
+      "id": "c2cddb62-ebc5-4088-b149-99e433be0eb0",
+      "key": "hermes-vps-no-firewall-found-and-fixed-2026-09-25",
+      "name": "hermes-vps had no working firewall at all; found and fixed while adding WireGuard",
+      "tags": [
+        "hermes",
+        "vps",
+        "security",
+        "incident"
+      ],
+      "type": "fact",
+      "updated_at": "2026-09-25T02:48:14.13328+00:00"
     }
   ],
-  "exported_at": "2026-09-25T02:29:17.453310+00:00",
+  "exported_at": "2026-09-25T02:48:36.157701+00:00",
   "relations": [
     {
       "attributes": {},
@@ -2427,6 +2476,36 @@
       "object_type": "entity",
       "predicate": "caused_by",
       "subject_key": "server-ufw-iptables-persistent-conflict-2026-09-25",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T02:48:20.334199+00:00",
+      "id": "a1e370ff-af73-4c6c-8ef8-3df73e70667b",
+      "object_key": "server-wireguard-configured-2026-09-25",
+      "object_type": "entity",
+      "predicate": "completes",
+      "subject_key": "hermes-vps-wireguard-configured-2026-09-25",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T02:48:20.390447+00:00",
+      "id": "920d5e5e-bc53-4533-bbce-99888ca22454",
+      "object_key": "hermes-goal-g4-2026-09-23",
+      "object_type": "entity",
+      "predicate": "fulfills",
+      "subject_key": "hermes-vps-wireguard-configured-2026-09-25",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T02:48:20.40003+00:00",
+      "id": "6de3d16d-2675-449b-8f11-acc4ab492472",
+      "object_key": "hermes-vps-wireguard-configured-2026-09-25",
+      "object_type": "entity",
+      "predicate": "discovered_during",
+      "subject_key": "hermes-vps-no-firewall-found-and-fixed-2026-09-25",
       "subject_type": "entity"
     }
   ],
