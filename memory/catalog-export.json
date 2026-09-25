@@ -1028,25 +1028,6 @@
     },
     {
       "attributes": {
-        "criterion": "ChatGPT Plus linked via Hermess native link+code flow, Codex used through Hermes for one real coding task",
-        "phase": 3,
-        "points": 20,
-        "status": "not_started"
-      },
-      "body": "G5 (20 pts, Phase 3 - Frontier tier connected): not started - command identified (hermes auth add openai-codex), not yet run.",
-      "created_at": "2026-09-25T00:47:28.175575+00:00",
-      "id": "b4bf2c7a-1aa5-4b80-8510-777031008db9",
-      "key": "hermes-goal-g5-2026-09-23",
-      "name": "G5: ChatGPT Plus linked via Hermes native flow, Codex used for a real task",
-      "tags": [
-        "hermes",
-        "goal"
-      ],
-      "type": "goal",
-      "updated_at": "2026-09-25T00:47:28.175575+00:00"
-    },
-    {
-      "attributes": {
         "criterion": "Hermes Desktop on this laptop, pointed at the VPS backend, same experience confirmed from two different locations",
         "phase": 4,
         "points": 10,
@@ -1099,9 +1080,139 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-25T00:54:42.099658+00:00"
+    },
+    {
+      "attributes": {
+        "criterion": "ChatGPT Plus linked via Hermess native link+code flow, Codex used through Hermes for one real coding task",
+        "phase": 3,
+        "points": 20,
+        "status": "done"
+      },
+      "body": "G5 (20 pts, Phase 3): done - Codex OAuth linked, set as default provider, live test confirmed response via gpt-5.6-sol.",
+      "created_at": "2026-09-25T00:47:28.175575+00:00",
+      "id": "b4bf2c7a-1aa5-4b80-8510-777031008db9",
+      "key": "hermes-goal-g5-2026-09-23",
+      "name": "G5: ChatGPT Plus linked via Hermes native flow, Codex used for a real task",
+      "tags": [
+        "hermes",
+        "goal"
+      ],
+      "type": "goal",
+      "updated_at": "2026-09-25T00:47:28.175575+00:00"
+    },
+    {
+      "attributes": {
+        "from_version": "0.16.0",
+        "host": "hermes-vps",
+        "note": "uv tool upgrade only bumped deps; required uv tool install hermes-agent@latest to move the pinned version",
+        "to_version": "0.19.0"
+      },
+      "body": "hermes-agent on hermes-vps upgraded to v0.19.0; both hermes-dashboard and hermes-gateway services restarted and confirmed active.",
+      "created_at": "2026-09-25T01:11:20.777443+00:00",
+      "id": "7b7d3d9e-c17a-4c65-b1c7-fe9df41a2323",
+      "key": "hermes-vps-upgraded-v0-19-0-2026-09-25",
+      "name": "hermes-vps upgraded from v0.16.0 to v0.19.0",
+      "tags": [
+        "hermes",
+        "vps",
+        "deployment"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-25T01:11:20.777443+00:00"
+    },
+    {
+      "attributes": {
+        "account": "mark.stephen.guy@gmail.com",
+        "auth_type": "device_code",
+        "blocker_hit": "ChatGPT device-code sign-in was disabled by default; user enabled it under ChatGPT Settings -> Security before the flow would accept a code",
+        "credential_label": "openai-codex-oauth-1",
+        "host": "hermes-vps",
+        "provider": "openai-codex"
+      },
+      "body": "hermes auth add openai-codex --no-browser completed successfully; hermes auth status openai-codex reports logged in.",
+      "created_at": "2026-09-25T01:11:20.839966+00:00",
+      "id": "3b3e8e46-71c3-4b73-b9aa-e163ddde1c89",
+      "key": "hermes-codex-oauth-linked-2026-09-25",
+      "name": "ChatGPT Plus linked to hermes-vps via openai-codex OAuth device flow",
+      "tags": [
+        "hermes",
+        "vps",
+        "codex"
+      ],
+      "type": "fact",
+      "updated_at": "2026-09-25T01:11:20.839966+00:00"
+    },
+    {
+      "attributes": {
+        "base_url": "https://chatgpt.com/backend-api/codex",
+        "config_path": "/home/hermes/.hermes/config.yaml",
+        "host": "hermes-vps",
+        "method": "called hermes_cli.auth._update_config_for_provider directly (python -c) since hermes model is an interactive-only picker with no non-interactive/scriptable path",
+        "model_default": "gpt-5.6-sol",
+        "prior_default": "zai-org/GLM-5.1-FP8 via api.vultrinference.com"
+      },
+      "body": "config.yaml model.provider and auth.json active_provider both set to openai-codex so nothing silently bills against Vultr Inference API anymore.",
+      "created_at": "2026-09-25T01:11:20.86336+00:00",
+      "id": "9c70065f-d62a-43f0-9488-101cce333fb0",
+      "key": "hermes-codex-default-provider-2026-09-25",
+      "name": "openai-codex set as default model provider on hermes-vps, replacing Vultr Inference API",
+      "tags": [
+        "hermes",
+        "vps",
+        "codex",
+        "decision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-25T01:11:20.86336+00:00"
+    },
+    {
+      "attributes": {
+        "behavior": "hermes-dashboard now refuses to bind 0.0.0.0 unless dashboard.basic_auth.username+password_hash is set in config.yaml, even though Caddy already gates access externally",
+        "credential_location": "password hash only in hermes-vps config.yaml; plaintext not stored in repo or catalog",
+        "fix": "generated a random password, hashed via plugins.dashboard_auth.basic.hash_password, added dashboard.basic_auth to config.yaml",
+        "host": "hermes-vps"
+      },
+      "body": "Upgrading to v0.19.0 broke hermes-dashboard startup until an internal basic_auth credential was added; this is separate from and in addition to Caddys front-door Basic Auth.",
+      "created_at": "2026-09-25T01:11:32.25295+00:00",
+      "id": "0cea2ded-9a86-4897-be05-3fa7b3608e0b",
+      "key": "hermes-dashboard-auth-gate-v0-19-2026-09-25",
+      "name": "hermes-agent v0.19.0 added a mandatory dashboard auth gate for non-loopback binds",
+      "tags": [
+        "hermes",
+        "vps",
+        "bug",
+        "upgrade"
+      ],
+      "type": "fact",
+      "updated_at": "2026-09-25T01:11:32.25295+00:00"
+    },
+    {
+      "attributes": {
+        "host": "hermes-vps",
+        "model": "gpt-5.6-sol",
+        "provider_confirmed_via": [
+          "hermes status output",
+          "response self-report",
+          "agent.log containing codex entries, no vultr entries"
+        ],
+        "test_method": "hermes -z <prompt> --cli"
+      },
+      "body": "Sent a live prompt through hermes CLI; response and hermes status both confirmed provider=OpenAI Codex, model=gpt-5.6-sol, with no Vultr Inference API traffic in agent.log.",
+      "created_at": "2026-09-25T01:11:32.274385+00:00",
+      "id": "daa78e46-99af-4962-8536-bea65af96554",
+      "key": "hermes-codex-e2e-test-confirmed-2026-09-25",
+      "name": "End-to-end Codex test confirmed on hermes-vps",
+      "tags": [
+        "hermes",
+        "vps",
+        "codex",
+        "verified"
+      ],
+      "type": "fact",
+      "updated_at": "2026-09-25T01:11:32.274385+00:00"
     }
   ],
-  "exported_at": "2026-09-25T00:54:46.392904+00:00",
+  "exported_at": "2026-09-25T01:11:56.309505+00:00",
   "relations": [
     {
       "attributes": {},
@@ -2041,6 +2152,76 @@
       "object_type": "entity",
       "predicate": "blocked_by",
       "subject_key": "hermes-goal-g4-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T01:11:52.694356+00:00",
+      "id": "252cf325-5ede-4659-926f-caad17ae3d60",
+      "object_key": "hermes-goal-g5-2026-09-23",
+      "object_type": "entity",
+      "predicate": "fulfills",
+      "subject_key": "hermes-codex-oauth-linked-2026-09-25",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T01:11:52.780375+00:00",
+      "id": "a540d2bd-4399-476e-91aa-86735420be85",
+      "object_key": "hermes-goal-g5-2026-09-23",
+      "object_type": "entity",
+      "predicate": "fulfills",
+      "subject_key": "hermes-codex-default-provider-2026-09-25",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T01:11:52.794034+00:00",
+      "id": "4bd27d7d-addb-4e35-98f6-1603e14dbc8b",
+      "object_key": "hermes-goal-g5-2026-09-23",
+      "object_type": "entity",
+      "predicate": "fulfills",
+      "subject_key": "hermes-codex-e2e-test-confirmed-2026-09-25",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T01:11:52.915556+00:00",
+      "id": "22ede16a-7723-4bc8-9a4e-d76b0369b12c",
+      "object_key": "hermes-codex-oauth-linked-2026-09-25",
+      "object_type": "entity",
+      "predicate": "depends_on",
+      "subject_key": "hermes-codex-default-provider-2026-09-25",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T01:11:52.95271+00:00",
+      "id": "dd237dc5-476b-4939-9563-e6c233c09cc5",
+      "object_key": "hermes-codex-default-provider-2026-09-25",
+      "object_type": "entity",
+      "predicate": "verifies",
+      "subject_key": "hermes-codex-e2e-test-confirmed-2026-09-25",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T01:11:53.013551+00:00",
+      "id": "4e2e8551-e8a3-4431-8032-45cb3ba19f71",
+      "object_key": "hermes-vps-upgraded-v0-19-0-2026-09-25",
+      "object_type": "entity",
+      "predicate": "caused_by",
+      "subject_key": "hermes-dashboard-auth-gate-v0-19-2026-09-25",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T01:11:53.040995+00:00",
+      "id": "598d7f00-f5fb-49bb-be6b-8e5a548237dc",
+      "object_key": "hermes-vps-upgraded-v0-19-0-2026-09-25",
+      "object_type": "entity",
+      "predicate": "depends_on",
+      "subject_key": "hermes-codex-default-provider-2026-09-25",
       "subject_type": "entity"
     }
   ],
