@@ -1,11 +1,11 @@
-﻿{
+{
   "entities": [
     {
       "attributes": {
         "goal": "unify home compute/storage/capability into one accessible pool, identical experience regardless of location"
       },
       "body": "User wants to transform all home network resources into a unified, supercomputer-like pool of capability, reachable with the same experience from anywhere.",
-      "created_at": "2026-09-23T21:12:39.369626-05:00",
+      "created_at": "2026-09-24T02:12:39.369626+00:00",
       "id": "d2d7184c-5e88-46a5-b8a2-ede11728302e",
       "key": "hermes-home-as-supercomputer-2026-09-23",
       "name": "Turn all home resources into one supercomputer-like pool, same experience anywhere",
@@ -15,7 +15,7 @@
         "vision"
       ],
       "type": "decision",
-      "updated_at": "2026-09-23T21:12:39.369626-05:00"
+      "updated_at": "2026-09-24T02:12:39.369626+00:00"
     },
     {
       "attributes": {
@@ -27,7 +27,7 @@
         "replace_with": "paid LLM gateway subscription for frontier-model access"
       },
       "body": "User will cancel ChatGPT Plus and Claude Pro, keep Google One, and use a paid LLM gateway to supplement frontier LLMs instead of separate subscriptions.",
-      "created_at": "2026-09-23T20:48:29.693422-05:00",
+      "created_at": "2026-09-24T01:48:29.693422+00:00",
       "id": "1cf1e88a-c653-449c-b26c-7401e2c2fc8d",
       "key": "hermes-subscription-consolidation-2026-09-23",
       "name": "Cancel ChatGPT Plus and Claude Pro; replace with a paid LLM gateway",
@@ -37,7 +37,7 @@
         "gateway"
       ],
       "type": "decision",
-      "updated_at": "2026-09-23T20:48:29.693422-05:00"
+      "updated_at": "2026-09-24T01:48:29.693422+00:00"
     },
     {
       "attributes": {
@@ -45,7 +45,7 @@
         "tier_2": "paid LM gateway picks the frontier model, used when prompt/task exceeds local capability"
       },
       "body": "Hermes should default to local LLMs for most prompts and escalate through the paid gateway, which selects the frontier model, only when the prompt/task level requires it.",
-      "created_at": "2026-09-23T20:48:29.760237-05:00",
+      "created_at": "2026-09-24T01:48:29.760237+00:00",
       "id": "da94a04c-da7f-4ba8-850a-b7898870a68b",
       "key": "hermes-tiered-routing-by-complexity-2026-09-23",
       "name": "Hermes routes by need: local LLMs first, gateway-selected frontier model beyond that",
@@ -55,7 +55,7 @@
         "architecture"
       ],
       "type": "decision",
-      "updated_at": "2026-09-23T20:48:29.760237-05:00"
+      "updated_at": "2026-09-24T01:48:29.760237+00:00"
     },
     {
       "attributes": {
@@ -63,7 +63,7 @@
         "codex_access": "included at base usage cap, not the boosted 5x/20x limits Pro tiers get"
       },
       "body": "User pays $20/month for OpenAI, which is the ChatGPT Plus tier (not Pro) - still qualifies for Codex CLIs subscription sign-in, just at base usage limits.",
-      "created_at": "2026-09-23T23:18:03.205408-05:00",
+      "created_at": "2026-09-24T04:18:03.205408+00:00",
       "id": "94911728-2d78-42ea-8a08-9806f26a91c3",
       "key": "hermes-user-openai-plan-is-plus-not-pro-2026-09-23",
       "name": "Users $20/mo OpenAI plan is ChatGPT Plus, not Pro",
@@ -72,12 +72,68 @@
         "cost"
       ],
       "type": "log-entry",
-      "updated_at": "2026-09-23T23:18:03.205408-05:00"
+      "updated_at": "2026-09-24T04:18:03.205408+00:00"
+    },
+    {
+      "attributes": {
+        "torrents": "home network via console/scripts",
+        "unmetered_needed": false,
+        "vps_traffic": "pure text tokens and orchestration (<50GB/mo)"
+      },
+      "body": "Bandwidth caps are a non-issue: torrents and heavy media execute completely on the home network via console/scripts, while VPS traffic is strictly text tokens and orchestration (<50GB/mo).",
+      "created_at": "2026-09-25T00:40:53.519959+00:00",
+      "id": "302409b3-fb11-403b-847b-1fea26e358b2",
+      "key": "hermes-bandwidth-concern-non-issue-2026-09-24",
+      "name": "Bandwidth concern is a non-issue: torrents stay home, VPS traffic is pure text tokens",
+      "tags": [
+        "hermes",
+        "network",
+        "cost"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-25T00:40:53.519959+00:00"
+    },
+    {
+      "attributes": {
+        "cost_model": "pay-per-second, zero idle",
+        "integration": "native Hermes Agent execution backend (nousresearch/hermes-modal)",
+        "role": "serverless burst compute & sandboxed execution"
+      },
+      "body": "Modal (or agent sandboxing) is confirmed as a necessary execution tier: zero-cost idle with on-demand GPU/CPU burst and isolated execution for untrusted agent code.",
+      "created_at": "2026-09-25T00:40:53.529122+00:00",
+      "id": "ccb8874f-4b32-4fe0-a58b-8c2ffaba01ef",
+      "key": "hermes-modal-compute-burst-confirmed-2026-09-24",
+      "name": "Modal confirmed as the serverless burst compute and sandbox execution tier",
+      "tags": [
+        "hermes",
+        "architecture",
+        "compute"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-25T00:40:53.529122+00:00"
+    },
+    {
+      "attributes": {
+        "auth_method": "ChatGPT Plus flat-fee via native link+code flow",
+        "next_step": "transition from external bootstrap agent to Hermes self-setup"
+      },
+      "body": "Initial onboarding will link users existing $20/mo ChatGPT Plus subscription via Hermes native link+code flow, allowing Hermes to take over and drive its own remaining setup (Dokploy, WireGuard, LM Studio bridge).",
+      "created_at": "2026-09-25T00:40:53.538094+00:00",
+      "id": "28d03ec4-23b2-43b2-ab34-8e87647a0032",
+      "key": "hermes-bootstrap-handoff-plan-2026-09-24",
+      "name": "Handoff plan: link ChatGPT Plus subscription, then switch into Hermes for self-setup",
+      "tags": [
+        "hermes",
+        "roadmap",
+        "bootstrap"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-25T00:40:53.538094+00:00"
     },
     {
       "attributes": {},
       "body": "User requirement: consistent access to the Hermes UI from this laptop regardless of location (home, Georgia Pacific work, hotels), plus eventually any device. Hard constraint: employer (Georgia Pacific) is actively averse to unusual network activity on company-managed devices, so nothing may require installing a VPN/tunnel client. Decision: reuse the existing DuckDNS domain (theguylab.duckdns.org) and Nginx Proxy Manager on server, adding a new path-based Custom Location (matching the existing /wp, /beszel pattern), e.g. theguylab.duckdns.org/hermes, password-gated. Explicitly rejected: Tailscale (dormant container on server), MeshCentral (no agents installed), Cloudflare Tunnel (nothing set up) - all three require a client on the connecting device, which is the opposite of the requirement. A password wall behind a normal HTTPS domain requires installing nothing and is indistinguishable from browsing any other site.",
-      "created_at": "2026-09-22T22:29:41.147735-05:00",
+      "created_at": "2026-09-23T03:29:41.147735+00:00",
       "id": "3ad7d927-0b5b-4f40-a066-dcf42b1f0090",
       "key": "hermes-remote-access-decision-2026-09-22",
       "name": "Remote access: password-gated web UI via existing DuckDNS + NPM, no client install",
@@ -87,7 +143,7 @@
         "remote-access"
       ],
       "type": "decision",
-      "updated_at": "2026-09-22T22:29:41.147735-05:00"
+      "updated_at": "2026-09-23T03:29:41.147735+00:00"
     },
     {
       "attributes": {
@@ -96,7 +152,7 @@
         "routing_decision_techniques": "RouteLLM (LMSYS/Berkeley binary complexity classifier, 85 percent cost reduction at 95 percent GPT-4 quality on MT-Bench), Semantic Router/vLLM Semantic Router (embedding-based intent routing, not difficulty-based), ICL-Router (2026 research, in-context capability vectors, no retraining needed for new models)"
       },
       "body": "LLM routing splits into two layers: gateways that aggregate many models under one API/subscription (LiteLLM, Portkey, OpenRouter, Nous Portal), and separate routing-decision techniques that pick which model tier to use per prompt (RouteLLM-style complexity classifiers, semantic/intent routers).",
-      "created_at": "2026-09-23T20:50:55.534647-05:00",
+      "created_at": "2026-09-24T01:50:55.534647+00:00",
       "id": "676a96dd-91b1-4134-91fc-31ae6baf9510",
       "key": "hermes-llm-routing-research-2026-09-23",
       "name": "Research: LLM routing has two distinct layers - gateway/aggregation vs. routing-decision",
@@ -106,14 +162,14 @@
         "gateway"
       ],
       "type": "log-entry",
-      "updated_at": "2026-09-23T20:50:55.534647-05:00"
+      "updated_at": "2026-09-24T01:50:55.534647+00:00"
     },
     {
       "attributes": {
         "example": "download a torrent, drop into a watched folder, Plex library picks it up"
       },
       "body": "Plex/fileserver-related tasks (e.g. torrent downloads landing in a watched folder) stay home-network-based and are reached via the VPN, not moved to the VPS.",
-      "created_at": "2026-09-23T23:43:03.731693-05:00",
+      "created_at": "2026-09-24T04:43:03.731693+00:00",
       "id": "ba6d182b-96db-461c-9547-f5626e854349",
       "key": "hermes-plex-workflow-stays-home-via-vpn-2026-09-23",
       "name": "Plex-related tasks stay home-based, reached via VPN",
@@ -122,7 +178,7 @@
         "architecture"
       ],
       "type": "decision",
-      "updated_at": "2026-09-23T23:43:03.731693-05:00"
+      "updated_at": "2026-09-24T04:43:03.731693+00:00"
     },
     {
       "attributes": {
@@ -131,7 +187,7 @@
         "status": "open, not decided"
       },
       "body": "User is weighing whether the existing WordPress site should move off server to a hosting service Hermes can directly manipulate, to reduce hops - not decided, and migrating a live site is more disruptive than adding a new capability.",
-      "created_at": "2026-09-23T23:43:03.755083-05:00",
+      "created_at": "2026-09-24T04:43:03.755083+00:00",
       "id": "377bd278-1964-4410-a48f-413945eb717d",
       "key": "hermes-wordpress-migration-consideration-2026-09-23",
       "name": "Consider moving the existing WordPress site off server to a Hermes-manipulable host",
@@ -141,7 +197,7 @@
         "risk"
       ],
       "type": "open-item",
-      "updated_at": "2026-09-23T23:43:03.755083-05:00"
+      "updated_at": "2026-09-24T04:43:03.755083+00:00"
     },
     {
       "attributes": {
@@ -186,7 +242,7 @@
         }
       },
       "body": "Fresh ground-truth inventory pulled via Salt (test.ping + grains.item across tgt=*) at the start of Hermes project work, so future Hermes sessions do not need to re-derive hardware state. All 6 minions responded live. Key correction vs. an earlier draft planning doc that assumed w_workstation had 128GB RAM: actual is 64GB (65263MB), still HP Z4 G4 Workstation with confirmed NVIDIA RTX A4000 GPU (4GB AdapterRAM reported by WMI is the driver-reported aperture size, not full VRAM - 16GB is the card spec and matches prior LM Studio load observations of ~12GB used). LM Studio on w_workstation is up and serving 4 models over its OpenAI-compatible API at :1234, directly reachable from laptop over LAN without needing Salt as a relay. server has 152GB free disk - plenty of headroom for new Hermes-related Docker services without capacity concerns.",
-      "created_at": "2026-09-22T22:05:47.32844-05:00",
+      "created_at": "2026-09-23T03:05:47.32844+00:00",
       "id": "e5a48e2d-a69a-43ca-a49c-62dd478bb964",
       "key": "hermes-network-inventory-2026-09-22",
       "name": "Live Salt inventory of all 6 LAN hosts for Hermes project start",
@@ -196,12 +252,12 @@
         "salt"
       ],
       "type": "network-snapshot",
-      "updated_at": "2026-09-22T22:05:47.32844-05:00"
+      "updated_at": "2026-09-23T03:05:47.32844+00:00"
     },
     {
       "attributes": {},
       "body": "User decided Hermes (personal AI agent + chat UI, meant to replace paid ChatGPT Plus/Claude Pro subscriptions) should NOT be treated as bound by LocalForge non-goal of avoiding a general-purpose multi-agent framework - that constraint was written for a different, narrower project (Claude Code offload tool) and does not apply to Hermes. Hermes may still reuse LM Studio on w_workstation as the underlying local-inference resource (same hardware, same RTX A4000/LM Studio server), and may reference LocalForge bridge code as prior art, but is scoped and decided independently. Repo scaffolded at /home/mark/projects/Hermes, remote https://github.com/markstephenguy-bit/hermes (not yet pushed - needs user auth).",
-      "created_at": "2026-09-22T22:05:50.930463-05:00",
+      "created_at": "2026-09-23T03:05:50.930463+00:00",
       "id": "2b90ae2b-9ca0-4a9a-8038-aec280e00efd",
       "key": "hermes-independent-of-localforge-2026-09-22",
       "name": "Hermes is a standalone project, not constrained by LocalForge scope",
@@ -211,12 +267,12 @@
         "decision"
       ],
       "type": "decision",
-      "updated_at": "2026-09-22T22:05:50.930463-05:00"
+      "updated_at": "2026-09-23T03:05:50.930463+00:00"
     },
     {
       "attributes": {},
       "body": "User set standing operating rules for the Hermes project, overriding the usual ask-first defaults for these specific actions: (1) Memory upkeep is Claude's responsibility, not the user's - never wait to be told to save something, capture decisions/corrections/facts as they happen including relations/edges linking entities together, not just isolated notes. (2) Git upkeep is Claude's responsibility - commit as work lands without asking; push too, once push actually works (blocked as of 2026-09-22 by missing GitHub credential in this environment - no SSH key registered with GitHub, no cached HTTPS token; user needs to register ~/.ssh/id_ed25519.pub with GitHub or cache a token, one-time setup). (3) Everything the user says in conversation is a priority signal - do not silently deprioritize what the user explicitly discussed in favor of what Claude judges more important. (4) Claude Code is understood as a bootstrap tool only - Hermes does not exist yet, which is the sole reason Claude Code is doing this work by hand; the expectation is this whole maintenance role (memory, repo upkeep, network changes) eventually moves into Hermes itself once it exists, so prefer building capabilities/APIs a future agent could call over one-off manual steps only Claude Code can perform.",
-      "created_at": "2026-09-22T22:29:41.108375-05:00",
+      "created_at": "2026-09-23T03:29:41.108375+00:00",
       "id": "47f8bda4-1871-41cb-887e-36abb7fc6960",
       "key": "hermes-operating-ground-rules-2026-09-22",
       "name": "Hermes project operating ground rules set by user",
@@ -225,12 +281,12 @@
         "ground-rules"
       ],
       "type": "decision",
-      "updated_at": "2026-09-22T22:29:41.108375-05:00"
+      "updated_at": "2026-09-23T03:29:41.108375+00:00"
     },
     {
       "attributes": {},
       "body": "User framed the core scope of Hermes: it is not just a chat UI backed by a local model. Existing home network resources (compute, storage, the ability to host a web page, etc.) are meant to become capabilities the agent itself can use and eventually control, implementation-agnostic. Users example: the ability to host web pages the personal agent constructs counts as a web server capability regardless of what software or host actually implements it - what matters is that it is under the agent's control, not the specific implementation. Applies to future design decisions: prefer designs where a capability is something Hermes can invoke/control, not just something Claude Code wired up once by hand.",
-      "created_at": "2026-09-22T22:29:41.133163-05:00",
+      "created_at": "2026-09-23T03:29:41.133163+00:00",
       "id": "b5281927-b4a9-4b25-b61b-cd7f3db5f450",
       "key": "hermes-network-resources-as-capabilities-2026-09-22",
       "name": "Core design principle: home network resources become agent capabilities",
@@ -239,12 +295,12 @@
         "architecture"
       ],
       "type": "decision",
-      "updated_at": "2026-09-22T22:29:41.133163-05:00"
+      "updated_at": "2026-09-23T03:29:41.133163+00:00"
     },
     {
       "attributes": {},
       "body": "User correction: the underlying model powering the Hermes agent is not an open design question to be evaluated (tool-calling benchmarks, comparing gemma vs other options, etc.) - it is specifically the Hermes model line from Nous Research, chosen because the user considers it best-in-class for this purpose currently. This resolves the previously-open BACKLOG.md \"Model choice\" item. Specific version/size (e.g. Hermes 3 vs a newer release, parameter count that fits w_workstation RTX A4000 16GB VRAM) not yet pinned down - Claude's knowledge cutoff is Jan 2026 and Nous ships new Hermes versions periodically, so verify current release before downloading rather than assuming.",
-      "created_at": "2026-09-22T22:52:00.828037-05:00",
+      "created_at": "2026-09-23T03:52:00.828037+00:00",
       "id": "5a8f7e86-ba99-45a8-941a-b60179e32613",
       "key": "hermes-agent-model-is-hermes-2026-09-23",
       "name": "The agent model is Hermes (Nous Research), not a from-scratch evaluation",
@@ -253,12 +309,12 @@
         "architecture"
       ],
       "type": "decision",
-      "updated_at": "2026-09-22T22:52:00.828037-05:00"
+      "updated_at": "2026-09-23T03:52:00.828037+00:00"
     },
     {
       "attributes": {},
       "body": "User referred to Hermes Desktop as the interface, prompting web research (this postdates Claude's Jan 2026 knowledge cutoff). Findings: Nous Research released Hermes Agent (open-source, self-improving agent framework, MIT licensed, first released 2026-02-25) with an official native desktop app, Hermes Desktop (public preview v0.15.2, released 2026-06-02, macOS/Windows/Linux). Architecture: hermes serve is the headless backend (API + dashboard, port 9119, REST handshake GET /api/status then WebSocket for chat/events), config/memory/skills/sessions live in ~/.hermes/. Desktop client supports Settings -> Gateways -> Remote gateway to point at a self-run hermes serve backend instead of spawning one locally (env vars HERMES_DESKTOP_REMOTE_URL / HERMES_DESKTOP_REMOTE_TOKEN also supported), with multiple saved backend profiles. Documented security guidance: keep the remote backend behind a trusted reverse proxy/VPN/SSH tunnel rather than exposed raw - directly compatible with the already-decided remote-access architecture (DuckDNS + Nginx Proxy Manager + password wall on server, catalog entity hermes-remote-access-decision-2026-09-22). Five sandboxed execution backends available (local, Docker, SSH, Singularity, Modal); Nous Portal offers 300+ models (free/paid). Not yet a locked decision - user has not confirmed moving from research to committed design.",
-      "created_at": "2026-09-22T22:54:16.791665-05:00",
+      "created_at": "2026-09-23T03:54:16.791665+00:00",
       "id": "942dd7fe-9276-4e75-af6b-ea5a13eac883",
       "key": "hermes-agent-product-research-2026-09-23",
       "name": "Research: Nous Research ships a real Hermes Agent product with a desktop client/server architecture",
@@ -267,7 +323,7 @@
         "research"
       ],
       "type": "log-entry",
-      "updated_at": "2026-09-22T22:54:16.791665-05:00"
+      "updated_at": "2026-09-23T03:54:16.791665+00:00"
     },
     {
       "attributes": {
@@ -276,7 +332,7 @@
         "primary_interface": "Hermes Desktop, talking to local LLM via LM Studio on w_workstation"
       },
       "body": "User wants Hermes to be their master AI harness - they talk to Hermes, not Claude Code directly, with a local LLM (LM Studio on w_workstation) as the default brain and an AI gateway routing heavier agentic/coding work to other AI backends on demand.",
-      "created_at": "2026-09-22T23:01:56.264047-05:00",
+      "created_at": "2026-09-23T04:01:56.264047+00:00",
       "id": "fb34d61c-9caf-4ef6-b62c-05a08289da99",
       "key": "hermes-master-harness-role-2026-09-23",
       "name": "Hermes is the master harness; Claude Code is a delegate, not the front door",
@@ -286,7 +342,7 @@
         "vision"
       ],
       "type": "decision",
-      "updated_at": "2026-09-22T23:01:56.264047-05:00"
+      "updated_at": "2026-09-23T04:01:56.264047+00:00"
     },
     {
       "attributes": {
@@ -295,7 +351,7 @@
         "status": "open"
       },
       "body": "User wants a proxy on a home Linux machine so the GP-issued work computer (primarily LM Studio running on it) can reach the internet/home network without going through Zscaler.",
-      "created_at": "2026-09-23T19:35:05.445418-05:00",
+      "created_at": "2026-09-24T00:35:05.445418+00:00",
       "id": "1486c234-1220-4087-a738-fbc0d15fb7b9",
       "key": "hermes-zscaler-bypass-proxy-2026-09-23",
       "name": "Home Linux proxy to route around Zscaler on the GP workstation",
@@ -305,14 +361,14 @@
         "risk"
       ],
       "type": "open-item",
-      "updated_at": "2026-09-23T19:35:05.445418-05:00"
+      "updated_at": "2026-09-24T00:35:05.445418+00:00"
     },
     {
       "attributes": {
         "status": "open"
       },
       "body": "User wants LM Studio to run multiple local LLMs concurrently/as-needed rather than a single fixed chat model.",
-      "created_at": "2026-09-23T19:35:05.519951-05:00",
+      "created_at": "2026-09-24T00:35:05.519951+00:00",
       "id": "57381e88-a83b-4b3e-ba22-25f766fc9770",
       "key": "hermes-lmstudio-multi-model-2026-09-23",
       "name": "LM Studio should host as many local LLMs as needed, not one fixed model",
@@ -321,7 +377,7 @@
         "lm-studio"
       ],
       "type": "open-item",
-      "updated_at": "2026-09-23T19:35:05.519951-05:00"
+      "updated_at": "2026-09-24T00:35:05.519951+00:00"
     },
     {
       "attributes": {
@@ -330,7 +386,7 @@
         "status": "open"
       },
       "body": "User wants to pick whichever machine is best to run the Hermes (hermes serve) backend, open to using the GP-issued work computer itself, with a hard constraint that it must never sleep.",
-      "created_at": "2026-09-23T19:35:05.545052-05:00",
+      "created_at": "2026-09-24T00:35:05.545052+00:00",
       "id": "e20c3c1f-5597-4893-a19a-f517df05e92d",
       "key": "hermes-backend-host-selection-2026-09-23",
       "name": "Pick the best machine to run the Hermes backend; GP workstation is a candidate",
@@ -340,7 +396,7 @@
         "risk"
       ],
       "type": "open-item",
-      "updated_at": "2026-09-23T19:35:05.545052-05:00"
+      "updated_at": "2026-09-24T00:35:05.545052+00:00"
     },
     {
       "attributes": {
@@ -349,7 +405,7 @@
         "tier_2": "paid gateway - only reached when tier 1 cannot handle it"
       },
       "body": "The tiering criterion is free-vs-paid: LM Studio local model runs first because it costs nothing, and it should also perform the routing decision itself (judge whether it can handle the prompt or must escalate) so that step stays free too.",
-      "created_at": "2026-09-23T20:54:39.541098-05:00",
+      "created_at": "2026-09-24T01:54:39.541098+00:00",
       "id": "ceec86fc-6a0e-430c-93a8-f9ded609d338",
       "key": "hermes-cost-based-routing-free-first-2026-09-23",
       "name": "Routing criterion is free-vs-paid: local LM Studio is always tried first, and should self-route",
@@ -359,7 +415,7 @@
         "architecture"
       ],
       "type": "decision",
-      "updated_at": "2026-09-23T20:54:39.541098-05:00"
+      "updated_at": "2026-09-24T01:54:39.541098+00:00"
     },
     {
       "attributes": {
@@ -369,7 +425,7 @@
         "status": "leaning, not fully decided"
       },
       "body": "User is leaning toward Signal/Telegram as the primary remote interface over the web UI, keeping a web UI landing page as a secondary option when remote, and using Hermes Desktop natively when practical.",
-      "created_at": "2026-09-23T20:58:20.593162-05:00",
+      "created_at": "2026-09-24T01:58:20.593162+00:00",
       "id": "d5784cb7-2694-4842-8118-6c1b6f0cfcfa",
       "key": "hermes-interface-strategy-refined-2026-09-23",
       "name": "Interface leaning: Signal/Telegram primary, web UI as remote landing page, Hermes Desktop when practical",
@@ -379,14 +435,14 @@
         "interface"
       ],
       "type": "decision",
-      "updated_at": "2026-09-23T20:58:20.593162-05:00"
+      "updated_at": "2026-09-24T01:58:20.593162+00:00"
     },
     {
       "attributes": {
         "approach": "let Hermes reach for network resources as it needs them post-spinup, do not pre-build a list of integrations"
       },
       "body": "Home network appliance/resource integrations are expected to emerge naturally once Hermes exists and reaches for them, not a punch list to build proactively now.",
-      "created_at": "2026-09-23T21:01:55.602405-05:00",
+      "created_at": "2026-09-24T02:01:55.602405+00:00",
       "id": "a716f657-9ed1-4f47-8dd2-3ab0c61b530c",
       "key": "hermes-appliance-integration-is-emergent-2026-09-23",
       "name": "Network appliance integrations are emergent, not a proactive build list",
@@ -395,7 +451,7 @@
         "architecture"
       ],
       "type": "decision",
-      "updated_at": "2026-09-23T21:01:55.602405-05:00"
+      "updated_at": "2026-09-24T02:01:55.602405+00:00"
     },
     {
       "attributes": {
@@ -405,7 +461,7 @@
         "w_workstation_note": "stays the free GPU/LM Studio resource hermes serve calls out to - separate open question whether its own sleep/power settings need reconfiguring"
       },
       "body": "Recommendation for hermes-backend-host-selection-2026-09-23: run hermes serve on server (always-on, matches the existing pattern for persistent home-lab services), not on w_workstation (needed as the free LM Studio/GPU resource instead) or the GP workstation (uncontrollable sleep policy plus already-flagged risk). Not yet confirmed by user.",
-      "created_at": "2026-09-23T21:01:55.674975-05:00",
+      "created_at": "2026-09-24T02:01:55.674975+00:00",
       "id": "6ad75c0d-5b77-4a85-86b4-cd3d72a82bcc",
       "key": "hermes-backend-host-recommendation-2026-09-23",
       "name": "Recommendation: run hermes serve on server, not w_workstation or the GP workstation",
@@ -415,14 +471,14 @@
         "recommendation"
       ],
       "type": "log-entry",
-      "updated_at": "2026-09-23T21:01:55.674975-05:00"
+      "updated_at": "2026-09-24T02:01:55.674975+00:00"
     },
     {
       "attributes": {
         "reason": "user has heard OpenClaw is in a downward spiral; considers Hermes the correct choice"
       },
       "body": "User confirmed Hermes Agent over its closest rival OpenClaw as the platform choice, citing reports that OpenClaw is declining.",
-      "created_at": "2026-09-23T21:12:39.319759-05:00",
+      "created_at": "2026-09-24T02:12:39.319759+00:00",
       "id": "60daf3f0-b316-47e3-896f-a1ecd2152ebf",
       "key": "hermes-vs-openclaw-confirmed-2026-09-23",
       "name": "Hermes confirmed over OpenClaw",
@@ -431,14 +487,14 @@
         "architecture"
       ],
       "type": "decision",
-      "updated_at": "2026-09-23T21:12:39.319759-05:00"
+      "updated_at": "2026-09-24T02:12:39.319759+00:00"
     },
     {
       "attributes": {
         "motivation": "avoid recurring/unbounded AI spend, not just a technical local-vs-cloud preference"
       },
       "body": "The free-first local-LLM routing strategy is explicitly motivated by not wanting to fall into an ongoing-cost money pit.",
-      "created_at": "2026-09-23T21:12:39.341686-05:00",
+      "created_at": "2026-09-24T02:12:39.341686+00:00",
       "id": "62381668-552c-42b1-b36d-2fbfb0c39ab8",
       "key": "hermes-avoid-money-pit-motivation-2026-09-23",
       "name": "Local-first strategy is explicitly about avoiding an ongoing-cost money pit",
@@ -447,7 +503,7 @@
         "cost"
       ],
       "type": "decision",
-      "updated_at": "2026-09-23T21:12:39.341686-05:00"
+      "updated_at": "2026-09-24T02:12:39.341686+00:00"
     },
     {
       "attributes": {
@@ -455,7 +511,7 @@
         "pain_point": "currently sets up a new memory/context system and a new GitHub repo for every new AI project"
       },
       "body": "User is tired of standing up new memory context and a new GitHub repo for every AI project and wants Hermes to be one persistent environment they can jump back into across all their AI work.",
-      "created_at": "2026-09-23T21:12:39.354641-05:00",
+      "created_at": "2026-09-24T02:12:39.354641+00:00",
       "id": "60586825-1da6-4754-8847-cd6b955f512f",
       "key": "hermes-unified-persistent-environment-2026-09-23",
       "name": "One persistent environment across all AI project work, not per-project setup",
@@ -465,7 +521,7 @@
         "vision"
       ],
       "type": "decision",
-      "updated_at": "2026-09-23T21:12:39.354641-05:00"
+      "updated_at": "2026-09-24T02:12:39.354641+00:00"
     },
     {
       "attributes": {
@@ -476,7 +532,7 @@
         "status": "leaning, not fully locked"
       },
       "body": "User is leaning toward running hermes serve on a VPS instead of server, with a direct VPN tunnel from the VPS back to the home network so it can reach LM Studio and other home resources.",
-      "created_at": "2026-09-23T23:03:26.965245-05:00",
+      "created_at": "2026-09-24T04:03:26.965245+00:00",
       "id": "e56e62fb-f2ee-4efb-b8fb-3d3eaa482c93",
       "key": "hermes-vps-backend-with-home-vpn-2026-09-23",
       "name": "Host hermes serve on a VPS instead of server, with a VPN back to the home network",
@@ -485,7 +541,7 @@
         "architecture"
       ],
       "type": "decision",
-      "updated_at": "2026-09-23T23:03:26.965245-05:00"
+      "updated_at": "2026-09-24T04:03:26.965245+00:00"
     },
     {
       "attributes": {
@@ -494,7 +550,7 @@
         "reason_3": "remote-native by default - reachable from anywhere without home-network-specific plumbing"
       },
       "body": "User prefers a VPS over server for three reasons: a clean, purpose-built environment to maximize the Hermes install, guaranteed always-on uptime, and remote reachability from anywhere by default.",
-      "created_at": "2026-09-23T23:05:15.898335-05:00",
+      "created_at": "2026-09-24T04:05:15.898335+00:00",
       "id": "93ff8d34-6051-47f6-8b03-20fc5e93d83a",
       "key": "hermes-vps-preference-reasons-2026-09-23",
       "name": "Why VPS over server: preconfigured install, guaranteed always-on, remote-native",
@@ -503,7 +559,7 @@
         "architecture"
       ],
       "type": "decision",
-      "updated_at": "2026-09-23T23:05:15.898335-05:00"
+      "updated_at": "2026-09-24T04:05:15.898335+00:00"
     },
     {
       "attributes": {
@@ -512,7 +568,7 @@
         "implication": "the already-decided paid LLM gateway path covers OpenAI-model access under one subscription without needing a separate OpenAI API account at all"
       },
       "body": "ChatGPT Pro is a consumer subscription with no API access included - using OpenAI models programmatically through Hermes would require a separate, separately-billed OpenAI API key, not the Pro subscription itself.",
-      "created_at": "2026-09-23T23:12:27.956298-05:00",
+      "created_at": "2026-09-24T04:12:27.956298+00:00",
       "id": "5e01bb55-3771-4fe8-8112-336df020cc1d",
       "key": "hermes-openai-pro-no-api-access-2026-09-23",
       "name": "ChatGPT Pro subscription cannot power Hermes - API billing is entirely separate",
@@ -522,7 +578,7 @@
         "cost"
       ],
       "type": "log-entry",
-      "updated_at": "2026-09-23T23:12:27.956298-05:00"
+      "updated_at": "2026-09-24T04:12:27.956298+00:00"
     },
     {
       "attributes": {
@@ -531,7 +587,7 @@
         "trigger_caveat": "documented trigger is route unavailability/capacity failure, not confirmed to be automatic prompt-complexity judging - that nuance is still open"
       },
       "body": "Hermes Agent natively supports a three-tier local/cloud-burst/fallback routing scheme via config.yaml, resolving whether this needs to be built separately - though whether it auto-judges prompt complexity (vs. just failing over on error) is still unconfirmed.",
-      "created_at": "2026-09-23T23:12:27.986388-05:00",
+      "created_at": "2026-09-24T04:12:27.986388+00:00",
       "id": "9212eb9d-8311-4325-92b6-5f21be296d23",
       "key": "hermes-agent-native-tiered-routing-confirmed-2026-09-23",
       "name": "Hermes Agent has native local -> cloud-burst -> fallback routing, resolving the earlier open question",
@@ -541,14 +597,14 @@
         "gateway"
       ],
       "type": "log-entry",
-      "updated_at": "2026-09-23T23:12:27.986388-05:00"
+      "updated_at": "2026-09-24T04:12:27.986388+00:00"
     },
     {
       "attributes": {
         "scope": "LM Studio on w_workstation, plus Salt API access to manage other home network systems"
       },
       "body": "User wants the VPS-to-home VPN tunnel to also carry Salt connectivity to other home network systems, not just LM Studio access.",
-      "created_at": "2026-09-23T23:12:27.997476-05:00",
+      "created_at": "2026-09-24T04:12:27.997476+00:00",
       "id": "2c8f7028-0a79-4909-ab4c-80c66b6fef73",
       "key": "hermes-vpn-scope-includes-salt-2026-09-23",
       "name": "The VPS-to-home VPN should also carry Salt connectivity, not just LM Studio",
@@ -558,7 +614,7 @@
         "architecture"
       ],
       "type": "decision",
-      "updated_at": "2026-09-23T23:12:27.997476-05:00"
+      "updated_at": "2026-09-24T04:12:27.997476+00:00"
     },
     {
       "attributes": {
@@ -568,7 +624,7 @@
         "pro_tiers": "$100/mo = 5x limit, $200/mo = 20x limit"
       },
       "body": "Correction to hermes-openai-pro-no-api-access-2026-09-23: OpenAIs Codex CLI specifically can authenticate with a ChatGPT Plus/Pro subscription (flat fee, capped usage) instead of a metered API key, unlike the general OpenAI API which remains separately billed.",
-      "created_at": "2026-09-23T23:15:47.69745-05:00",
+      "created_at": "2026-09-24T04:15:47.69745+00:00",
       "id": "068ce020-3464-4731-83d9-e9b7a8ecf4b0",
       "key": "hermes-codex-subscription-correction-2026-09-23",
       "name": "Correction: Codex CLI can use ChatGPT Plus/Pro subscription flat-fee, unlike the general OpenAI API",
@@ -578,7 +634,7 @@
         "cost"
       ],
       "type": "log-entry",
-      "updated_at": "2026-09-23T23:15:47.69745-05:00"
+      "updated_at": "2026-09-24T04:15:47.69745+00:00"
     },
     {
       "attributes": {
@@ -587,7 +643,7 @@
         "vpn_leg": "VPS to home LAN, for LM Studio and Salt access - reaches users own infrastructure"
       },
       "body": "Confirmed: the VPS-hosted Hermes backend can combine a home-network VPN (for LM Studio and Salt) with Codex-via-ChatGPT-Plus subscription access, as two independent legs on the same box.",
-      "created_at": "2026-09-23T23:19:43.32043-05:00",
+      "created_at": "2026-09-24T04:19:43.32043+00:00",
       "id": "a84900e0-4fa6-45f7-a5b1-a76e4f88e443",
       "key": "hermes-vps-combines-vpn-and-codex-2026-09-23",
       "name": "VPS Hermes combines home-VPN (LM Studio/Salt) with Codex-via-ChatGPT-Plus, independently",
@@ -597,14 +653,14 @@
         "gateway"
       ],
       "type": "decision",
-      "updated_at": "2026-09-23T23:19:43.32043-05:00"
+      "updated_at": "2026-09-24T04:19:43.32043+00:00"
     },
     {
       "attributes": {
         "flow": "device-authorization style - Hermes shows a link and a code, user completes login in a browser once"
       },
       "body": "User observed (via a YouTube demo) that Hermes has a native onboarding flow (link + code) for linking an OpenAI/ChatGPT subscription, resolving the earlier headless-VPS auth caveat without custom scripting.",
-      "created_at": "2026-09-23T23:21:52.846405-05:00",
+      "created_at": "2026-09-24T04:21:52.846405+00:00",
       "id": "398bbbfc-6909-4b9c-a0d8-a85f163f3775",
       "key": "hermes-native-openai-linking-flow-confirmed-2026-09-23",
       "name": "Hermes has a native link+code flow to connect an OpenAI/ChatGPT subscription",
@@ -614,7 +670,7 @@
         "gateway"
       ],
       "type": "log-entry",
-      "updated_at": "2026-09-23T23:21:52.846405-05:00"
+      "updated_at": "2026-09-24T04:21:52.846405+00:00"
     },
     {
       "attributes": {
@@ -622,7 +678,7 @@
         "status": "leaning toward this as the actual first build"
       },
       "body": "User considers local LM Studio plus a VPS-hosted Hermes plus their existing $20 ChatGPT Plus (linked via Hermes native code flow) a good, inexpensive starting point for the actual Hermes rollout.",
-      "created_at": "2026-09-23T23:21:52.877885-05:00",
+      "created_at": "2026-09-24T04:21:52.877885+00:00",
       "id": "39a92431-c8ef-4339-bc83-df29805e4456",
       "key": "hermes-inexpensive-starting-point-2026-09-23",
       "name": "Local LM Studio + VPS Hermes + existing $20 ChatGPT Plus is the planned inexpensive starting point",
@@ -632,7 +688,7 @@
         "architecture"
       ],
       "type": "decision",
-      "updated_at": "2026-09-23T23:21:52.877885-05:00"
+      "updated_at": "2026-09-24T04:21:52.877885+00:00"
     },
     {
       "attributes": {
@@ -642,7 +698,7 @@
         "start_size": "start at the ~$5/mo tier (2 vCPU/4GB), resize later since providers support vertical scaling without a rebuild"
       },
       "body": "User wants all Hermes sub-agents to execute on the VPS itself, calling out over the VPN to LM Studio (primarily) or to Codex only for the model-inference step - meaning VPS CPU/RAM genuinely gates agent capacity, unlike a pure orchestration-relay design.",
-      "created_at": "2026-09-23T23:29:35.929763-05:00",
+      "created_at": "2026-09-24T04:29:35.929763+00:00",
       "id": "052f57eb-c864-4934-b627-d42b80b886cf",
       "key": "hermes-agents-execute-on-vps-2026-09-23",
       "name": "All sub-agents execute on the VPS itself, calling out to LM Studio/Codex only for model inference",
@@ -651,7 +707,7 @@
         "architecture"
       ],
       "type": "decision",
-      "updated_at": "2026-09-23T23:29:35.929763-05:00"
+      "updated_at": "2026-09-24T04:29:35.929763+00:00"
     },
     {
       "attributes": {
@@ -662,7 +718,7 @@
         "throttling_mechanism": "entry tiers use shared/burstable vCPU - full speed only in bursts, throttled back to baseline under sustained load; dedicated vCPU (2-3x price) removes this, and is the real/legitimate upgrade path, not an artificial upsell"
       },
       "body": "Researched real VPS cost vs headline price: Hostinger KVM1 ($4.99/mo flat, backups+IP included) is closer to its true cost than Hetzner CX22 (backups are +20% extra). The entry-tier constraint mechanism is shared/burstable vCPU throttling under sustained load - a real limitation, and given Hermes agents execute on the VPS itself, sustained agent workloads are exactly what would trigger it, making dedicated vCPU a predictable (not deceptive) future upgrade.",
-      "created_at": "2026-09-23T23:33:05.896669-05:00",
+      "created_at": "2026-09-24T04:33:05.896669+00:00",
       "id": "2f325380-e036-40cb-b37f-1d1ec8d62506",
       "key": "hermes-vps-real-cost-research-2026-09-23",
       "name": "Research: entry-tier VPS real cost vs headline price, and the shared-vCPU throttling mechanism",
@@ -672,7 +728,7 @@
         "cost"
       ],
       "type": "log-entry",
-      "updated_at": "2026-09-23T23:33:05.896669-05:00"
+      "updated_at": "2026-09-24T04:33:05.896669+00:00"
     },
     {
       "attributes": {
@@ -682,7 +738,7 @@
         "web_and_docker_tool": "Dokploy - open-source, free, self-hosted on the same VPS, exposes an MCP server for agent-driven deploys/Docker/app management"
       },
       "body": "User wants Hermes web-presence and Docker-hosting capability to live on the VPS rather than exposing home network ports - Dokploy (free, self-hosted, MCP-native) on the same VPS covers both, with Modal (already a native Hermes execution backend) for on-demand heavier compute.",
-      "created_at": "2026-09-23T23:37:38.137375-05:00",
+      "created_at": "2026-09-24T04:37:38.137375+00:00",
       "id": "aedb0d63-2e08-4b57-b2ee-834a4300c8f1",
       "key": "hermes-web-and-docker-presence-shifts-to-vps-2026-09-23",
       "name": "Web presence and Docker hosting move to the VPS, not the home network",
@@ -691,7 +747,7 @@
         "architecture"
       ],
       "type": "decision",
-      "updated_at": "2026-09-23T23:37:38.137375-05:00"
+      "updated_at": "2026-09-24T04:37:38.137375+00:00"
     },
     {
       "attributes": {
@@ -699,7 +755,7 @@
         "principle": "minimize the number of distinct systems/providers Hermes has to coordinate across to have power over its own capabilities"
       },
       "body": "User prioritizes minimizing hops/complications for Hermes to have power over its capabilities - prefers one provider offering multiple integrated services over best-of-breed point solutions scattered across providers.",
-      "created_at": "2026-09-23T23:43:03.767004-05:00",
+      "created_at": "2026-09-24T04:43:03.767004+00:00",
       "id": "d505a685-ee84-4ea9-bd47-47309baed719",
       "key": "hermes-prefer-unified-provider-2026-09-23",
       "name": "Fewer hops matter more than best-of-breed: prefer one unified provider over scattered services",
@@ -709,7 +765,7 @@
         "cost"
       ],
       "type": "decision",
-      "updated_at": "2026-09-23T23:43:03.767004-05:00"
+      "updated_at": "2026-09-24T04:43:03.767004+00:00"
     },
     {
       "attributes": {
@@ -718,7 +774,7 @@
         "modal_mechanism": "execution backend, alongside local/Docker/SSH/Singularity - where Hermess own sandboxed tool-calls/scripts actually run, especially for serverless GPU jobs via nousresearch/hermes-modal"
       },
       "body": "Researched Dokploy vs Modal integration: no direct connection exists between them. Dokploy is an MCP server (gives Hermes capabilities to invoke), Modal is an execution backend (where Hermess own code runs) - two separate, parallel integration points, not a combined stack.",
-      "created_at": "2026-09-23T23:45:22.589357-05:00",
+      "created_at": "2026-09-24T04:45:22.589357+00:00",
       "id": "ba186628-f2c9-430b-ba63-9ff31c9d8b67",
       "key": "hermes-modal-dokploy-not-integrated-2026-09-23",
       "name": "Modal and Dokploy are not integrated with each other - two separate Hermes integration mechanisms",
@@ -728,7 +784,7 @@
         "architecture"
       ],
       "type": "log-entry",
-      "updated_at": "2026-09-23T23:45:22.589357-05:00"
+      "updated_at": "2026-09-24T04:45:22.589357+00:00"
     },
     {
       "attributes": {
@@ -737,7 +793,7 @@
         "user_philosophy": "prefers proven workhorse infrastructure over shiny/hype-driven new products - consistent with the earlier OpenClaw-decline skepticism and the money-pit-avoidance motivation"
       },
       "body": "User is skeptical that Cloudways/DO Managed AI Agents premium buys real capability rather than just setup convenience, given the small dollar difference vs. a properly-sized self-configured VPS and the products being only days old.",
-      "created_at": "2026-09-24T00:06:21.562296-05:00",
+      "created_at": "2026-09-24T05:06:21.562296+00:00",
       "id": "da2cebfe-c2e4-4d98-be20-f8034bfff086",
       "key": "hermes-managed-ai-hosting-skepticism-2026-09-24",
       "name": "Managed AI Agent hosting (Cloudways/DO) is setup convenience, not real capability - skeptical of the premium",
@@ -747,7 +803,7 @@
         "architecture"
       ],
       "type": "decision",
-      "updated_at": "2026-09-24T00:06:21.562296-05:00"
+      "updated_at": "2026-09-24T05:06:21.562296+00:00"
     },
     {
       "attributes": {
@@ -755,7 +811,7 @@
         "status": "leaning, supersedes the earlier lean toward Cloudways Managed AI Agents"
       },
       "body": "Given the managed-AI-hosting skepticism, the user is leaning back toward a plain properly-sized VPS with self-configured Dokploy and MCP tools, rather than paying a premium for the newly-launched Cloudways/DO managed branding.",
-      "created_at": "2026-09-24T00:06:21.582338-05:00",
+      "created_at": "2026-09-24T05:06:21.582338+00:00",
       "id": "118aeb2f-72bc-47b8-b848-f2cdb70854ef",
       "key": "hermes-hosting-lean-back-to-plain-vps-2026-09-24",
       "name": "Lean back toward a plain, properly-sized VPS with self-configured MCP tools, not a managed AI-hosting brand",
@@ -765,51 +821,28 @@
         "cost"
       ],
       "type": "decision",
-      "updated_at": "2026-09-24T00:06:21.582338-05:00"
+      "updated_at": "2026-09-24T05:06:21.582338+00:00"
     },
     {
-      "id": "34aca5b8-be3d-4bde-81aa-170fae3519c4",
-      "key": "hermes-bandwidth-concern-non-issue-2026-09-24",
-      "name": "Bandwidth concern is a non-issue: torrents stay home, VPS traffic is pure text tokens",
-      "body": "Bandwidth caps are a non-issue: torrents and heavy media execute completely on the home network via console/scripts, while VPS traffic is strictly text tokens and orchestration (<50GB/mo).",
-      "tags": [
-        "hermes",
-        "network",
-        "cost"
-      ],
-      "type": "decision",
       "attributes": {
-        "torrents": "home network via console/scripts",
-        "vps_traffic": "pure text tokens and orchestration (<50GB/mo)",
-        "unmetered_needed": false
+        "location": "Dallas, US",
+        "monthly_cost": 28.8,
+        "provider": "Vultr",
+        "ram": "4GB",
+        "reasons": [
+          "ultra-low latency to home ISP (~10-15ms)",
+          "fast single-core clock for subagents",
+          "no CPU credit throttling"
+        ],
+        "storage": "100GB NVMe",
+        "tier": "High Performance AMD (vhp-2c-4gb-amd)",
+        "vcpus": 2
       },
-      "created_at": "2026-09-24T21:31:15.3005572Z",
-      "updated_at": "2026-09-24T21:31:15.3005572Z"
-    },
-    {
-      "id": "78b4a7a8-d58e-4769-8549-ce85f889c45c",
-      "key": "hermes-modal-compute-burst-confirmed-2026-09-24",
-      "name": "Modal confirmed as the serverless burst compute and sandbox execution tier",
-      "body": "Modal (or agent sandboxing) is confirmed as a necessary execution tier: zero-cost idle with on-demand GPU/CPU burst and isolated execution for untrusted agent code.",
-      "tags": [
-        "hermes",
-        "architecture",
-        "compute"
-      ],
-      "type": "decision",
-      "attributes": {
-        "role": "serverless burst compute & sandboxed execution",
-        "integration": "native Hermes Agent execution backend (nousresearch/hermes-modal)",
-        "cost_model": "pay-per-second, zero idle"
-      },
-      "created_at": "2026-09-24T21:31:15.3005572Z",
-      "updated_at": "2026-09-24T21:31:15.3005572Z"
-    },
-    {
-      "id": "5d319c4c-54bd-43bc-828f-8cc616bbd13c",
+      "body": "Selected Vultr High Performance AMD in Dallas, TX ($24/mo + $4.80 backups) over DO, Linode, Lightsail, and Hetzner for superior single-thread clock speed, NVMe I/O, no burstable CPU credit traps, and lowest ping to East Texas home LAN.",
+      "created_at": "2026-09-25T00:40:53.490767+00:00",
+      "id": "a3ba4dec-1242-4a7f-a482-b3c07d2c0fd1",
       "key": "hermes-vps-provider-selected-vultr-2026-09-24",
-      "name": "Selected Vultr High Performance AMD in Dallas, TX (/mo + .80 backups)",
-      "body": "Selected Vultr High Performance AMD in Dallas, TX (/mo + .80 backups) over DO, Linode, Lightsail, and Hetzner for superior single-thread clock speed, NVMe I/O, no burstable CPU credit traps, and lowest ping to East Texas home LAN.",
+      "name": "Selected Vultr High Performance AMD in Dallas, TX ($24/mo + $4.80 backups)",
       "tags": [
         "hermes",
         "architecture",
@@ -817,68 +850,35 @@
         "hosting"
       ],
       "type": "decision",
-      "attributes": {
-        "provider": "Vultr",
-        "tier": "High Performance AMD (vhp-2c-4gb-amd)",
-        "vcpus": 2,
-        "ram": "4GB",
-        "storage": "100GB NVMe",
-        "location": "Dallas, US",
-        "monthly_cost": 28.8,
-        "reasons": [
-          "ultra-low latency to home ISP (~10-15ms)",
-          "fast single-core clock for subagents",
-          "no CPU credit throttling"
-        ]
-      },
-      "created_at": "2026-09-24T21:31:15.3005572Z",
-      "updated_at": "2026-09-24T21:31:15.3005572Z"
+      "updated_at": "2026-09-25T00:40:53.490767+00:00"
     },
     {
-      "id": "2696b840-49ae-481f-ba93-fde5aa69d6c8",
+      "attributes": {
+        "hostname": "hermes",
+        "ip_type": "Dedicated Public IPv4",
+        "label": "hermes-vps",
+        "marketplace_app": "HermesAgent (Ubuntu 24.04)",
+        "status": "deployed"
+      },
+      "body": "Deployed the official Nous Research HermesAgent Ubuntu 24.04 Marketplace image on Vultr, providing turn-key pre-configured hermes serve with full root KVM access for Dokploy and WireGuard.",
+      "created_at": "2026-09-25T00:40:53.510399+00:00",
+      "id": "8fef2cd4-5f8c-4dfe-a94f-4ac28e9f5ac2",
       "key": "hermes-vultr-marketplace-agent-deployed-2026-09-24",
       "name": "Deployed official Nous Research HermesAgent Ubuntu 24.04 Marketplace image",
-      "body": "Deployed the official Nous Research HermesAgent Ubuntu 24.04 Marketplace image on Vultr, providing turn-key pre-configured hermes serve with full root KVM access for Dokploy and WireGuard.",
       "tags": [
         "hermes",
         "deployment",
         "vps"
       ],
       "type": "fact",
-      "attributes": {
-        "marketplace_app": "HermesAgent (Ubuntu 24.04)",
-        "hostname": "hermes",
-        "label": "hermes-vps",
-        "status": "deployed",
-        "ip_type": "Dedicated Public IPv4"
-      },
-      "created_at": "2026-09-24T21:31:15.3005572Z",
-      "updated_at": "2026-09-24T21:31:15.3005572Z"
-    },
-    {
-      "id": "e8ba7cff-b8ae-40d5-9aaf-5b22b002f2e4",
-      "key": "hermes-bootstrap-handoff-plan-2026-09-24",
-      "name": "Handoff plan: link ChatGPT Plus subscription, then switch into Hermes for self-setup",
-      "body": "Initial onboarding will link user's existing /mo ChatGPT Plus subscription via Hermes native link+code flow, allowing Hermes to take over and drive its own remaining setup (Dokploy, WireGuard, LM Studio bridge).",
-      "tags": [
-        "hermes",
-        "roadmap",
-        "bootstrap"
-      ],
-      "type": "decision",
-      "attributes": {
-        "auth_method": "ChatGPT Plus flat-fee via native link+code flow",
-        "next_step": "transition from external bootstrap agent to Hermes self-setup"
-      },
-      "created_at": "2026-09-24T21:31:15.3005572Z",
-      "updated_at": "2026-09-24T21:31:15.3005572Z"
+      "updated_at": "2026-09-25T00:40:53.510399+00:00"
     }
   ],
-  "exported_at": "2026-09-24T00:06:27.413251-05:00",
+  "exported_at": "2026-09-25T00:41:02.267370+00:00",
   "relations": [
     {
       "attributes": {},
-      "created_at": "2026-09-22T22:29:52.6672-05:00",
+      "created_at": "2026-09-23T03:29:52.6672+00:00",
       "id": "5b1abe23-801a-413e-8f71-ca044367e9cf",
       "object_key": "hermes-independent-of-localforge-2026-09-22",
       "object_type": "entity",
@@ -888,7 +888,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-22T22:29:52.686859-05:00",
+      "created_at": "2026-09-23T03:29:52.686859+00:00",
       "id": "24dc5cea-ba56-433a-9e67-3d2b6d7a9eae",
       "object_key": "hermes-network-resources-as-capabilities-2026-09-22",
       "object_type": "entity",
@@ -898,7 +898,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-22T22:29:52.695903-05:00",
+      "created_at": "2026-09-23T03:29:52.695903+00:00",
       "id": "31ca5e9f-fe6e-44e2-8517-a4df5886371a",
       "object_key": "hermes-remote-access-decision-2026-09-22",
       "object_type": "entity",
@@ -908,7 +908,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-22T22:29:52.706011-05:00",
+      "created_at": "2026-09-23T03:29:52.706011+00:00",
       "id": "55239524-02b2-44bc-afa3-b4b053e2d366",
       "object_key": "hermes-network-inventory-2026-09-22",
       "object_type": "entity",
@@ -918,7 +918,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-22T22:29:52.716334-05:00",
+      "created_at": "2026-09-23T03:29:52.716334+00:00",
       "id": "1f4ab24a-c9d7-471d-beab-9812ecba1363",
       "object_key": "server",
       "object_type": "host",
@@ -928,7 +928,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-22T22:29:52.728447-05:00",
+      "created_at": "2026-09-23T03:29:52.728447+00:00",
       "id": "65732b55-d020-49bf-88ce-c867ad434462",
       "object_key": "Nginx Proxy Manager",
       "object_type": "service",
@@ -938,7 +938,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-22T22:29:52.741279-05:00",
+      "created_at": "2026-09-23T03:29:52.741279+00:00",
       "id": "7606569d-b000-4eea-ad59-bf3fd12dc73c",
       "object_key": "DuckDNS updater",
       "object_type": "service",
@@ -948,7 +948,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-22T22:29:52.753791-05:00",
+      "created_at": "2026-09-23T03:29:52.753791+00:00",
       "id": "d2b9fbe9-fd57-4a38-8551-ad0178af021a",
       "object_key": "hermes-independent-of-localforge-2026-09-22",
       "object_type": "entity",
@@ -958,7 +958,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-22T22:29:52.778765-05:00",
+      "created_at": "2026-09-23T03:29:52.778765+00:00",
       "id": "9c38d575-9eed-4267-bf4b-09f892e4a8d9",
       "object_key": "hermes-network-inventory-2026-09-22",
       "object_type": "entity",
@@ -968,7 +968,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-22T22:29:52.800987-05:00",
+      "created_at": "2026-09-23T03:29:52.800987+00:00",
       "id": "51358495-eb27-454c-867d-3cc1edfb5de7",
       "object_key": "w_workstation",
       "object_type": "host",
@@ -978,7 +978,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-22T22:54:20.494463-05:00",
+      "created_at": "2026-09-23T03:54:20.494463+00:00",
       "id": "cf675b38-7255-4efd-8571-df556a5fada5",
       "object_key": "hermes-remote-access-decision-2026-09-22",
       "object_type": "entity",
@@ -988,7 +988,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-22T22:54:20.527443-05:00",
+      "created_at": "2026-09-23T03:54:20.527443+00:00",
       "id": "ac1b4135-c689-4ed5-9137-f28f4b6b31bc",
       "object_key": "hermes-agent-model-is-hermes-2026-09-23",
       "object_type": "entity",
@@ -998,7 +998,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-22T23:01:59.81702-05:00",
+      "created_at": "2026-09-23T04:01:59.81702+00:00",
       "id": "fa1deb03-fca1-40c8-bb94-9db02a5d305a",
       "object_key": "hermes-agent-model-is-hermes-2026-09-23",
       "object_type": "entity",
@@ -1008,7 +1008,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-22T23:01:59.874974-05:00",
+      "created_at": "2026-09-23T04:01:59.874974+00:00",
       "id": "7db21902-dd40-420c-a961-1b4034f4d07e",
       "object_key": "hermes-agent-product-research-2026-09-23",
       "object_type": "entity",
@@ -1018,7 +1018,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-22T23:01:59.893841-05:00",
+      "created_at": "2026-09-23T04:01:59.893841+00:00",
       "id": "3b214aaf-55f6-4b07-9dab-7c63c4da4cdd",
       "object_key": "hermes-operating-ground-rules-2026-09-22",
       "object_type": "entity",
@@ -1028,7 +1028,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T19:35:11.501823-05:00",
+      "created_at": "2026-09-24T00:35:11.501823+00:00",
       "id": "c7d6557a-7895-4e72-b41f-55d13fb28d88",
       "object_key": "hermes-remote-access-decision-2026-09-22",
       "object_type": "entity",
@@ -1038,7 +1038,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T19:35:11.574145-05:00",
+      "created_at": "2026-09-24T00:35:11.574145+00:00",
       "id": "16722a1b-1ea2-4440-a3fa-a51120e64cb2",
       "object_key": "w_workstation",
       "object_type": "host",
@@ -1048,7 +1048,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T19:35:11.601766-05:00",
+      "created_at": "2026-09-24T00:35:11.601766+00:00",
       "id": "a0dee71d-9978-4ad3-967d-06227a92fd91",
       "object_key": "hermes-master-harness-role-2026-09-23",
       "object_type": "entity",
@@ -1058,7 +1058,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T19:35:11.619036-05:00",
+      "created_at": "2026-09-24T00:35:11.619036+00:00",
       "id": "e03c3218-c487-49f2-9e7d-5d4a213420d2",
       "object_key": "hermes-agent-product-research-2026-09-23",
       "object_type": "entity",
@@ -1068,7 +1068,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T20:48:33.914343-05:00",
+      "created_at": "2026-09-24T01:48:33.914343+00:00",
       "id": "a9774e43-7510-4030-a1ed-e927d5ace124",
       "object_key": "hermes-subscription-consolidation-2026-09-23",
       "object_type": "entity",
@@ -1078,7 +1078,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T20:48:33.933778-05:00",
+      "created_at": "2026-09-24T01:48:33.933778+00:00",
       "id": "353835c7-38e4-4a7c-b41d-e819a3be2f61",
       "object_key": "hermes-lmstudio-multi-model-2026-09-23",
       "object_type": "entity",
@@ -1088,7 +1088,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T20:48:34.165573-05:00",
+      "created_at": "2026-09-24T01:48:34.165573+00:00",
       "id": "c141c9e9-1c80-4db3-a22b-0fe4908da633",
       "object_key": "hermes-master-harness-role-2026-09-23",
       "object_type": "entity",
@@ -1098,7 +1098,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T20:48:34.199753-05:00",
+      "created_at": "2026-09-24T01:48:34.199753+00:00",
       "id": "e0cd6cda-797d-49bd-9eeb-bd0638334160",
       "object_key": "hermes-agent-product-research-2026-09-23",
       "object_type": "entity",
@@ -1108,7 +1108,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T20:50:59.183638-05:00",
+      "created_at": "2026-09-24T01:50:59.183638+00:00",
       "id": "dd02365b-b2e9-4326-90fc-9b36e2dd4e99",
       "object_key": "hermes-tiered-routing-by-complexity-2026-09-23",
       "object_type": "entity",
@@ -1118,7 +1118,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T20:50:59.202925-05:00",
+      "created_at": "2026-09-24T01:50:59.202925+00:00",
       "id": "b56106b9-39fb-4585-8c88-e5fd4f4c3aef",
       "object_key": "hermes-agent-product-research-2026-09-23",
       "object_type": "entity",
@@ -1128,7 +1128,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T20:50:59.211734-05:00",
+      "created_at": "2026-09-24T01:50:59.211734+00:00",
       "id": "6ffe47f9-9212-4ffe-b541-6e1128a315fe",
       "object_key": "hermes-subscription-consolidation-2026-09-23",
       "object_type": "entity",
@@ -1138,7 +1138,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T20:54:42.746248-05:00",
+      "created_at": "2026-09-24T01:54:42.746248+00:00",
       "id": "a9b31e2a-a9c6-4927-a0bd-8f3b7b9f9d8e",
       "object_key": "hermes-tiered-routing-by-complexity-2026-09-23",
       "object_type": "entity",
@@ -1148,7 +1148,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T20:54:42.80297-05:00",
+      "created_at": "2026-09-24T01:54:42.80297+00:00",
       "id": "9219d9d8-1743-4b44-a263-f04b1e38ff4a",
       "object_key": "hermes-llm-routing-research-2026-09-23",
       "object_type": "entity",
@@ -1158,7 +1158,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T20:58:23.94596-05:00",
+      "created_at": "2026-09-24T01:58:23.94596+00:00",
       "id": "6edf5675-f70e-4b95-9beb-92279a55f651",
       "object_key": "hermes-remote-access-decision-2026-09-22",
       "object_type": "entity",
@@ -1168,7 +1168,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T20:58:23.996493-05:00",
+      "created_at": "2026-09-24T01:58:23.996493+00:00",
       "id": "79ee0d6e-cde5-4009-be09-33c2df6f018b",
       "object_key": "hermes-master-harness-role-2026-09-23",
       "object_type": "entity",
@@ -1178,7 +1178,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T21:02:01.284534-05:00",
+      "created_at": "2026-09-24T02:02:01.284534+00:00",
       "id": "6e651b6b-1c9a-405c-95b8-bc4a788cf7f1",
       "object_key": "hermes-network-resources-as-capabilities-2026-09-22",
       "object_type": "entity",
@@ -1188,7 +1188,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T21:02:01.343758-05:00",
+      "created_at": "2026-09-24T02:02:01.343758+00:00",
       "id": "d887ca5e-7292-4d69-9f8a-caf9572d9cde",
       "object_key": "hermes-backend-host-selection-2026-09-23",
       "object_type": "entity",
@@ -1198,7 +1198,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T21:02:01.354089-05:00",
+      "created_at": "2026-09-24T02:02:01.354089+00:00",
       "id": "318b651c-e850-421a-b7c4-e8f1bf601b58",
       "object_key": "server",
       "object_type": "host",
@@ -1208,7 +1208,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T21:02:01.381505-05:00",
+      "created_at": "2026-09-24T02:02:01.381505+00:00",
       "id": "a33947c8-5ce7-45c7-a7fc-61ffc3d4fe15",
       "object_key": "w_workstation",
       "object_type": "host",
@@ -1218,7 +1218,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T21:12:47.376855-05:00",
+      "created_at": "2026-09-24T02:12:47.376855+00:00",
       "id": "4356b8a0-bb9e-44df-9b3c-cd45c9cbdb4d",
       "object_key": "hermes-agent-model-is-hermes-2026-09-23",
       "object_type": "entity",
@@ -1228,7 +1228,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T21:12:47.448137-05:00",
+      "created_at": "2026-09-24T02:12:47.448137+00:00",
       "id": "695b4919-2dc6-4f8f-850d-a3ae01d7e9fb",
       "object_key": "hermes-cost-based-routing-free-first-2026-09-23",
       "object_type": "entity",
@@ -1238,7 +1238,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T21:12:47.472872-05:00",
+      "created_at": "2026-09-24T02:12:47.472872+00:00",
       "id": "d4c41fd3-cba6-41a6-b3e0-c2c97ba1bcd6",
       "object_key": "hermes-master-harness-role-2026-09-23",
       "object_type": "entity",
@@ -1248,7 +1248,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T21:12:47.497553-05:00",
+      "created_at": "2026-09-24T02:12:47.497553+00:00",
       "id": "6152b326-2346-414c-b950-2584e1a0449d",
       "object_key": "hermes-network-resources-as-capabilities-2026-09-22",
       "object_type": "entity",
@@ -1258,7 +1258,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T21:12:47.522679-05:00",
+      "created_at": "2026-09-24T02:12:47.522679+00:00",
       "id": "5c921a0b-2b55-4c00-baf1-9282896af0fb",
       "object_key": "hermes-interface-strategy-refined-2026-09-23",
       "object_type": "entity",
@@ -1268,7 +1268,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:03:31.407133-05:00",
+      "created_at": "2026-09-24T04:03:31.407133+00:00",
       "id": "24802add-0aed-4add-beef-883090b8c581",
       "object_key": "hermes-backend-host-recommendation-2026-09-23",
       "object_type": "entity",
@@ -1278,7 +1278,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:03:31.463578-05:00",
+      "created_at": "2026-09-24T04:03:31.463578+00:00",
       "id": "f250e460-9e9a-4065-a8f5-726cc4887490",
       "object_key": "hermes-remote-access-decision-2026-09-22",
       "object_type": "entity",
@@ -1288,7 +1288,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:03:31.475279-05:00",
+      "created_at": "2026-09-24T04:03:31.475279+00:00",
       "id": "84ea36c6-527a-4d32-9d23-703bd166e701",
       "object_key": "hermes-avoid-money-pit-motivation-2026-09-23",
       "object_type": "entity",
@@ -1298,7 +1298,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:05:18.761014-05:00",
+      "created_at": "2026-09-24T04:05:18.761014+00:00",
       "id": "93b895e5-1c70-41a6-bf36-c1e1d8ba74d5",
       "object_key": "hermes-vps-backend-with-home-vpn-2026-09-23",
       "object_type": "entity",
@@ -1308,7 +1308,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:12:32.736515-05:00",
+      "created_at": "2026-09-24T04:12:32.736515+00:00",
       "id": "43f1c234-a950-4ebf-bb19-9bfeda3c7135",
       "object_key": "hermes-subscription-consolidation-2026-09-23",
       "object_type": "entity",
@@ -1318,7 +1318,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:12:32.797312-05:00",
+      "created_at": "2026-09-24T04:12:32.797312+00:00",
       "id": "1587d1fc-2431-4aa0-a797-806a8c3f120b",
       "object_key": "hermes-llm-routing-research-2026-09-23",
       "object_type": "entity",
@@ -1328,7 +1328,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:12:32.815065-05:00",
+      "created_at": "2026-09-24T04:12:32.815065+00:00",
       "id": "3bb6031b-6c83-4e05-a0fa-8624af5237ea",
       "object_key": "hermes-cost-based-routing-free-first-2026-09-23",
       "object_type": "entity",
@@ -1338,7 +1338,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:12:32.835998-05:00",
+      "created_at": "2026-09-24T04:12:32.835998+00:00",
       "id": "08a757e2-0d60-439e-a68d-1a321a9facd6",
       "object_key": "hermes-vps-backend-with-home-vpn-2026-09-23",
       "object_type": "entity",
@@ -1348,7 +1348,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:15:51.026409-05:00",
+      "created_at": "2026-09-24T04:15:51.026409+00:00",
       "id": "09652b82-e949-4c80-9b55-1de4c29ce026",
       "object_key": "hermes-openai-pro-no-api-access-2026-09-23",
       "object_type": "entity",
@@ -1358,7 +1358,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:15:51.102021-05:00",
+      "created_at": "2026-09-24T04:15:51.102021+00:00",
       "id": "99f91aa7-499a-413d-a6d5-cf74194409e6",
       "object_key": "hermes-subscription-consolidation-2026-09-23",
       "object_type": "entity",
@@ -1368,7 +1368,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:18:06.916758-05:00",
+      "created_at": "2026-09-24T04:18:06.916758+00:00",
       "id": "bb998ed9-36db-4530-a824-1dd1122c1a31",
       "object_key": "hermes-codex-subscription-correction-2026-09-23",
       "object_type": "entity",
@@ -1378,7 +1378,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:18:06.935492-05:00",
+      "created_at": "2026-09-24T04:18:06.935492+00:00",
       "id": "c6bf8ec2-5d49-4371-88b8-0e6ae1c0f6b2",
       "object_key": "hermes-subscription-consolidation-2026-09-23",
       "object_type": "entity",
@@ -1388,7 +1388,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:19:47.174097-05:00",
+      "created_at": "2026-09-24T04:19:47.174097+00:00",
       "id": "eccdab38-04cb-4ea1-8eaa-0fa8d4d13a81",
       "object_key": "hermes-vps-backend-with-home-vpn-2026-09-23",
       "object_type": "entity",
@@ -1398,7 +1398,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:19:47.229838-05:00",
+      "created_at": "2026-09-24T04:19:47.229838+00:00",
       "id": "fdc019c2-632c-416c-a4f5-8b0a25b4423b",
       "object_key": "hermes-codex-subscription-correction-2026-09-23",
       "object_type": "entity",
@@ -1408,7 +1408,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:19:47.241437-05:00",
+      "created_at": "2026-09-24T04:19:47.241437+00:00",
       "id": "220aacf1-9728-445b-9532-3510f3f43f37",
       "object_key": "hermes-vpn-scope-includes-salt-2026-09-23",
       "object_type": "entity",
@@ -1418,7 +1418,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:21:56.72878-05:00",
+      "created_at": "2026-09-24T04:21:56.72878+00:00",
       "id": "3e97a69f-0cc4-475a-aeab-db784e3e46ea",
       "object_key": "hermes-vps-combines-vpn-and-codex-2026-09-23",
       "object_type": "entity",
@@ -1428,7 +1428,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:21:56.749773-05:00",
+      "created_at": "2026-09-24T04:21:56.749773+00:00",
       "id": "3c3e246d-3713-47b1-a45a-89ae3a7f7d2b",
       "object_key": "hermes-vps-combines-vpn-and-codex-2026-09-23",
       "object_type": "entity",
@@ -1438,7 +1438,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:21:56.761759-05:00",
+      "created_at": "2026-09-24T04:21:56.761759+00:00",
       "id": "36b0afcb-6779-4af3-93e3-e4f2e8610750",
       "object_key": "hermes-avoid-money-pit-motivation-2026-09-23",
       "object_type": "entity",
@@ -1448,7 +1448,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:29:39.809043-05:00",
+      "created_at": "2026-09-24T04:29:39.809043+00:00",
       "id": "bb0ab1b0-91e2-46a6-8956-ad03c1ad3c14",
       "object_key": "hermes-vps-combines-vpn-and-codex-2026-09-23",
       "object_type": "entity",
@@ -1458,7 +1458,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:29:39.828213-05:00",
+      "created_at": "2026-09-24T04:29:39.828213+00:00",
       "id": "f77a015a-ea68-45fb-8989-9bd318d86095",
       "object_key": "hermes-vps-preference-reasons-2026-09-23",
       "object_type": "entity",
@@ -1468,7 +1468,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:33:09.351629-05:00",
+      "created_at": "2026-09-24T04:33:09.351629+00:00",
       "id": "45b988a6-ba87-4982-917f-342d493c525c",
       "object_key": "hermes-agents-execute-on-vps-2026-09-23",
       "object_type": "entity",
@@ -1478,7 +1478,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:33:09.373924-05:00",
+      "created_at": "2026-09-24T04:33:09.373924+00:00",
       "id": "fd19a1df-0cf5-41de-8b43-a7c0e5d04f2c",
       "object_key": "hermes-avoid-money-pit-motivation-2026-09-23",
       "object_type": "entity",
@@ -1488,7 +1488,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:37:42.537859-05:00",
+      "created_at": "2026-09-24T04:37:42.537859+00:00",
       "id": "b528793b-546d-463b-b18c-2cb6890de867",
       "object_key": "hermes-network-resources-as-capabilities-2026-09-22",
       "object_type": "entity",
@@ -1498,7 +1498,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:37:42.597345-05:00",
+      "created_at": "2026-09-24T04:37:42.597345+00:00",
       "id": "fc439e03-f84e-4c1c-a273-eb6b5f5d6eac",
       "object_key": "hermes-agents-execute-on-vps-2026-09-23",
       "object_type": "entity",
@@ -1508,7 +1508,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:43:08.745276-05:00",
+      "created_at": "2026-09-24T04:43:08.745276+00:00",
       "id": "7e708ed1-5ddf-4c90-a588-dc792f752816",
       "object_key": "hermes-web-and-docker-presence-shifts-to-vps-2026-09-23",
       "object_type": "entity",
@@ -1518,7 +1518,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:43:08.764159-05:00",
+      "created_at": "2026-09-24T04:43:08.764159+00:00",
       "id": "238358d8-0982-4343-880e-b44205a2fcfa",
       "object_key": "hermes-web-and-docker-presence-shifts-to-vps-2026-09-23",
       "object_type": "entity",
@@ -1528,7 +1528,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:43:08.773752-05:00",
+      "created_at": "2026-09-24T04:43:08.773752+00:00",
       "id": "f173fece-b74e-4b34-a9fe-70889fac6909",
       "object_key": "hermes-vps-real-cost-research-2026-09-23",
       "object_type": "entity",
@@ -1538,7 +1538,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:43:08.789235-05:00",
+      "created_at": "2026-09-24T04:43:08.789235+00:00",
       "id": "a42b12e8-2316-40f8-9d30-fce34fda7129",
       "object_key": "hermes-vpn-scope-includes-salt-2026-09-23",
       "object_type": "entity",
@@ -1548,7 +1548,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-23T23:45:25.482263-05:00",
+      "created_at": "2026-09-24T04:45:25.482263+00:00",
       "id": "81f04cff-b777-4e13-bc0d-42d2b9c238d9",
       "object_key": "hermes-web-and-docker-presence-shifts-to-vps-2026-09-23",
       "object_type": "entity",
@@ -1558,7 +1558,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-24T00:06:27.056613-05:00",
+      "created_at": "2026-09-24T05:06:27.056613+00:00",
       "id": "ceb6f320-f2f7-4cb0-8d6f-aeb5b25f3803",
       "object_key": "hermes-managed-ai-hosting-skepticism-2026-09-24",
       "object_type": "entity",
@@ -1568,7 +1568,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-24T00:06:27.081141-05:00",
+      "created_at": "2026-09-24T05:06:27.081141+00:00",
       "id": "994c3d9a-1631-478e-83dc-7c54ab00bc06",
       "object_key": "hermes-web-and-docker-presence-shifts-to-vps-2026-09-23",
       "object_type": "entity",
@@ -1578,7 +1578,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-24T00:06:27.089971-05:00",
+      "created_at": "2026-09-24T05:06:27.089971+00:00",
       "id": "594eae81-0cef-40c4-8703-1143e3e9cc5b",
       "object_key": "hermes-prefer-unified-provider-2026-09-23",
       "object_type": "entity",
@@ -1588,7 +1588,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-24T00:06:27.099357-05:00",
+      "created_at": "2026-09-24T05:06:27.099357+00:00",
       "id": "c94e2278-f7d5-4978-879a-baacea3f25df",
       "object_key": "hermes-vs-openclaw-confirmed-2026-09-23",
       "object_type": "entity",
@@ -1598,7 +1598,7 @@
     },
     {
       "attributes": {},
-      "created_at": "2026-09-24T00:06:27.108325-05:00",
+      "created_at": "2026-09-24T05:06:27.108325+00:00",
       "id": "1b82514c-4012-4689-83b0-36f381e973e4",
       "object_key": "hermes-avoid-money-pit-motivation-2026-09-23",
       "object_type": "entity",
@@ -1607,64 +1607,84 @@
       "subject_type": "entity"
     },
     {
-      "id": "0502b00b-6df2-40d0-8529-4fd65f921ea5",
-      "subject_type": "entity",
-      "subject_key": "hermes-bandwidth-concern-non-issue-2026-09-24",
-      "predicate": "relates_to",
-      "object_type": "entity",
-      "object_key": "hermes-plex-workflow-stays-home-via-vpn-2026-09-23",
       "attributes": {},
-      "created_at": "2026-09-24T21:31:15.3005572Z"
-    },
-    {
-      "id": "fe9796a1-1dbb-42f2-92fa-64bf6a7c27d5",
-      "subject_type": "entity",
-      "subject_key": "hermes-modal-compute-burst-confirmed-2026-09-24",
-      "predicate": "refines",
-      "object_type": "entity",
-      "object_key": "hermes-modal-dokploy-not-integrated-2026-09-23",
-      "attributes": {},
-      "created_at": "2026-09-24T21:31:15.3005572Z"
-    },
-    {
-      "id": "167cfedc-df6b-4958-8c5d-ce3c023e85b7",
-      "subject_type": "entity",
-      "subject_key": "hermes-vps-provider-selected-vultr-2026-09-24",
-      "predicate": "supersedes",
-      "object_type": "entity",
+      "created_at": "2026-09-25T00:41:00.014356+00:00",
+      "id": "4da6c8ba-a457-484d-a085-6cc48cd6fec9",
       "object_key": "hermes-hosting-lean-back-to-plain-vps-2026-09-24",
-      "attributes": {},
-      "created_at": "2026-09-24T21:31:15.3005572Z"
+      "object_type": "entity",
+      "predicate": "satisfies",
+      "subject_key": "hermes-vps-provider-selected-vultr-2026-09-24",
+      "subject_type": "entity"
     },
     {
-      "id": "7ff87858-1b43-4f3e-8dc5-be7a35a15765",
-      "subject_type": "entity",
-      "subject_key": "hermes-vultr-marketplace-agent-deployed-2026-09-24",
-      "predicate": "implements",
+      "attributes": {},
+      "created_at": "2026-09-25T00:41:00.032846+00:00",
+      "id": "e5f79286-b7c9-4e27-9707-7051d791d3c0",
+      "object_key": "hermes-vps-real-cost-research-2026-09-23",
       "object_type": "entity",
+      "predicate": "resolves",
+      "subject_key": "hermes-vps-provider-selected-vultr-2026-09-24",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T00:41:00.041966+00:00",
+      "id": "a0be447b-dac2-4aa1-95e4-3ee619a459af",
       "object_key": "hermes-vps-provider-selected-vultr-2026-09-24",
-      "attributes": {},
-      "created_at": "2026-09-24T21:31:15.3005572Z"
+      "object_type": "entity",
+      "predicate": "implements",
+      "subject_key": "hermes-vultr-marketplace-agent-deployed-2026-09-24",
+      "subject_type": "entity"
     },
     {
-      "id": "072d8d39-f40c-493d-8132-ef3b46599a4c",
-      "subject_type": "entity",
-      "subject_key": "hermes-bootstrap-handoff-plan-2026-09-24",
-      "predicate": "informed_by",
+      "attributes": {},
+      "created_at": "2026-09-25T00:41:00.051038+00:00",
+      "id": "86a16d6b-f931-4967-ac14-2d87e4476bfc",
+      "object_key": "hermes-agents-execute-on-vps-2026-09-23",
       "object_type": "entity",
+      "predicate": "implements",
+      "subject_key": "hermes-vultr-marketplace-agent-deployed-2026-09-24",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T00:41:00.059458+00:00",
+      "id": "c6d933a8-d239-449d-a6ea-52c5888ac670",
+      "object_key": "hermes-plex-workflow-stays-home-via-vpn-2026-09-23",
+      "object_type": "entity",
+      "predicate": "resolves",
+      "subject_key": "hermes-bandwidth-concern-non-issue-2026-09-24",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T00:41:00.068295+00:00",
+      "id": "a7c87eae-71bf-440d-b2a3-8d9f983b12c5",
+      "object_key": "hermes-web-and-docker-presence-shifts-to-vps-2026-09-23",
+      "object_type": "entity",
+      "predicate": "confirms",
+      "subject_key": "hermes-modal-compute-burst-confirmed-2026-09-24",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T00:41:00.077734+00:00",
+      "id": "7b7b9a06-530d-454b-bbd3-f81900d7a819",
       "object_key": "hermes-native-openai-linking-flow-confirmed-2026-09-23",
-      "attributes": {},
-      "created_at": "2026-09-24T21:31:15.3005572Z"
+      "object_type": "entity",
+      "predicate": "implements",
+      "subject_key": "hermes-bootstrap-handoff-plan-2026-09-24",
+      "subject_type": "entity"
     },
     {
-      "id": "a19331c2-d385-434d-b20f-fe3680ea4c70",
-      "subject_type": "entity",
-      "subject_key": "hermes-bootstrap-handoff-plan-2026-09-24",
-      "predicate": "advances",
-      "object_type": "entity",
-      "object_key": "hermes-master-harness-role-2026-09-23",
       "attributes": {},
-      "created_at": "2026-09-24T21:31:15.3005572Z"
+      "created_at": "2026-09-25T00:41:00.086584+00:00",
+      "id": "88f8ff71-3e5c-49b7-99d3-b491542c2eed",
+      "object_key": "hermes-vultr-marketplace-agent-deployed-2026-09-24",
+      "object_type": "entity",
+      "predicate": "relates_to",
+      "subject_key": "hermes-bootstrap-handoff-plan-2026-09-24",
+      "subject_type": "entity"
     }
   ],
   "source": "http://192.168.40.250:3003 (Postgres+PostgREST on `server`, live copy is authoritative)"
