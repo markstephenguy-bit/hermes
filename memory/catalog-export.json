@@ -1210,9 +1210,27 @@
       ],
       "type": "fact",
       "updated_at": "2026-09-25T01:11:32.274385+00:00"
+    },
+    {
+      "attributes": {
+        "content_summary": "Standard Nous Research HermesAgent marketplace onboarding text: dashboard login, Vultr Inference model list, chat commands, gateway setup, skills/memory, cron, restart instructions",
+        "credential_note": "dashboard basic_auth password shown on this screen matches the bcrypt hash already in /etc/caddy/Caddyfile; not stored here or in secrets table - no shared secrets passphrase available this session",
+        "host": "hermes-vps"
+      },
+      "body": "User shared the Vultr marketplace onboarding screen text; confirms no drift between deployed Caddy config and the images documented defaults.",
+      "created_at": "2026-09-25T01:14:28.565848+00:00",
+      "id": "3fe6ab06-2ebf-416f-9cd5-32b8e3ccaa8d",
+      "key": "hermes-vps-startup-screen-shown-2026-09-25",
+      "name": "Vultr marketplace startup screen for hermes-vps reviewed by user",
+      "tags": [
+        "hermes",
+        "vps"
+      ],
+      "type": "fact",
+      "updated_at": "2026-09-25T01:14:28.565848+00:00"
     }
   ],
-  "exported_at": "2026-09-25T01:11:56.309505+00:00",
+  "exported_at": "2026-09-25T01:14:33.266887+00:00",
   "relations": [
     {
       "attributes": {},
