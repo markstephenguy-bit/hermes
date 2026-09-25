@@ -1082,9 +1082,26 @@
       ],
       "type": "goal",
       "updated_at": "2026-09-25T00:47:28.196651+00:00"
+    },
+    {
+      "attributes": {
+        "file": "NEXT_SESSION.md",
+        "scope": "get Hermes working on hermes-vps via ChatGPT Plus/Codex only - explicitly excludes LM Studio and home-network/VPN work"
+      },
+      "body": "Created NEXT_SESSION.md as a self-contained seed for starting a fresh session focused only on Codex/VPS setup, since this session grew very long and repeatedly had to be corrected for discussing LM Studio prematurely.",
+      "created_at": "2026-09-25T00:54:42.099658+00:00",
+      "id": "d1328612-7ec3-49a5-a8be-e46e78a0e889",
+      "key": "hermes-next-session-seed-created-2026-09-24",
+      "name": "Created NEXT_SESSION.md - scoped seed for Codex-first VPS setup, LM Studio out of scope",
+      "tags": [
+        "hermes",
+        "roadmap"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-25T00:54:42.099658+00:00"
     }
   ],
-  "exported_at": "2026-09-25T00:47:32.809016+00:00",
+  "exported_at": "2026-09-25T00:54:46.392904+00:00",
   "relations": [
     {
       "attributes": {},
