@@ -298,6 +298,25 @@
       "updated_at": "2026-09-23T03:29:41.133163+00:00"
     },
     {
+      "attributes": {
+        "criterion": "one prompt handled entirely by LM Studio, one that correctly escalates, both observed",
+        "phase": 5,
+        "points": 15,
+        "status": "not_started"
+      },
+      "body": "G8 (15 pts, Phase 5 - Routing proven): not started - blocked on G4 and G5.",
+      "created_at": "2026-09-25T00:47:28.207723+00:00",
+      "id": "4f1a1644-1eb0-4b08-b989-8b926441da7e",
+      "key": "hermes-goal-g8-2026-09-23",
+      "name": "G8: Local-first routing verified end-to-end",
+      "tags": [
+        "hermes",
+        "goal"
+      ],
+      "type": "goal",
+      "updated_at": "2026-09-25T00:47:28.207723+00:00"
+    },
+    {
       "attributes": {},
       "body": "User correction: the underlying model powering the Hermes agent is not an open design question to be evaluated (tool-calling benchmarks, comparing gemma vs other options, etc.) - it is specifically the Hermes model line from Nous Research, chosen because the user considers it best-in-class for this purpose currently. This resolves the previously-open BACKLOG.md \"Model choice\" item. Specific version/size (e.g. Hermes 3 vs a newer release, parameter count that fits w_workstation RTX A4000 16GB VRAM) not yet pinned down - Claude's knowledge cutoff is Jan 2026 and Nous ships new Hermes versions periodically, so verify current release before downloading rather than assuming.",
       "created_at": "2026-09-23T03:52:00.828037+00:00",
@@ -397,6 +416,25 @@
       ],
       "type": "open-item",
       "updated_at": "2026-09-24T00:35:05.545052+00:00"
+    },
+    {
+      "attributes": {
+        "criterion": "Claude Pro canceled (ChatGPT Plus intentionally kept for Codex)",
+        "phase": 6,
+        "points": 10,
+        "status": "not_started"
+      },
+      "body": "G9 (10 pts, Phase 6 - Cleanup): not started.",
+      "created_at": "2026-09-25T00:47:28.218273+00:00",
+      "id": "c5397a72-ec97-4991-86d3-2df680e353e4",
+      "key": "hermes-goal-g9-2026-09-23",
+      "name": "G9: Claude Pro canceled",
+      "tags": [
+        "hermes",
+        "goal"
+      ],
+      "type": "goal",
+      "updated_at": "2026-09-25T00:47:28.218273+00:00"
     },
     {
       "attributes": {
@@ -911,9 +949,142 @@
       ],
       "type": "open-item",
       "updated_at": "2026-09-25T00:43:17.743161+00:00"
+    },
+    {
+      "attributes": {
+        "criterion": "Hermes Agent installed and running anywhere, talking to LM Studio on w_workstation for at least one real exchange",
+        "phase": 1,
+        "points": 10,
+        "status": "in_progress"
+      },
+      "body": "G1 (10 pts, Phase 1 - Free tier proven): Hermes running is done (hermes-vps), but no LM Studio exchange has happened yet - not complete.",
+      "created_at": "2026-09-25T00:47:28.087822+00:00",
+      "id": "fc4dcc5e-eb34-420e-bced-0f016d85a2ad",
+      "key": "hermes-goal-g1-2026-09-23",
+      "name": "G1: Hermes Agent running and talking to LM Studio",
+      "tags": [
+        "hermes",
+        "goal"
+      ],
+      "type": "goal",
+      "updated_at": "2026-09-25T00:47:28.087822+00:00"
+    },
+    {
+      "attributes": {
+        "criterion": "LM Studio running multiple models concurrently, confirmed reachable",
+        "phase": 1,
+        "points": 15,
+        "status": "done"
+      },
+      "body": "G2 (15 pts, Phase 1): already satisfied before this project even started - w_workstation LM Studio has gemma-4-12b-it@q4_k_m, @q8_0, and a nomic embedding model all available.",
+      "created_at": "2026-09-25T00:47:28.144254+00:00",
+      "id": "122f6e0e-22be-4046-8255-8491e99ab372",
+      "key": "hermes-goal-g2-2026-09-23",
+      "name": "G2: LM Studio running multiple models concurrently",
+      "tags": [
+        "hermes",
+        "goal"
+      ],
+      "type": "goal",
+      "updated_at": "2026-09-25T00:47:28.144254+00:00"
+    },
+    {
+      "attributes": {
+        "criterion": "VPS provisioned, hermes serve running on it",
+        "phase": 2,
+        "points": 10,
+        "status": "done"
+      },
+      "body": "G3 (10 pts, Phase 2 - VPS backend live): done - hermes-vps on Vultr, verified reachable, hermes-dashboard/gateway services active.",
+      "created_at": "2026-09-25T00:47:28.155072+00:00",
+      "id": "90b709fd-b439-4f6a-8576-a58255bda4ca",
+      "key": "hermes-goal-g3-2026-09-23",
+      "name": "G3: VPS provisioned, hermes serve running",
+      "tags": [
+        "hermes",
+        "goal"
+      ],
+      "type": "goal",
+      "updated_at": "2026-09-25T00:47:28.155072+00:00"
+    },
+    {
+      "attributes": {
+        "criterion": "VPN from VPS to home LAN up, both LM Studio and Salt reachable through it",
+        "phase": 2,
+        "points": 20,
+        "status": "not_started"
+      },
+      "body": "G4 (20 pts, Phase 2): not started - decision pending between Tailscale (reactivate dormant container on server) vs hand-rolled WireGuard.",
+      "created_at": "2026-09-25T00:47:28.164861+00:00",
+      "id": "65e100e2-8999-437f-8401-bb1524c91b77",
+      "key": "hermes-goal-g4-2026-09-23",
+      "name": "G4: VPN from VPS to home LAN, LM Studio and Salt reachable",
+      "tags": [
+        "hermes",
+        "goal"
+      ],
+      "type": "goal",
+      "updated_at": "2026-09-25T00:47:28.164861+00:00"
+    },
+    {
+      "attributes": {
+        "criterion": "ChatGPT Plus linked via Hermess native link+code flow, Codex used through Hermes for one real coding task",
+        "phase": 3,
+        "points": 20,
+        "status": "not_started"
+      },
+      "body": "G5 (20 pts, Phase 3 - Frontier tier connected): not started - command identified (hermes auth add openai-codex), not yet run.",
+      "created_at": "2026-09-25T00:47:28.175575+00:00",
+      "id": "b4bf2c7a-1aa5-4b80-8510-777031008db9",
+      "key": "hermes-goal-g5-2026-09-23",
+      "name": "G5: ChatGPT Plus linked via Hermes native flow, Codex used for a real task",
+      "tags": [
+        "hermes",
+        "goal"
+      ],
+      "type": "goal",
+      "updated_at": "2026-09-25T00:47:28.175575+00:00"
+    },
+    {
+      "attributes": {
+        "criterion": "Hermes Desktop on this laptop, pointed at the VPS backend, same experience confirmed from two different locations",
+        "phase": 4,
+        "points": 10,
+        "status": "not_started"
+      },
+      "body": "G6 (10 pts, Phase 4 - Interface): not started.",
+      "created_at": "2026-09-25T00:47:28.185532+00:00",
+      "id": "86b19fe1-2396-4b9e-94fd-5f7b10443dc5",
+      "key": "hermes-goal-g6-2026-09-23",
+      "name": "G6: Hermes Desktop on laptop, connected to VPS backend",
+      "tags": [
+        "hermes",
+        "goal"
+      ],
+      "type": "goal",
+      "updated_at": "2026-09-25T00:47:28.185532+00:00"
+    },
+    {
+      "attributes": {
+        "criterion": "Signal and/or Telegram wired up as a working interface",
+        "phase": 4,
+        "points": 15,
+        "status": "not_started"
+      },
+      "body": "G7 (15 pts, Phase 4): not started - hermes-gateway.service is running but no channel configured yet.",
+      "created_at": "2026-09-25T00:47:28.196651+00:00",
+      "id": "0edd97dc-4aff-4f70-999b-9dddfaa5f463",
+      "key": "hermes-goal-g7-2026-09-23",
+      "name": "G7: Signal/Telegram wired up as a working interface",
+      "tags": [
+        "hermes",
+        "goal"
+      ],
+      "type": "goal",
+      "updated_at": "2026-09-25T00:47:28.196651+00:00"
     }
   ],
-  "exported_at": "2026-09-25T00:43:21.532330+00:00",
+  "exported_at": "2026-09-25T00:47:32.809016+00:00",
   "relations": [
     {
       "attributes": {},
@@ -1743,6 +1914,116 @@
       "object_type": "entity",
       "predicate": "blocks",
       "subject_key": "hermes-vps-docker-not-installed-2026-09-24",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T00:47:32.560192+00:00",
+      "id": "a05b4bad-e659-4607-9407-0376d586e78f",
+      "object_key": "hermes-vultr-marketplace-agent-deployed-2026-09-24",
+      "object_type": "entity",
+      "predicate": "tracks",
+      "subject_key": "hermes-goal-g1-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T00:47:32.579276+00:00",
+      "id": "953c5d8a-841c-4788-a5a3-cd7165989c09",
+      "object_key": "hermes-vultr-marketplace-agent-deployed-2026-09-24",
+      "object_type": "entity",
+      "predicate": "tracks",
+      "subject_key": "hermes-goal-g2-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T00:47:32.588557+00:00",
+      "id": "b2b96916-4610-4d5e-a521-fd030dc36364",
+      "object_key": "hermes-vultr-marketplace-agent-deployed-2026-09-24",
+      "object_type": "entity",
+      "predicate": "tracks",
+      "subject_key": "hermes-goal-g3-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T00:47:32.598474+00:00",
+      "id": "47a19aed-c30e-4bc3-aa39-8466aa252449",
+      "object_key": "hermes-vultr-marketplace-agent-deployed-2026-09-24",
+      "object_type": "entity",
+      "predicate": "tracks",
+      "subject_key": "hermes-goal-g4-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T00:47:32.617713+00:00",
+      "id": "2745bad5-f13a-436c-8e09-8e716eae5afe",
+      "object_key": "hermes-vultr-marketplace-agent-deployed-2026-09-24",
+      "object_type": "entity",
+      "predicate": "tracks",
+      "subject_key": "hermes-goal-g5-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T00:47:32.638016+00:00",
+      "id": "12f51be9-0fa0-40d1-b783-ee5671ec2719",
+      "object_key": "hermes-vultr-marketplace-agent-deployed-2026-09-24",
+      "object_type": "entity",
+      "predicate": "tracks",
+      "subject_key": "hermes-goal-g6-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T00:47:32.664221+00:00",
+      "id": "58ce6ca9-e4df-495d-bf3f-e358f1b83228",
+      "object_key": "hermes-vultr-marketplace-agent-deployed-2026-09-24",
+      "object_type": "entity",
+      "predicate": "tracks",
+      "subject_key": "hermes-goal-g7-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T00:47:32.67404+00:00",
+      "id": "04e1bed7-847f-466c-b82f-c87f1cfc6eb0",
+      "object_key": "hermes-vultr-marketplace-agent-deployed-2026-09-24",
+      "object_type": "entity",
+      "predicate": "tracks",
+      "subject_key": "hermes-goal-g8-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T00:47:32.686302+00:00",
+      "id": "56bbd10d-42dd-4f03-9a11-9fe74c928c27",
+      "object_key": "hermes-vultr-marketplace-agent-deployed-2026-09-24",
+      "object_type": "entity",
+      "predicate": "tracks",
+      "subject_key": "hermes-goal-g9-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T00:47:32.69733+00:00",
+      "id": "97b72bb8-e04f-445e-b4aa-da85d29e2ff3",
+      "object_key": "hermes-vps-verified-reachable-2026-09-24",
+      "object_type": "entity",
+      "predicate": "satisfied_by",
+      "subject_key": "hermes-goal-g3-2026-09-23",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T00:47:32.706695+00:00",
+      "id": "4fd4a3f5-0538-4f1a-b2a8-ea8de20e7f44",
+      "object_key": "hermes-vps-docker-not-installed-2026-09-24",
+      "object_type": "entity",
+      "predicate": "blocked_by",
+      "subject_key": "hermes-goal-g4-2026-09-23",
       "subject_type": "entity"
     }
   ],
