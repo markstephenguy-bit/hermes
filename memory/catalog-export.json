@@ -1414,9 +1414,33 @@
       ],
       "type": "fact",
       "updated_at": "2026-09-25T02:48:14.13328+00:00"
+    },
+    {
+      "attributes": {
+        "not_yet_filed": "Dokploy admin account (not created by user yet); hermes-vps root password (deliberately stays Vultr-console-only per project policy, not filed here); WireGuard private keys (deliberately stay host-local, not filed here)",
+        "note": "Values are pgp_sym_encrypt'd; passphrase supplied in-chat by user this session and not retained anywhere",
+        "secret_names": [
+          "hermes-vps-caddy-basic-auth",
+          "hermes-vps-dashboard-basic-auth",
+          "hermes-vps-vultr-inference-api-key"
+        ]
+      },
+      "body": "Filed the Caddy basic-auth password, the app-level dashboard basic-auth password, and the retired Vultr Inference API key into the catalog secrets table via secret_set.",
+      "created_at": "2026-09-25T02:51:39.692413+00:00",
+      "id": "f8ddf1dc-d6b0-466f-b917-9e5b04a8bc38",
+      "key": "hermes-vps-credentials-filed-in-secrets-2026-09-25",
+      "name": "Three hermes-vps credentials filed in the catalog's encrypted secrets table",
+      "tags": [
+        "hermes",
+        "vps",
+        "security",
+        "secrets"
+      ],
+      "type": "fact",
+      "updated_at": "2026-09-25T02:51:39.692413+00:00"
     }
   ],
-  "exported_at": "2026-09-25T02:48:36.157701+00:00",
+  "exported_at": "2026-09-25T02:51:39.796401+00:00",
   "relations": [
     {
       "attributes": {},
