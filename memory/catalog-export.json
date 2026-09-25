@@ -1438,9 +1438,88 @@
       ],
       "type": "fact",
       "updated_at": "2026-09-25T02:51:39.692413+00:00"
+    },
+    {
+      "attributes": {
+        "acl": "only source 192.168.40.100 (w_workstation) allowed; ufw restricts the port to that source too",
+        "actual_outcome": "not needed - the real fix for Zscaler-blocked downloads was trusting Zscaler's already-installed root CA (Go's TLS stack uses the Windows cert store automatically), not proxying traffic",
+        "host": "server (192.168.40.250)",
+        "original_purpose": "intended as a Zscaler bypass for LM Studio on w_workstation",
+        "port": 3128,
+        "status": "left running, unused for now, in case a future app needs a Zscaler bypass",
+        "verified": "request from w_workstation through squid succeeds (200); request from server itself (not on the allowlist) is denied (403)"
+      },
+      "body": "Installed and verified a restricted Squid proxy on server for a Zscaler-bypass use case that turned out unnecessary once the actual root cause (missing CA trust in Electron apps) was found.",
+      "created_at": "2026-09-25T06:17:52.313675+00:00",
+      "id": "3016ea69-7f7c-4e8a-b0a6-b1569da69e68",
+      "key": "server-squid-proxy-2026-09-25",
+      "name": "Squid forward proxy installed on server, restricted to w_workstation only",
+      "tags": [
+        "hermes",
+        "server",
+        "network",
+        "decision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-25T06:17:52.313675+00:00"
+    },
+    {
+      "attributes": {
+        "host": "w_workstation (192.168.40.100)",
+        "install_gotcha": "installer ran as SYSTEM via Salt, so it landed under C:\\WINDOWS\\system32\\config\\systemprofile\\... instead of the interactive user (MGUY)'s profile; worked around by running ollama serve directly as SYSTEM instead of fighting for MGUY's session",
+        "install_method": "Salt remote execution (w_workstation is an accepted Salt minion, server is the Salt master)",
+        "models_path": "OLLAMA_MODELS env var set to E:\\Ollama Models (user's chosen drive/folder)",
+        "models_planned_not_yet_pulled": [
+          "gpt-oss-20b (primary, ~14GB)",
+          "qwen3-vl:8b (vision/screenshots, ~12GB)",
+          "nomic-embed-text (embeddings, ~274MB)"
+        ],
+        "network_fix": "Ollama defaults to binding 127.0.0.1 only; set OLLAMA_HOST=0.0.0.0 (system env var) plus a netsh firewall rule scoped to 192.168.40.0/24 and 10.60.0.0/24 (LAN + WireGuard tunnel only, not internet-facing)",
+        "service_mechanism": "SYSTEM-level scheduled task 'OllamaService', trigger onstart, no login dependency - genuinely headless, unlike LM Studio which requires an interactive GUI session",
+        "verified": "curl to http://192.168.40.100:11434/ returns 'Ollama is running' both from server directly and from hermes-vps over the WireGuard tunnel"
+      },
+      "body": "Chose Ollama over LM Studio as the local model host on w_workstation specifically because it runs as a true headless background service manageable via Salt, unlike LM Studio's GUI/session-tied Electron app. Fully installed, running, and network-reachable from hermes-vps; models not yet pulled.",
+      "created_at": "2026-09-25T06:17:52.331476+00:00",
+      "id": "7c661c55-1806-43bb-9e77-aa08c9463b02",
+      "key": "w-workstation-ollama-installed-2026-09-25",
+      "name": "Ollama installed on w_workstation as a SYSTEM-level Windows service, managed via Salt",
+      "tags": [
+        "hermes",
+        "vps",
+        "server",
+        "ollama",
+        "decision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-25T06:17:52.331476+00:00"
+    },
+    {
+      "attributes": {
+        "candidates_considered": [
+          "Hermes-4-14B (Nous Research's own line, per the original 2026-09-23 project decision)",
+          "Qwen3-14B (documented to struggle with multi-step agentic tasks >5 tool calls)",
+          "gpt-oss-20b (OpenAI, Apache 2.0, MoE, chosen)"
+        ],
+        "companion_models": "qwen3-vl:8b for vision/screenshot/OCR understanding (user relies heavily on screenshots; none of the primary candidates can see images) and nomic-embed-text for memory/RAG embeddings",
+        "concurrency_note": "primary model will serve multiple concurrent agent sessions to avoid runaway frontier-model (Codex) usage/cost; exact concurrency needs unknown yet since user is new to Hermes, deferred as a tunable (OLLAMA_NUM_PARALLEL) rather than blocking the initial setup",
+        "reason": "gpt-oss-20b is benchmarked as the top pick for 16GB VRAM + agentic tool-calling specifically - MoE architecture (20.9B total, 3.6B active per token) gives ~2.8x the speed of a dense model at the same footprint, while user explicitly prioritized performance over brand preference",
+        "vram_tradeoff": "gpt-oss-20b (~14GB) and qwen3-vl:8b (~12GB) do not both fit in 16GB simultaneously; Ollama will swap between them on demand rather than both staying resident"
+      },
+      "body": "User explicitly deprioritized the earlier Nous-Hermes-brand preference in favor of a direct performance/benchmark comparison once actually configuring the local model, landing on gpt-oss-20b plus qwen3-vl:8b and nomic-embed-text as sidecars.",
+      "created_at": "2026-09-25T06:17:52.337571+00:00",
+      "id": "73a47c85-95eb-4cc1-affe-3d24c3ae0f7b",
+      "key": "hermes-local-model-choice-2026-09-25",
+      "name": "gpt-oss-20b chosen as local primary model, superseding the earlier Nous-Hermes-line preference",
+      "tags": [
+        "hermes",
+        "decision",
+        "model-choice"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-25T06:17:52.337571+00:00"
     }
   ],
-  "exported_at": "2026-09-25T02:51:39.796401+00:00",
+  "exported_at": "2026-09-25T06:18:02.923746+00:00",
   "relations": [
     {
       "attributes": {},
@@ -2530,6 +2609,56 @@
       "object_type": "entity",
       "predicate": "discovered_during",
       "subject_key": "hermes-vps-no-firewall-found-and-fixed-2026-09-25",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T06:17:58.875372+00:00",
+      "id": "ba2003f6-a403-4a2c-89eb-8a2696bcd5fb",
+      "object_key": "hermes-vps-wireguard-configured-2026-09-25",
+      "object_type": "entity",
+      "predicate": "depends_on",
+      "subject_key": "w-workstation-ollama-installed-2026-09-25",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T06:17:58.894361+00:00",
+      "id": "17dd2751-5dfd-4366-999b-dd264ff8cddd",
+      "object_key": "w-workstation-ollama-installed-2026-09-25",
+      "object_type": "entity",
+      "predicate": "governs",
+      "subject_key": "hermes-local-model-choice-2026-09-25",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T06:17:58.904278+00:00",
+      "id": "8aec4242-e749-4217-b271-a01391148484",
+      "object_key": "hermes-agent-model-is-hermes-2026-09-23",
+      "object_type": "entity",
+      "predicate": "supersedes",
+      "subject_key": "hermes-local-model-choice-2026-09-25",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T06:17:58.913928+00:00",
+      "id": "f43dae36-18fe-4682-8142-b607690afa18",
+      "object_key": "w-workstation-ollama-installed-2026-09-25",
+      "object_type": "entity",
+      "predicate": "depends_on",
+      "subject_key": "server-squid-proxy-2026-09-25",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T06:17:58.922627+00:00",
+      "id": "a08e7252-1f38-4841-a8f0-b97e7bc2cd78",
+      "object_key": "hermes-goal-g1-2026-09-23",
+      "object_type": "entity",
+      "predicate": "advances",
+      "subject_key": "w-workstation-ollama-installed-2026-09-25",
       "subject_type": "entity"
     }
   ],

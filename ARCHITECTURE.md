@@ -19,18 +19,29 @@ something Claude Code wired up once by hand.
 
 - **`hermes-vps`** (Vultr High Performance AMD, Dallas TX): Dedicated 2 vCPU,
   4GB RAM, 100GB NVMe. Runs the official Nous Research `HermesAgent` Ubuntu 24.04
-  marketplace image. Hosts `hermes serve` and acts as the central hub and web
-  presence, with full KVM root access to run Dokploy and the WireGuard home tunnel.
-- **`w_workstation`** (192.168.40.100, Windows 11) has the actual GPU: an
-  NVIDIA RTX A4000, 16GB VRAM. LM Studio is already running there with
-  `gemma-4-12b-it@q8_0` loaded (~12GB) plus `nomic-embed-text-v1.5` for
-  embeddings — roughly 4GB of headroom left before a second model could be
-  loaded alongside it.
-- **`server`** (192.168.40.250, Ubuntu 24.04) is the existing Docker host —
-  already runs Nginx Proxy Manager, AdGuard (LAN DNS), Portainer, the
-  catalog (`catalog-db`/`catalog-api`), and persistent home services.
-  Acts as the home-side WireGuard gateway endpoint to route `192.168.40.0/24`
-  traffic from the VPS to `w_workstation` and Salt.
+  marketplace image, hermes-agent v0.19.0. Codex (`openai-codex`/`gpt-5.6-sol`,
+  via linked ChatGPT Plus) is the default model provider. Docker + Dokploy
+  installed (Dokploy's own Traefik disabled to avoid conflicting with
+  Caddy's existing 80/443; Dokploy panel on :3000, localhost-only). A real
+  firewall now exists (previously none at all).
+- **`w_workstation`** (192.168.40.100, Windows 11, Georgia Pacific-managed
+  via `BPNET` domain, Zscaler) has the actual GPU: an NVIDIA RTX A4000,
+  16GB VRAM. As of 2026-09-25, **Ollama** (not LM Studio — see BACKLOG.md
+  model-choice note) runs here as a genuine SYSTEM-level Windows service
+  (no login dependency), models stored on `E:\Ollama Models`, bound to the
+  LAN + WireGuard tunnel subnet. Managed remotely via Salt (this machine is
+  an accepted Salt minion; `server` is the Salt master). LM Studio remains
+  installed but is not the primary path — its Electron/GUI-session model
+  proved awkward for remote/Salt management compared to Ollama's headless
+  service model.
+- **`server`** (192.168.40.250, Ubuntu 24.04) is the existing Docker host
+  and Salt master — already runs Nginx Proxy Manager, AdGuard (LAN DNS),
+  Portainer, the catalog (`catalog-db`/`catalog-api`), and persistent home
+  services. As of 2026-09-25, also runs the WireGuard tunnel endpoint
+  (dials out to hermes-vps, self-healing via keepalive, no home router
+  port forwarding needed) and a Squid proxy (built for a Zscaler bypass
+  that turned out unnecessary — left running, restricted to
+  `w_workstation` only, in case it's useful later).
 - **Remote access — decided (2026-09-22):** password-gated web UI behind the
   existing DuckDNS domain (`theguylab.duckdns.org`) or direct authenticated
   Hermes web interface / Telegram / Signal interface.
@@ -42,7 +53,10 @@ something Claude Code wired up once by hand.
 
 ## Network Topology & Subnet Tunnel
 
-The VPS connects to the home fileserver via a site-to-site WireGuard tunnel,
+**Live as of 2026-09-25** (verified end-to-end: ping + catalog API + Salt
+ports all reachable from hermes-vps over the tunnel). Tunnel subnet is
+`10.60.0.0/24` (hermes-vps `10.60.0.1`, server `10.60.0.2`). The VPS
+connects to the home fileserver via a site-to-site WireGuard tunnel,
 enabling subnet routing so Hermes can address any LAN IP directly:
 
 ```
