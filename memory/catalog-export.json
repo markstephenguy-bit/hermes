@@ -872,9 +872,48 @@
       ],
       "type": "fact",
       "updated_at": "2026-09-25T00:40:53.510399+00:00"
+    },
+    {
+      "attributes": {
+        "credentials": "root password and basic_auth hash live on the box / in Vultr console only - not stored in the catalog or repo",
+        "ip": "207.148.2.224",
+        "public_url": "https://0095e5d9-9994-48de-92c1-99f6817c6564.vultropenclaw.com",
+        "security": "Caddy reverse proxy with auto-TLS + HTTP Basic Auth in front of the dashboard; ufw firewall allows only 22/80/443 in, dashboard port not internet-reachable despite 0.0.0.0 bind",
+        "services": "hermes-dashboard.service (:9119) and hermes-gateway.service both active since deployment"
+      },
+      "body": "Verified via SSH: hermes-vps is real, reachable, and already properly secured (Caddy auto-TLS + Basic Auth, firewalled to 22/80/443 only) - no exposure issue despite the dashboard binding to 0.0.0.0.",
+      "created_at": "2026-09-25T00:43:17.668683+00:00",
+      "id": "89b0a316-5452-4f4b-b525-dcdaa1cde8ea",
+      "key": "hermes-vps-verified-reachable-2026-09-24",
+      "name": "hermes-vps verified reachable and correctly secured",
+      "tags": [
+        "hermes",
+        "deployment",
+        "vps"
+      ],
+      "type": "fact",
+      "updated_at": "2026-09-25T00:43:17.668683+00:00"
+    },
+    {
+      "attributes": {
+        "blocks": "Dokploy installation (web/container-hosting plan)",
+        "status": "open"
+      },
+      "body": "Docker is not installed on hermes-vps yet, which blocks installing Dokploy per the planned web-presence/Docker-hosting architecture.",
+      "created_at": "2026-09-25T00:43:17.743161+00:00",
+      "id": "c403b86d-d392-4389-b7b5-1f46937f0855",
+      "key": "hermes-vps-docker-not-installed-2026-09-24",
+      "name": "Docker not installed on hermes-vps - blocks Dokploy setup",
+      "tags": [
+        "hermes",
+        "deployment",
+        "vps"
+      ],
+      "type": "open-item",
+      "updated_at": "2026-09-25T00:43:17.743161+00:00"
     }
   ],
-  "exported_at": "2026-09-25T00:41:02.267370+00:00",
+  "exported_at": "2026-09-25T00:43:21.532330+00:00",
   "relations": [
     {
       "attributes": {},
@@ -1684,6 +1723,26 @@
       "object_type": "entity",
       "predicate": "relates_to",
       "subject_key": "hermes-bootstrap-handoff-plan-2026-09-24",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T00:43:21.351106+00:00",
+      "id": "bbc0caa9-b61b-4e02-9e54-70464751e7f5",
+      "object_key": "hermes-vultr-marketplace-agent-deployed-2026-09-24",
+      "object_type": "entity",
+      "predicate": "confirms",
+      "subject_key": "hermes-vps-verified-reachable-2026-09-24",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T00:43:21.409882+00:00",
+      "id": "ba42d335-ff4a-4ca5-93d8-53d9870b2651",
+      "object_key": "hermes-web-and-docker-presence-shifts-to-vps-2026-09-23",
+      "object_type": "entity",
+      "predicate": "blocks",
+      "subject_key": "hermes-vps-docker-not-installed-2026-09-24",
       "subject_type": "entity"
     }
   ],
