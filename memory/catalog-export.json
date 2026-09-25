@@ -1228,9 +1228,95 @@
       ],
       "type": "fact",
       "updated_at": "2026-09-25T01:14:28.565848+00:00"
+    },
+    {
+      "attributes": {
+        "config_path": "/home/mark/.hermes",
+        "host": "laptop (mark@laptop)",
+        "install_method": "official installer script (uv-based)",
+        "relation_to_vps": "independent instance, not yet connected to or unified with hermes-vps",
+        "service": "hermes-gateway.service, user systemd unit, linger enabled to survive SSH logout"
+      },
+      "body": "User ran the Hermes Agent installer directly on their laptop while intending to set up Hermes Desktop as a remote viewer for hermes-vps; ended up with a second standalone local instance instead.",
+      "created_at": "2026-09-25T01:22:11.652677+00:00",
+      "id": "49592790-794f-4053-aa43-04572359a0f4",
+      "key": "hermes-local-laptop-install-2026-09-25",
+      "name": "Local Hermes Agent installed on laptop (w_workstation), separate from hermes-vps",
+      "tags": [
+        "hermes",
+        "laptop"
+      ],
+      "type": "fact",
+      "updated_at": "2026-09-25T01:22:11.652677+00:00"
+    },
+    {
+      "attributes": {
+        "compose_version": "v5.5.1",
+        "docker_version": "29.8.1",
+        "host": "hermes-vps",
+        "method": "get.docker.com convenience script"
+      },
+      "body": "Installed Docker Engine + Compose plugin on hermes-vps via the official convenience script; daemon active, no pre-existing containers.",
+      "created_at": "2026-09-25T02:05:51.409428+00:00",
+      "id": "409d7343-014d-495b-a7ff-d9a1b96a1162",
+      "key": "hermes-vps-docker-installed-2026-09-25",
+      "name": "Docker installed on hermes-vps",
+      "tags": [
+        "hermes",
+        "vps",
+        "docker"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-25T02:05:51.409428+00:00"
+    },
+    {
+      "attributes": {
+        "dokploy_version": "v0.30.7",
+        "host": "hermes-vps",
+        "panel_access": "localhost-only via iptables DOCKER-USER rule; use SSH tunnel: ssh -L 3000:127.0.0.1:3000 root@207.148.2.224 then browse localhost:3000",
+        "panel_port": 3000,
+        "reason": "Dokploys default Traefik wants 0.0.0.0:80/443 which Caddy already owns for the working hermes-vps dashboard TLS+auth; installer itself refuses to run while those ports are held, so Caddy was stopped only for the install window then restarted",
+        "traefik_container": "dokploy-traefik, stopped and restart=no (not a swarm service, wont auto-resume)"
+      },
+      "body": "Dokploy (v0.30.7) and dokploy-postgres running as Docker services; Traefik reverse proxy deliberately disabled, panel restricted to localhost via iptables so it is not internet-reachable until a real reverse-proxy plan is decided.",
+      "created_at": "2026-09-25T02:05:51.431311+00:00",
+      "id": "8715f895-b525-4836-94da-c86d25b0d1a2",
+      "key": "hermes-vps-dokploy-installed-2026-09-25",
+      "name": "Dokploy installed on hermes-vps with bundled Traefik disabled to avoid conflicting with Caddy",
+      "tags": [
+        "hermes",
+        "vps",
+        "docker",
+        "dokploy",
+        "decision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-25T02:05:51.431311+00:00"
+    },
+    {
+      "attributes": {
+        "fix": "Added DOCKER-USER chain rules: RETURN for source 127.0.0.1, DROP for all other sources, dport 3000",
+        "host": "hermes-vps",
+        "persistence": "installed iptables-persistent; rules auto-saved to /etc/iptables/rules.v4 and verified present after install",
+        "root_cause": "Docker inserts its own DOCKER chain iptables rules that bypass ufw entirely; ufw showed only 22/80/443 allowed but Dokploys published port 3000 was reachable from the public internet regardless",
+        "verified": "external curl to 207.148.2.224:3000 times out (000); localhost curl on the VPS still gets 307"
+      },
+      "body": "Caught and fixed a real public exposure: Dokploy panel on :3000 was reachable from the internet despite ufw rules, due to the well-known Docker-bypasses-ufw iptables behavior.",
+      "created_at": "2026-09-25T02:05:51.441736+00:00",
+      "id": "e6e690bf-a750-482f-88dc-db56f1e689a8",
+      "key": "hermes-vps-docker-ufw-bypass-fixed-2026-09-25",
+      "name": "Fixed Docker/ufw port-3000 public exposure bypass on hermes-vps",
+      "tags": [
+        "hermes",
+        "vps",
+        "security",
+        "docker"
+      ],
+      "type": "fact",
+      "updated_at": "2026-09-25T02:05:51.441736+00:00"
     }
   ],
-  "exported_at": "2026-09-25T01:14:33.266887+00:00",
+  "exported_at": "2026-09-25T02:05:58.067569+00:00",
   "relations": [
     {
       "attributes": {},
@@ -2240,6 +2326,36 @@
       "object_type": "entity",
       "predicate": "depends_on",
       "subject_key": "hermes-codex-default-provider-2026-09-25",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T02:05:57.540026+00:00",
+      "id": "1312d622-62b3-4af6-b8ca-a6c49fcfd0b1",
+      "object_key": "hermes-vps-docker-installed-2026-09-25",
+      "object_type": "entity",
+      "predicate": "depends_on",
+      "subject_key": "hermes-vps-dokploy-installed-2026-09-25",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T02:05:57.600616+00:00",
+      "id": "d62ca5b2-9a61-4e8c-aadd-075efaac9435",
+      "object_key": "hermes-vps-dokploy-installed-2026-09-25",
+      "object_type": "entity",
+      "predicate": "caused_by",
+      "subject_key": "hermes-vps-docker-ufw-bypass-fixed-2026-09-25",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-25T02:05:57.622528+00:00",
+      "id": "491d584d-0014-4b0d-a8f3-6e0a9aad7c37",
+      "object_key": "hermes-vps-dokploy-installed-2026-09-25",
+      "object_type": "entity",
+      "predicate": "governs",
+      "subject_key": "hermes-vps-docker-ufw-bypass-fixed-2026-09-25",
       "subject_type": "entity"
     }
   ],
