@@ -1699,33 +1699,6 @@
     },
     {
       "attributes": {
-        "host": "hermes-vps",
-        "overlaps_with": "hermes-parallel-session-building-setup-tooling-2026-09-26 - likely belongs in that scaffolding script rather than built ad hoc separately",
-        "status": "open",
-        "sub_steps": [
-          "pick first capability to expose (catalog API is the obvious candidate)",
-          "decide reuse existing Postgres/PostgREST MCP server vs custom thin wrapper",
-          "decide read-only vs read/write scope for Hermes self-logging to catalog",
-          "add Salt API as second MCP target once catalog MCP proven"
-        ]
-      },
-      "body": "No mcp_servers block exists in config.yaml, so Hermes cannot call the home-network catalog API, Salt, or any other LAN capability as a tool yet, contradicting ARCHITECTURE.md core principle that network resources should be agent capabilities.",
-      "created_at": "2026-09-26T00:42:10.101931+00:00",
-      "id": "1ccda239-a6b6-4011-baa8-ec49cf4d7611",
-      "key": "hermes-no-mcp-servers-configured-2026-09-26",
-      "name": "hermes-vps has zero MCP servers configured",
-      "tags": [
-        "hermes",
-        "vps",
-        "gap-analysis",
-        "architecture",
-        "mcp"
-      ],
-      "type": "gap",
-      "updated_at": "2026-09-26T00:42:10.101931+00:00"
-    },
-    {
-      "attributes": {
         "coupled_with": "hermes-gateway-allow-all-users-exposure-2026-09-26",
         "host": "hermes-vps",
         "missing_env": [
@@ -1777,9 +1750,74 @@
       ],
       "type": "decision",
       "updated_at": "2026-09-26T01:38:25.079047+00:00"
+    },
+    {
+      "attributes": {
+        "config_block": "mcp_servers.catalog in ~/.hermes/config.yaml, stdio transport",
+        "deliberately_excluded": [
+          "/secrets and /rpc/secret_* (credential access kept out of general tool calls)",
+          "/rpc/search_similar (needs a 768-float embedding this process cannot generate yet)"
+        ],
+        "deployed_path": "/home/hermes/.hermes/mcp_servers/catalog/catalog_mcp.py",
+        "host": "hermes-vps",
+        "script_path_repo": "scripts/catalog_mcp.py",
+        "side_effect_fix": "gateway service unit was outdated per earlier audit; hermes gateway restart --system also refreshed it while restarting to pick up the new MCP config",
+        "tools_registered": [
+          "get_entities",
+          "get_hosts",
+          "get_services",
+          "add_entity",
+          "add_relation",
+          "graph_recall"
+        ],
+        "venv_path": "/home/hermes/.hermes/mcp_servers/catalog/venv",
+        "verification": "hermes -z --cli prompt asking to list hosts via the MCP tool returned all 6 real hostnames from the catalog"
+      },
+      "body": "Wrote scripts/catalog_mcp.py (FastMCP, 6 tools: get_entities, get_hosts, get_services, add_entity, add_relation, graph_recall - secrets and embedding-dependent search_similar deliberately excluded), deployed it to an isolated venv on hermes-vps, added the mcp extra to hermes-agent (uv tool install hermes-agent[mcp]==0.19.0), registered via hermes mcp add, and verified end-to-end: hermes -z asked to list hosts via the tool correctly returned live catalog data with zero Claude Code involvement in the query itself.",
+      "created_at": "2026-09-26T02:11:58.684209+00:00",
+      "id": "4fe3268e-e565-420a-b97e-42887398edeb",
+      "key": "hermes-vps-catalog-mcp-server-live-2026-09-26",
+      "name": "Catalog MCP server implemented and connected on hermes-vps",
+      "tags": [
+        "hermes",
+        "vps",
+        "mcp",
+        "catalog",
+        "milestone"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-26T02:11:58.684209+00:00"
+    },
+    {
+      "attributes": {
+        "host": "hermes-vps",
+        "overlaps_with": "hermes-parallel-session-building-setup-tooling-2026-09-26 - likely belongs in that scaffolding script rather than built ad hoc separately",
+        "resolution": "resolved via hermes-vps-catalog-mcp-server-live-2026-09-26 - custom FastMCP wrapper chosen over generic postgres MCP server (avoided archived/CVE package + kept secrets table out of scope); read/write scope granted (add_entity, add_relation) since self-logging is the explicit long-term goal; Salt API MCP still open",
+        "status": "resolved",
+        "sub_steps": [
+          "pick first capability to expose (catalog API is the obvious candidate)",
+          "decide reuse existing Postgres/PostgREST MCP server vs custom thin wrapper",
+          "decide read-only vs read/write scope for Hermes self-logging to catalog",
+          "add Salt API as second MCP target once catalog MCP proven"
+        ]
+      },
+      "body": "No mcp_servers block exists in config.yaml, so Hermes cannot call the home-network catalog API, Salt, or any other LAN capability as a tool yet, contradicting ARCHITECTURE.md core principle that network resources should be agent capabilities.",
+      "created_at": "2026-09-26T00:42:10.101931+00:00",
+      "id": "1ccda239-a6b6-4011-baa8-ec49cf4d7611",
+      "key": "hermes-no-mcp-servers-configured-2026-09-26",
+      "name": "hermes-vps has zero MCP servers configured",
+      "tags": [
+        "hermes",
+        "vps",
+        "gap-analysis",
+        "architecture",
+        "mcp"
+      ],
+      "type": "gap",
+      "updated_at": "2026-09-26T00:42:10.101931+00:00"
     }
   ],
-  "exported_at": "2026-09-26T01:38:29.261252+00:00",
+  "exported_at": "2026-09-26T02:12:09.461758+00:00",
   "relations": [
     {
       "attributes": {},
@@ -3019,6 +3057,26 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-priority-mcp-before-local-llm-2026-09-26",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-26T02:12:07.216872+00:00",
+      "id": "f7018ea3-ec4a-4dfb-87ab-e8d515b8dce3",
+      "object_key": "hermes-no-mcp-servers-configured-2026-09-26",
+      "object_type": "entity",
+      "predicate": "resolves",
+      "subject_key": "hermes-vps-catalog-mcp-server-live-2026-09-26",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-26T02:12:07.230992+00:00",
+      "id": "af580216-ea77-4a41-9f08-a43054725550",
+      "object_key": "hermes-priority-mcp-before-local-llm-2026-09-26",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-vps-catalog-mcp-server-live-2026-09-26",
       "subject_type": "entity"
     }
   ],
