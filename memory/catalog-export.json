@@ -1580,9 +1580,137 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-26T00:30:33.360453+00:00"
+    },
+    {
+      "attributes": {
+        "auth_providers_logged_in": [
+          "nous-portal",
+          "openai-codex"
+        ],
+        "auth_providers_missing": [
+          "minimax",
+          "xai"
+        ],
+        "doctor_issues_reported": 3,
+        "method": "ssh root@207.148.2.224, su - hermes -c \"hermes doctor / gateway status / auth status\""
+      },
+      "body": "Ran hermes doctor, gateway status, and read config.yaml/.env live on hermes-vps via SSH to determine what remains before Hermes is fully functional, rather than relying on cached docs.",
+      "created_at": "2026-09-26T00:42:00.224382+00:00",
+      "id": "d1eb962c-623c-4059-ae27-00cde73f748e",
+      "key": "hermes-vps-functional-gap-audit-2026-09-26",
+      "name": "Live functional-gap audit run on hermes-vps",
+      "tags": [
+        "hermes",
+        "vps",
+        "audit",
+        "gap-analysis"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-26T00:42:00.224382+00:00"
+    },
+    {
+      "attributes": {
+        "current_values": {
+          "API_SERVER_ENABLED": "true",
+          "API_SERVER_HOST": "0.0.0.0",
+          "API_SERVER_PORT": "8642",
+          "GATEWAY_ALLOW_ALL_USERS": "true",
+          "terminal.backend": "local"
+        },
+        "file": "~/.hermes/.env and ~/.hermes/config.yaml",
+        "fix_options": [
+          "set TELEGRAM_ALLOWED_USERS/DISCORD_ALLOWED_USERS instead of ALLOW_ALL_USERS",
+          "switch terminal.backend to docker",
+          "bind API_SERVER_HOST to tunnel-only address"
+        ],
+        "host": "hermes-vps",
+        "severity": "high",
+        "status": "open"
+      },
+      "body": "GATEWAY_ALLOW_ALL_USERS=true plus API_SERVER_HOST=0.0.0.0 plus terminal.backend=local means any caller reaching :8642 over the WireGuard tunnel/LAN can run arbitrary shell commands as the hermes user with no allowlist; Hermes docs explicitly warn against this exact combination.",
+      "created_at": "2026-09-26T00:42:00.285534+00:00",
+      "id": "b4750797-09d4-44bb-a4bc-82de6200b2ba",
+      "key": "hermes-gateway-allow-all-users-exposure-2026-09-26",
+      "name": "hermes-vps API server exposes unsandboxed terminal to all gateway users",
+      "tags": [
+        "hermes",
+        "vps",
+        "security",
+        "risk",
+        "gap-analysis"
+      ],
+      "type": "risk",
+      "updated_at": "2026-09-26T00:42:00.285534+00:00"
+    },
+    {
+      "attributes": {
+        "config_path": "/home/hermes/.hermes/config.yaml",
+        "expected_endpoint": "Ollama on w_workstation via 10.60.0.0/24 tunnel",
+        "host": "hermes-vps",
+        "status": "open"
+      },
+      "body": "config.yaml only defines openai-codex and a legacy vultr provider; nothing routes to Ollama on w_workstation over the WireGuard tunnel, so the architectures Tier 2 free-local-inference routing is not actually live and every query bills against ChatGPT Plus/Codex.",
+      "created_at": "2026-09-26T00:42:00.303707+00:00",
+      "id": "d55bcecd-926b-4578-ad02-c5b05c738e92",
+      "key": "hermes-no-local-llm-tier-wired-2026-09-26",
+      "name": "hermes-vps has no local-LLM (Ollama/w_workstation) provider configured",
+      "tags": [
+        "hermes",
+        "vps",
+        "gap-analysis",
+        "architecture"
+      ],
+      "type": "gap",
+      "updated_at": "2026-09-26T00:42:00.303707+00:00"
+    },
+    {
+      "attributes": {
+        "host": "hermes-vps",
+        "status": "open"
+      },
+      "body": "No mcp_servers block exists in config.yaml, so Hermes cannot call the home-network catalog API, Salt, or any other LAN capability as a tool yet, contradicting ARCHITECTURE.md core principle that network resources should be agent capabilities.",
+      "created_at": "2026-09-26T00:42:10.101931+00:00",
+      "id": "1ccda239-a6b6-4011-baa8-ec49cf4d7611",
+      "key": "hermes-no-mcp-servers-configured-2026-09-26",
+      "name": "hermes-vps has zero MCP servers configured",
+      "tags": [
+        "hermes",
+        "vps",
+        "gap-analysis",
+        "architecture",
+        "mcp"
+      ],
+      "type": "gap",
+      "updated_at": "2026-09-26T00:42:10.101931+00:00"
+    },
+    {
+      "attributes": {
+        "host": "hermes-vps",
+        "missing_env": [
+          "TELEGRAM_BOT_TOKEN or equivalent"
+        ],
+        "missing_packages": [
+          "python-telegram-bot",
+          "discord.py"
+        ],
+        "status": "open"
+      },
+      "body": "hermes-gateway.service is active but python-telegram-bot and discord.py are not installed and no bot tokens are configured, so the decided Signal/Telegram-primary interface strategy is not live yet.",
+      "created_at": "2026-09-26T00:42:12.47108+00:00",
+      "id": "17da0d53-221e-4429-bcd9-95b7ef235d6b",
+      "key": "hermes-gateway-no-messaging-platforms-connected-2026-09-26",
+      "name": "hermes-gateway service running but no messaging platform connected",
+      "tags": [
+        "hermes",
+        "vps",
+        "gap-analysis",
+        "interface"
+      ],
+      "type": "gap",
+      "updated_at": "2026-09-26T00:42:12.47108+00:00"
     }
   ],
-  "exported_at": "2026-09-26T00:30:49.420480+00:00",
+  "exported_at": "2026-09-26T00:42:32.349805+00:00",
   "relations": [
     {
       "attributes": {},
@@ -2742,6 +2870,46 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-agent-usage-research-2026-09-25",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-26T00:42:19.106012+00:00",
+      "id": "2a512801-af55-4de1-8c0d-267d1ce07e63",
+      "object_key": "hermes-goal-g1-2026-09-23",
+      "object_type": "entity",
+      "predicate": "blocks",
+      "subject_key": "hermes-gateway-allow-all-users-exposure-2026-09-26",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-26T00:42:19.126339+00:00",
+      "id": "84b3f555-55ab-416e-8928-223ba6f4d1e5",
+      "object_key": "hermes-goal-g1-2026-09-23",
+      "object_type": "entity",
+      "predicate": "blocks",
+      "subject_key": "hermes-no-local-llm-tier-wired-2026-09-26",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-26T00:42:19.209169+00:00",
+      "id": "6d814fb2-8e5d-4eeb-af6b-2001b5990d2c",
+      "object_key": "hermes-goal-g1-2026-09-23",
+      "object_type": "entity",
+      "predicate": "blocks",
+      "subject_key": "hermes-no-mcp-servers-configured-2026-09-26",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-26T00:42:19.244453+00:00",
+      "id": "6505782e-1b13-4bb0-a555-65089780b43a",
+      "object_key": "hermes-goal-g1-2026-09-23",
+      "object_type": "entity",
+      "predicate": "blocks",
+      "subject_key": "hermes-gateway-no-messaging-platforms-connected-2026-09-26",
       "subject_type": "entity"
     }
   ],
