@@ -1517,9 +1517,72 @@
       ],
       "type": "decision",
       "updated_at": "2026-09-25T06:17:52.337571+00:00"
+    },
+    {
+      "attributes": {
+        "config_dir": "~/.hermes/ (config.yaml, .env, auth.json, SOUL.md, memories/, skills/, sessions/, logs/)",
+        "context_files": [
+          "AGENTS.md (project root)",
+          "SOUL.md (~/.hermes/, personality)",
+          ".cursorrules (auto-loaded)"
+        ],
+        "docs_root": "https://hermes-agent.nousresearch.com/docs/",
+        "key_cli_flags": [
+          "hermes -c / --continue",
+          "hermes -r / --resume",
+          "hermes chat -q",
+          "hermes chat --toolsets",
+          "hermes -w (worktree)",
+          "hermes setup --portal"
+        ],
+        "key_slash_commands": [
+          "/compress",
+          "/model",
+          "/skills browse",
+          "/context",
+          "/usage",
+          "/insights",
+          "/verbose",
+          "/yolo",
+          "/sethome",
+          "/title",
+          "/reasoning high",
+          "/personality"
+        ],
+        "messaging_gateway": "27+ platforms incl. Telegram, Discord, Slack, WhatsApp, Signal, Matrix via hermes gateway",
+        "openai_compatible_api": "http://localhost:8642/v1 (used by Open WebUI integration for browser-based chat UI)",
+        "security_notes": [
+          "TERMINAL_ENV=docker for untrusted code",
+          "never GATEWAY_ALLOW_ALL_USERS=true with terminal access",
+          "start command approval at session scope, not always"
+        ],
+        "terminal_backends": [
+          "local",
+          "docker",
+          "ssh",
+          "modal",
+          "daytona",
+          "vercel_sandbox",
+          "singularity"
+        ]
+      },
+      "body": "Researched official docs at hermes-agent.nousresearch.com for how to get the most out of the installed hermes-agent v0.19.0 on hermes-vps: CLI/TUI + Desktop app are primary surfaces (no native web UI), but an OpenAI-compatible API server (localhost:8642/v1) lets Open WebUI provide a browser chat UI with full tool/terminal visibility.",
+      "created_at": "2026-09-26T00:30:33.360453+00:00",
+      "id": "5b3d34c3-ded4-4248-9647-dac28c7d1103",
+      "key": "hermes-agent-usage-research-2026-09-25",
+      "name": "Hermes Agent (Nous Research) usage best practices researched",
+      "tags": [
+        "hermes",
+        "vps",
+        "usage",
+        "research",
+        "documentation"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-26T00:30:33.360453+00:00"
     }
   ],
-  "exported_at": "2026-09-25T06:18:02.923746+00:00",
+  "exported_at": "2026-09-26T00:30:49.420480+00:00",
   "relations": [
     {
       "attributes": {},
@@ -2659,6 +2722,26 @@
       "object_type": "entity",
       "predicate": "advances",
       "subject_key": "w-workstation-ollama-installed-2026-09-25",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-26T00:30:43.142299+00:00",
+      "id": "235acff2-d40a-446e-837d-dacace155fb1",
+      "object_key": "hermes-home-as-supercomputer-2026-09-23",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-agent-usage-research-2026-09-25",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-26T00:30:46.646794+00:00",
+      "id": "8ea57a86-3bbf-401c-8076-37e339e6d459",
+      "object_key": "hermes-interface-strategy-refined-2026-09-23",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-agent-usage-research-2026-09-25",
       "subject_type": "entity"
     }
   ],
