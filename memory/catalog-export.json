@@ -1758,9 +1758,28 @@
       ],
       "type": "gap",
       "updated_at": "2026-09-26T00:42:12.47108+00:00"
+    },
+    {
+      "attributes": {
+        "reasoning": "MCP access lets Hermes self-discover the Ollama endpoint and self-log to the catalog, directly serving the bootstrap-handoff mandate; local-LLM routing is narrower and easier once MCP exists",
+        "security_status": "deprioritized, not resolved - external firewall mitigates but tunnel/LAN exposure is still open"
+      },
+      "body": "User deprioritized the GATEWAY_ALLOW_ALL_USERS/0.0.0.0 security exposure since the external firewall already blocks internet access; between the remaining structural gaps, MCP-connecting the catalog comes before wiring Ollama as a local-LLM provider, so Hermes can start managing its own capabilities/config instead of depending on Claude Code for each one.",
+      "created_at": "2026-09-26T01:38:25.079047+00:00",
+      "id": "d86b251d-6e06-4441-b805-2c93a24000e2",
+      "key": "hermes-priority-mcp-before-local-llm-2026-09-26",
+      "name": "MCP-server wiring prioritized ahead of local-LLM tier; security exposure deprioritized",
+      "tags": [
+        "hermes",
+        "vps",
+        "decision",
+        "priority"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-26T01:38:25.079047+00:00"
     }
   ],
-  "exported_at": "2026-09-26T00:49:51.185714+00:00",
+  "exported_at": "2026-09-26T01:38:29.261252+00:00",
   "relations": [
     {
       "attributes": {},
@@ -2970,6 +2989,36 @@
       "object_type": "entity",
       "predicate": "informs",
       "subject_key": "hermes-parallel-session-building-setup-tooling-2026-09-26",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-26T01:38:25.102843+00:00",
+      "id": "d0d86c33-3dd4-456b-84ce-1032a7be9cb4",
+      "object_key": "hermes-no-mcp-servers-configured-2026-09-26",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-priority-mcp-before-local-llm-2026-09-26",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-26T01:38:25.114335+00:00",
+      "id": "7f9b93ba-4c69-495c-994d-c679da989769",
+      "object_key": "hermes-no-local-llm-tier-wired-2026-09-26",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-priority-mcp-before-local-llm-2026-09-26",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-26T01:38:25.125239+00:00",
+      "id": "0fffe89d-d813-4392-9a64-babb08956b38",
+      "object_key": "hermes-master-harness-role-2026-09-23",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-priority-mcp-before-local-llm-2026-09-26",
       "subject_type": "entity"
     }
   ],
