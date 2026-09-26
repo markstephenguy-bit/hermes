@@ -1708,9 +1708,28 @@
       ],
       "type": "gap",
       "updated_at": "2026-09-26T00:42:12.47108+00:00"
+    },
+    {
+      "attributes": {
+        "example_deliverable": "script for correctly setting up a new project within Hermes",
+        "status": "in_progress",
+        "tool": "Hermes agent session (not Claude Code)"
+      },
+      "body": "User is separately working in a Hermes session (using Hermes agent directly, not Claude Code) on setup tooling, e.g. a script to scaffold a new project the correct way within Hermes; the gap-audit findings from this session should not be remediated blind since each has non-trivial downstream/corresponding actions and may overlap with that work.",
+      "created_at": "2026-09-26T00:45:25.193089+00:00",
+      "id": "2286bd9a-424b-4932-9221-054e8aefaa45",
+      "key": "hermes-parallel-session-building-setup-tooling-2026-09-26",
+      "name": "User running a parallel session inside Hermes itself to build correct internal setup tooling",
+      "tags": [
+        "hermes",
+        "coordination",
+        "gap-analysis"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-26T00:45:25.193089+00:00"
     }
   ],
-  "exported_at": "2026-09-26T00:42:32.349805+00:00",
+  "exported_at": "2026-09-26T00:45:27.987612+00:00",
   "relations": [
     {
       "attributes": {},
@@ -2910,6 +2929,16 @@
       "object_type": "entity",
       "predicate": "blocks",
       "subject_key": "hermes-gateway-no-messaging-platforms-connected-2026-09-26",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-26T00:45:25.216374+00:00",
+      "id": "96c8a5d7-cb0b-4500-a266-49b0cdd1b71c",
+      "object_key": "hermes-vps-functional-gap-audit-2026-09-26",
+      "object_type": "entity",
+      "predicate": "informs",
+      "subject_key": "hermes-parallel-session-building-setup-tooling-2026-09-26",
       "subject_type": "entity"
     }
   ],
