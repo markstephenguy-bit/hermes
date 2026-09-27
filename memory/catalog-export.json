@@ -1904,9 +1904,39 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-27T23:02:16.830587+00:00"
+    },
+    {
+      "attributes": {
+        "correction": "Ollama runs as Scheduled Task OllamaService (SYSTEM context), NOT a Windows Service - Restart-Service Ollama does not work, use Stop-ScheduledTask/Start-ScheduledTask -TaskName OllamaService instead",
+        "env_vars_set_machine_level": {
+          "HTTPS_PROXY": "http://192.168.40.250:3128",
+          "HTTP_PROXY": "http://192.168.40.250:3128",
+          "NO_PROXY": "localhost,127.0.0.1,192.168.40.100",
+          "OLLAMA_KV_CACHE_TYPE": "q8_0"
+        },
+        "follow_up_available": "q8_0 KV cache roughly halves memory per context token - num_ctx on qwen3-vl:8b-hermes could now be raised from 64K toward ~96-128K while still leaving multi-GB headroom, not yet done pending user confirmation",
+        "host": "w_workstation",
+        "method": "Salt REST API (client=local, tgt=w_workstation, fun=cmd.run, shell=powershell) authenticated via PAM eauth using the server-mark-sudo catalog secret - a pre-established automation credential, not a live interactive password",
+        "squid_acl_already_sufficient": "original acl workstation src 192.168.40.100 / http_access allow workstation already covered this - no Squid changes needed for this direction",
+        "verified": "Ollama API responsive post-restart, model reloaded into VRAM, full generation succeeded (14.9s incl. cold load)"
+      },
+      "body": "User caught a wrong direction: the Squid proxy was needed for Ollamas own outbound internet traffic on w_workstation (to avoid Zscaler interference), not for hermes-vps reaching Ollamas LAN API - reverted the incorrect complexity_router.py Squid-routing change. Also discovered Ollama on w_workstation is NOT a registered Windows Service (contradicts prior architecture notes/catalog entries) - it runs as a SYSTEM-context Scheduled Task named OllamaService. Set HTTP_PROXY/HTTPS_PROXY (Machine-level) to the existing Squid proxy (192.168.40.250:3128, whose original ACL already allowed w_workstation), plus OLLAMA_KV_CACHE_TYPE=q8_0, both applied and verified live via the Salt API (no interactive credentials used).",
+      "created_at": "2026-09-27T23:30:48.626075+00:00",
+      "id": "fffb3a47-f4ab-49b1-8e42-f0ff0451e907",
+      "key": "ollama-outbound-proxy-and-scheduled-task-correction-2026-09-27",
+      "name": "Fixed Ollama outbound Zscaler routing; corrected wrong Windows-Service assumption",
+      "tags": [
+        "hermes",
+        "ollama",
+        "w_workstation",
+        "correction",
+        "milestone"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-27T23:30:48.626075+00:00"
     }
   ],
-  "exported_at": "2026-09-27T23:02:17.313421+00:00",
+  "exported_at": "2026-09-27T23:30:48.818166+00:00",
   "relations": [
     {
       "attributes": {},
@@ -3196,6 +3226,16 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-vps-complexity-router-live-2026-09-27",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-27T23:30:48.685668+00:00",
+      "id": "32a9ec0c-98af-41d4-b424-7b55773e887f",
+      "object_key": "hermes-vps-ollama-set-as-primary-2026-09-27",
+      "object_type": "entity",
+      "predicate": "corrects",
+      "subject_key": "ollama-outbound-proxy-and-scheduled-task-correction-2026-09-27",
       "subject_type": "entity"
     }
   ],
