@@ -1847,9 +1847,34 @@
       ],
       "type": "gap",
       "updated_at": "2026-09-26T00:42:00.303707+00:00"
+    },
+    {
+      "attributes": {
+        "fallback_configured": "openai-codex/gpt-5.6-sol via fallback_model block",
+        "host": "hermes-vps + w_workstation",
+        "latency_caveat": "full hermes chat turn (with tool-schema system prompt) took 78s for a trivial one-line reply due to the models thinking/chain-of-thought mode - real usability tradeoff flagged to user, not yet resolved (disabling thinking mode is the likely fix if latency is unacceptable)",
+        "num_ctx_chosen": 65536,
+        "pending_user_action": "set OLLAMA_KV_CACHE_TYPE=q8_0 as a Machine-level env var on w_workstation + restart Ollama service (needs Windows admin, cannot be done via Ollama API alone) - would roughly halve KV cache cost, allowing num_ctx to be raised to ~96-128K while still leaving multi-GB headroom",
+        "reason_for_64k_not_higher": "fp16 KV cache math leaves no VRAM headroom above 64K on this card - user explicitly wants extra space, so did not push higher without KV cache quantization",
+        "vram_math": "weights ~5.7GB (Q4_K_M) + ~144KiB/token fp16 KV cache (36 layers, 8 KV heads, head_dim 128) - at 64K context thats ~9GB KV cache, ~15.7GB total of 16GB card, leaves almost no headroom"
+      },
+      "body": "User requested Ollama as PRIMARY (not just selectable) with full capability (web search/tools, image/vision) and VRAM headroom on w_workstations 16GB RTX A4000. Created qwen3-vl:8b-hermes (custom Modelfile, num_ctx=65536 baked in, same underlying blob as qwen3-vl:8b so no extra disk cost). Set model.provider/model.default to ollama/qwen3-vl:8b-hermes in hermes-vps config.yaml, moved prior default (openai-codex/gpt-5.6-sol) to fallback_model. Verified via hermes chat -q with no --provider flag.",
+      "created_at": "2026-09-27T22:43:53.862615+00:00",
+      "id": "18f73d9e-5a35-428e-8ee4-31d28f373ea2",
+      "key": "hermes-vps-ollama-set-as-primary-2026-09-27",
+      "name": "Ollama qwen3-vl promoted to primary default model on hermes-vps",
+      "tags": [
+        "hermes",
+        "vps",
+        "ollama",
+        "local-llm",
+        "milestone"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-27T22:43:53.862615+00:00"
     }
   ],
-  "exported_at": "2026-09-27T20:47:57.752885+00:00",
+  "exported_at": "2026-09-27T22:43:54.842678+00:00",
   "relations": [
     {
       "attributes": {},
@@ -3119,6 +3144,16 @@
       "object_type": "entity",
       "predicate": "resolves",
       "subject_key": "hermes-vps-ollama-provider-live-2026-09-27",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-27T22:43:54.009479+00:00",
+      "id": "c180537a-7210-4db4-ad46-e46142a7ab8b",
+      "object_key": "hermes-vps-ollama-provider-live-2026-09-27",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-vps-ollama-set-as-primary-2026-09-27",
       "subject_type": "entity"
     }
   ],
