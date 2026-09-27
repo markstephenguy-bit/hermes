@@ -1610,34 +1610,6 @@
     },
     {
       "attributes": {
-        "config_path": "/home/hermes/.hermes/config.yaml",
-        "expected_endpoint": "Ollama on w_workstation via 10.60.0.0/24 tunnel",
-        "host": "hermes-vps",
-        "status": "open",
-        "sub_steps": [
-          "confirm Ollama endpoint/port on w_workstation and reachability over tunnel",
-          "design decision: hermes fallback_model only triggers on errors/rate-limits, not free-first preference - tiered routing likely needs a skill/MCP decision layer",
-          "add provider block to config.yaml",
-          "verify Ollama bind stays tunnel+LAN only",
-          "end-to-end test + latency check before defaulting to it"
-        ]
-      },
-      "body": "config.yaml only defines openai-codex and a legacy vultr provider; nothing routes to Ollama on w_workstation over the WireGuard tunnel, so the architectures Tier 2 free-local-inference routing is not actually live and every query bills against ChatGPT Plus/Codex.",
-      "created_at": "2026-09-26T00:42:00.303707+00:00",
-      "id": "d55bcecd-926b-4578-ad02-c5b05c738e92",
-      "key": "hermes-no-local-llm-tier-wired-2026-09-26",
-      "name": "hermes-vps has no local-LLM (Ollama/w_workstation) provider configured",
-      "tags": [
-        "hermes",
-        "vps",
-        "gap-analysis",
-        "architecture"
-      ],
-      "type": "gap",
-      "updated_at": "2026-09-26T00:42:00.303707+00:00"
-    },
-    {
-      "attributes": {
         "example_deliverable": "script for correctly setting up a new project within Hermes",
         "status": "in_progress",
         "tool": "Hermes agent session (not Claude Code)"
@@ -1815,9 +1787,69 @@
       ],
       "type": "gap",
       "updated_at": "2026-09-26T00:42:10.101931+00:00"
+    },
+    {
+      "attributes": {
+        "context_window": 262144,
+        "endpoint": "http://192.168.40.100:11434/v1",
+        "host": "hermes-vps",
+        "model": "qwen3-vl:8b",
+        "model_capabilities": [
+          "completion",
+          "vision",
+          "tools",
+          "thinking"
+        ],
+        "not_yet_done": "this makes the endpoint usable via --provider ollama, not the default/auto-routed model - tiered local-first routing (architecture Tier 1-2-3) is still a separate open design decision",
+        "quirk": "thinking-model output sometimes wraps final answer in \\boxed{} LaTeX-style formatting, not a plain string - parsing/prompting may need to account for this",
+        "rejected_model": "qwen2.5:14b - real context 32768, below Hermes hard 64K minimum, deleted from Ollama after swap"
+      },
+      "body": "Added providers.ollama to hermes-vps config.yaml pointing at w_workstation Ollama over the WireGuard tunnel (192.168.40.100:11434/v1). First attempt (qwen2.5:14b) was rejected by Hermes hard 64K context-minimum check (real context 32K, not a config workaround case). Swapped to qwen3-vl:8b (256K native context, vision+tools+completion capabilities confirmed via /api/tags) per user requirement that the endpoint support web search/tool-calling and image reading, not just meet the context floor. Verified end-to-end via hermes chat --provider ollama --model qwen3-vl:8b.",
+      "created_at": "2026-09-27T20:47:57.203616+00:00",
+      "id": "291fa55d-26e7-4e4f-87d0-d942a82ad2a2",
+      "key": "hermes-vps-ollama-provider-live-2026-09-27",
+      "name": "Ollama on w_workstation wired into hermes-vps as a provider",
+      "tags": [
+        "hermes",
+        "vps",
+        "ollama",
+        "local-llm",
+        "milestone"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-27T20:47:57.203616+00:00"
+    },
+    {
+      "attributes": {
+        "config_path": "/home/hermes/.hermes/config.yaml",
+        "expected_endpoint": "Ollama on w_workstation via 10.60.0.0/24 tunnel",
+        "host": "hermes-vps",
+        "resolution": "resolved via hermes-vps-ollama-provider-live-2026-09-27 - qwen3-vl:8b pulled and wired as providers.ollama, verified end-to-end. Automatic local-first tiered routing (vs manual --provider selection) remains a separate open design decision, not yet built.",
+        "status": "resolved",
+        "sub_steps": [
+          "confirm Ollama endpoint/port on w_workstation and reachability over tunnel",
+          "design decision: hermes fallback_model only triggers on errors/rate-limits, not free-first preference - tiered routing likely needs a skill/MCP decision layer",
+          "add provider block to config.yaml",
+          "verify Ollama bind stays tunnel+LAN only",
+          "end-to-end test + latency check before defaulting to it"
+        ]
+      },
+      "body": "config.yaml only defines openai-codex and a legacy vultr provider; nothing routes to Ollama on w_workstation over the WireGuard tunnel, so the architectures Tier 2 free-local-inference routing is not actually live and every query bills against ChatGPT Plus/Codex.",
+      "created_at": "2026-09-26T00:42:00.303707+00:00",
+      "id": "d55bcecd-926b-4578-ad02-c5b05c738e92",
+      "key": "hermes-no-local-llm-tier-wired-2026-09-26",
+      "name": "hermes-vps has no local-LLM (Ollama/w_workstation) provider configured",
+      "tags": [
+        "hermes",
+        "vps",
+        "gap-analysis",
+        "architecture"
+      ],
+      "type": "gap",
+      "updated_at": "2026-09-26T00:42:00.303707+00:00"
     }
   ],
-  "exported_at": "2026-09-26T02:12:09.461758+00:00",
+  "exported_at": "2026-09-27T20:47:57.752885+00:00",
   "relations": [
     {
       "attributes": {},
@@ -3077,6 +3109,16 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-vps-catalog-mcp-server-live-2026-09-26",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-27T20:47:57.292689+00:00",
+      "id": "36eb973f-3c65-474f-8c4c-37937319ad10",
+      "object_key": "hermes-no-local-llm-tier-wired-2026-09-26",
+      "object_type": "entity",
+      "predicate": "resolves",
+      "subject_key": "hermes-vps-ollama-provider-live-2026-09-27",
       "subject_type": "entity"
     }
   ],
