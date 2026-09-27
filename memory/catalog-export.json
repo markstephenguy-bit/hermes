@@ -1970,9 +1970,32 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-27T23:39:25.731887+00:00"
+    },
+    {
+      "attributes": {
+        "host": "hermes-vps + w_workstation",
+        "test_1": "hermes chat --provider ollama --model qwen3-vl:8b-hermes -q, correct answer, 23s",
+        "test_2": "hermes chat -q (default path, no flag), correct answer, 16s",
+        "transient_issue": "w_workstation briefly fully unreachable (ping 100% loss from hermes-vps, up to 75% from server on same LAN, salt-minion Not connected) then self-resolved within a few minutes - user attributed to a known w_workstation network issue unrelated to Hermes/Ollama changes"
+      },
+      "body": "Tested the actual expected production workflow per user request: Hermes on hermes-vps making requests to qwen3-vl:8b-hermes on w_workstation Ollama over the WireGuard tunnel, both via explicit --provider ollama flag and via the actual configured default (no flag). Both returned correct answers to simple arithmetic questions within expectation (19 for 12+7, 42 for 25+17), 16-23s latency. Hit a transient w_workstation network issue mid-test (100% then partial packet loss from both hermes-vps and server, Salt minion briefly showing Not connected) that resolved on its own - user confirmed this was a known w_workstation network issue, not related to the recent NSSM/proxy changes.",
+      "created_at": "2026-09-27T23:47:58.860527+00:00",
+      "id": "da6d8391-c78e-4d21-9e86-8023ebb21c36",
+      "key": "hermes-vps-to-ollama-production-path-verified-2026-09-27",
+      "name": "Verified the real production path: hermes-vps to Ollama over WireGuard, default and explicit",
+      "tags": [
+        "hermes",
+        "ollama",
+        "vps",
+        "w_workstation",
+        "verification",
+        "milestone"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-27T23:47:58.860527+00:00"
     }
   ],
-  "exported_at": "2026-09-27T23:39:26.551132+00:00",
+  "exported_at": "2026-09-27T23:47:59.677520+00:00",
   "relations": [
     {
       "attributes": {},
@@ -3282,6 +3305,16 @@
       "object_type": "entity",
       "predicate": "resolves",
       "subject_key": "ollama-converted-to-real-windows-service-2026-09-27",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-27T23:47:58.88276+00:00",
+      "id": "433c7af0-bae7-4a75-9a62-ddd6a8585e03",
+      "object_key": "ollama-converted-to-real-windows-service-2026-09-27",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-vps-to-ollama-production-path-verified-2026-09-27",
       "subject_type": "entity"
     }
   ],
