@@ -1934,9 +1934,45 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-27T23:30:48.626075+00:00"
+    },
+    {
+      "attributes": {
+        "env_vars_carried_over": "Machine-level HTTP_PROXY/HTTPS_PROXY/NO_PROXY/OLLAMA_KV_CACHE_TYPE from prior fix apply automatically to the new service process, no changes needed",
+        "host": "w_workstation",
+        "lmstudio_proxy_verification": "confirmed via lmstudio-ai/lmstudio-bug-tracker issue #1588 (open) - LM Studio ignores HTTP_PROXY/HTTPS_PROXY entirely, no workaround exists",
+        "method": "Salt REST API, same PAM eauth pattern as prior fixes, no interactive credentials used",
+        "old_setup_removed": "scheduled task OllamaService (BootTrigger, SYSTEM S-1-5-18, no crash recovery) deleted via schtasks /delete",
+        "service_config": {
+          "AppExit_Default": "Restart",
+          "AppRestartDelay": "3000ms",
+          "ObjectName": "LocalSystem",
+          "Start": "SERVICE_AUTO_START",
+          "logs": "C:\\ProgramData\\nssm\\ollama-stdout.log / ollama-stderr.log"
+        },
+        "tool": "NSSM 2.24 (https://nssm.cc/release/nssm-2.24.zip), installed to C:\\ProgramData\\nssm",
+        "verification": [
+          "API responsive post-install",
+          "full generation succeeded",
+          "crash-recovery live-tested: killed process, NSSM auto-restarted with new PID within 5s, service stayed Running and healthy"
+        ]
+      },
+      "body": "Before converting, verified LM Studio genuinely cannot use a proxy (open upstream bug, ignores HTTP_PROXY/HTTPS_PROXY entirely, no in-app setting) - confirms the original Ollama-over-LM-Studio decision was technically correct. Since Ollama.exe does not implement the Windows Service Control Protocol itself, sc create would fail (Error 1053 pattern); used NSSM 2.24 (official nssm.cc release) to wrap it as a proper service. Deleted the old BootTrigger scheduled task, installed OllamaService as an NSSM-managed service running as LocalSystem, AppExit Default Restart for crash recovery. Verified end-to-end: API responsive, generation succeeded, and crash-recovery actually tested by killing the process (PID changed, service auto-restarted, stayed healthy).",
+      "created_at": "2026-09-27T23:39:25.731887+00:00",
+      "id": "49bc3c32-d56c-44ef-be58-dd5a5f4b285e",
+      "key": "ollama-converted-to-real-windows-service-2026-09-27",
+      "name": "Converted OllamaService from Scheduled Task to real Windows Service via NSSM",
+      "tags": [
+        "hermes",
+        "ollama",
+        "w_workstation",
+        "milestone",
+        "reliability"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-27T23:39:25.731887+00:00"
     }
   ],
-  "exported_at": "2026-09-27T23:30:48.818166+00:00",
+  "exported_at": "2026-09-27T23:39:26.551132+00:00",
   "relations": [
     {
       "attributes": {},
@@ -3236,6 +3272,16 @@
       "object_type": "entity",
       "predicate": "corrects",
       "subject_key": "ollama-outbound-proxy-and-scheduled-task-correction-2026-09-27",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-27T23:39:25.800682+00:00",
+      "id": "ee9413ab-66bc-467d-9d80-afdf73c41075",
+      "object_key": "ollama-outbound-proxy-and-scheduled-task-correction-2026-09-27",
+      "object_type": "entity",
+      "predicate": "resolves",
+      "subject_key": "ollama-converted-to-real-windows-service-2026-09-27",
       "subject_type": "entity"
     }
   ],
