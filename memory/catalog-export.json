@@ -2250,9 +2250,52 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-28T02:13:00.461733+00:00"
+    },
+    {
+      "attributes": {
+        "fix_direction": "add a real web_search + url_fetch MCP tool (or reuse an existing provider) so research-shaped requests resolve in 1-3 calls instead of dozens",
+        "observed": "35L MOS research task took 29 tool calls (curl w/ UA spoofing, HTML/JS regex scraping, jina.ai reader fallback, PDF reads) to answer a simple factual question",
+        "root_cause": "no structured web-search or url-fetch capability registered as an MCP tool; agent falls back to shell curl + BeautifulSoup/regex against raw HTML/JS, retrying different endpoints on failure",
+        "self_repair_observed": "agent auto-created a skill source-grounded-current-research at the end of the run, but that only encodes the scraping workaround, not a fix for the missing capability",
+        "user_reaction": "flagged it as strange that a simple request required that much processing"
+      },
+      "body": "User observed Hermes burning ~29 tool calls (curl scraping, regex parsing, jina.ai reader, PDF reads) to answer a simple MOS research question, exposing that Hermes has no dedicated web_search/url_fetch tool and instead brute-forces research via raw shell scraping.",
+      "created_at": "2026-09-28T02:19:57.153913+00:00",
+      "id": "537c5ef0-3e94-4823-992f-3e715ced6e46",
+      "key": "hermes-research-lacks-web-search-tool-2026-09-27",
+      "name": "Hermes has no dedicated web_search/fetch tool, so research tasks brute-force via raw curl+regex scraping",
+      "tags": [
+        "hermes",
+        "gap-analysis",
+        "tools",
+        "research"
+      ],
+      "type": "gap",
+      "updated_at": "2026-09-28T02:19:57.153913+00:00"
+    },
+    {
+      "attributes": {
+        "cpu_cores": 4,
+        "cpu_model": "Intel Xeon W-2225",
+        "cpu_threads": 8,
+        "gpu": "NVIDIA RTX A4000 16GB",
+        "ram_gib": 63.7
+      },
+      "body": "Verified live via Salt cmd.run (Get-CimInstance): CPU is Intel Xeon W-2225 @4.10GHz, 4 physical cores/8 logical processors. RAM is 68433559552 bytes = 63.7GiB. GPU is NVIDIA RTX A4000 (WMI AdapterRAM field under-reports as ~4GB due to a known 32-bit DWORD overflow bug - actual card is 16GB per prior confirmed specs).",
+      "created_at": "2026-09-28T02:23:05.422155+00:00",
+      "id": "1b06d03f-be08-4662-9df7-f4c45977f66d",
+      "key": "w-workstation-hardware-specs-2026-09-28",
+      "name": "w_workstation hardware: Xeon W-2225 (4c/8t), 63.7GiB RAM, RTX A4000 16GB VRAM",
+      "tags": [
+        "hermes",
+        "w_workstation",
+        "hardware"
+      ],
+      "type": "fact",
+      "updated_at": "2026-09-28T02:23:05.422155+00:00"
     }
   ],
-  "exported_at": "2026-09-28T02:13:00.826680+00:00",
+  "exported_at": "2026-09-28T02:23:06.106484+00:00",
   "relations": [
     {
       "attributes": {},
