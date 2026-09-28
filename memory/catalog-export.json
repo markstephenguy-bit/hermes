@@ -2539,9 +2539,33 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-28T22:03:09.884094+00:00"
+    },
+    {
+      "attributes": {
+        "cpu_clock_mhz": 4104,
+        "cpu_max_clock_mhz": 4104,
+        "gpu_idle_pstate": "P8",
+        "gpu_power_draw_idle_w": 10.28,
+        "gpu_power_limit_w": 140.0,
+        "measured_tokens_per_sec": 63.1,
+        "power_plan": "Balanced"
+      },
+      "body": "User asked to verify local models are not constrained by something on the workstation. GPU idle state shows only GpuIdle as the active clock-limit reason (no power cap/thermal/driver throttle); CPU runs at its full rated 4104MHz even at low load; a timed real generation (556 tokens, 8.8s) measured ~63 tok/s, consistent with expected memory-bandwidth-bound full-speed inference for an 8.8B Q4 model on this cards ~448GB/s bandwidth, not a throttled number. Only unverified variable: Windows power plan is Balanced not High Performance, though this should not affect NVIDIA GPU power states.",
+      "created_at": "2026-09-28T22:05:56.746019+00:00",
+      "id": "6082fefb-0058-4cf9-bb60-0b1674b03af4",
+      "key": "workstation-no-throttling-confirmed-2026-09-28",
+      "name": "Confirmed live: w_workstation GPU/CPU are not throttling the local model",
+      "tags": [
+        "hermes",
+        "w_workstation",
+        "hardware",
+        "performance"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-28T22:05:56.746019+00:00"
     }
   ],
-  "exported_at": "2026-09-28T22:03:10.223022+00:00",
+  "exported_at": "2026-09-28T22:05:56.888108+00:00",
   "relations": [
     {
       "attributes": {},
