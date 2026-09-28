@@ -2089,9 +2089,46 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-28T00:25:18.985087+00:00"
+    },
+    {
+      "attributes": {
+        "capabilities_confirmed": [
+          "completion",
+          "vision",
+          "tools"
+        ],
+        "cleanup": "removed append_nothink() from complexity_router.py - dead code now that the model does not think at all",
+        "complex_routing_still_verified": "refactor/race-condition keyword prompt still correctly triggers verdict=complex and escalates to Codex post-swap",
+        "host": "w_workstation + hermes-vps",
+        "measured_latency": {
+          "after_instruct_model": "0.6-0.9s, 6-16 completion tokens for equivalent trivial questions",
+          "before_thinking_model": "0.6-93s depending on cache/cold state, 337-2413 completion tokens"
+        },
+        "new_model": "qwen3-vl:8b-hermes-instruct (custom tag, num_ctx=65536, from qwen3-vl:8b-instruct)",
+        "old_models_deleted": [
+          "qwen3-vl:8b",
+          "qwen3-vl:8b-hermes"
+        ],
+        "tool_calling_verified": "direct test with a get_hosts function definition produced a correct tool_calls response, finish_reason=tool_calls, 16 completion tokens"
+      },
+      "body": "User questioned whether the thinking-mode model was the right choice at all, given the routing architecture already sends anything hard to Codex - the local tiers actual job is fast/simple, which a thinking model is structurally mismatched to. Researched and found qwen3-vl:8b-instruct, an official non-thinking sibling variant (capabilities: completion/vision/tools, no thinking) - same architecture, context, and VRAM footprint as the thinking build, but without its broken/unfixable template bug. Verified: tool-calling still works correctly (16 completion tokens for a clean tool_calls response), and a repeat of the exact same capital-of-Japan question that took 93s cold and 11-18s warm on the thinking model now takes 0.6-0.9s even with a full 14.7K-token cold system prompt. Removed the now-unnecessary /nothink workaround from complexity_router.py. Deleted the old qwen3-vl:8b and qwen3-vl:8b-hermes (thinking) models to reclaim disk. Complex-routing to Codex verified still intact post-swap.",
+      "created_at": "2026-09-28T00:33:39.309862+00:00",
+      "id": "c0b15705-b853-45f3-8706-25962179ac15",
+      "key": "ollama-swapped-to-instruct-variant-2026-09-28",
+      "name": "Swapped Hermes primary model from qwen3-vl:8b (thinking) to qwen3-vl:8b-instruct - resolves latency issue at the root instead of mitigating it",
+      "tags": [
+        "hermes",
+        "ollama",
+        "w_workstation",
+        "local-llm",
+        "performance",
+        "milestone"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-28T00:33:39.309862+00:00"
     }
   ],
-  "exported_at": "2026-09-28T00:25:19.407774+00:00",
+  "exported_at": "2026-09-28T00:33:39.547935+00:00",
   "relations": [
     {
       "attributes": {},
@@ -3441,6 +3478,26 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "qwen3-vl-nothink-workaround-2026-09-28",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-28T00:33:39.434815+00:00",
+      "id": "5a28f40f-91be-4fad-bd46-8254f824499c",
+      "object_key": "qwen3-vl-nothink-workaround-2026-09-28",
+      "object_type": "entity",
+      "predicate": "supersedes",
+      "subject_key": "ollama-swapped-to-instruct-variant-2026-09-28",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-28T00:33:39.483049+00:00",
+      "id": "36d196ca-0939-4d85-aac2-b182eccbb757",
+      "object_key": "hermes-vps-ollama-set-as-primary-2026-09-27",
+      "object_type": "entity",
+      "predicate": "supersedes",
+      "subject_key": "ollama-swapped-to-instruct-variant-2026-09-28",
       "subject_type": "entity"
     }
   ],
