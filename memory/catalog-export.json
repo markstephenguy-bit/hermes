@@ -2595,9 +2595,34 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-28T22:39:21.308496+00:00"
+    },
+    {
+      "attributes": {
+        "host": "hermes-vps + w_workstation",
+        "measured_speedup": "63.1 -> 102.7 tok/s",
+        "new_model": "qwen3-vl:4b-hermes-instruct",
+        "new_num_ctx": 131072,
+        "old_model": "qwen3-vl:8b-hermes-instruct",
+        "old_num_ctx": 98304,
+        "rollback": "old tag and config.yaml.bak still present"
+      },
+      "body": "Built qwen3-vl:4b-hermes-instruct (FROM qwen3-vl:4b-instruct, num_ctx=131072) after benchmarking showed it beats the 8b on every axis: 102.7 tok/s vs 63.1, 3.07GiB vs 5.72GiB weights, identical tool-calling/vision correctness. Updated config.yaml model.default and providers.ollama.models, restarted hermes-gateway.service, verified clean startup. Old qwen3-vl:8b-hermes-instruct tag left in place as a rollback option, not deleted. Caveat: 3 already-running TUI sessions on hermes-vps still have the old model pinned via process args (--model qwen3-vl:8b-hermes-instruct) and won't pick up the switch until restarted individually.",
+      "created_at": "2026-09-28T22:43:48.005938+00:00",
+      "id": "64136c5f-e980-4793-9523-cebd35ae2338",
+      "key": "switched-live-model-to-4b-2026-09-28",
+      "name": "Switched Hermes primary model to qwen3-vl:4b-hermes-instruct (from 8b), 128K context",
+      "tags": [
+        "hermes",
+        "ollama",
+        "qwen3-vl",
+        "config-change",
+        "milestone"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-28T22:43:48.005938+00:00"
     }
   ],
-  "exported_at": "2026-09-28T22:39:22.045273+00:00",
+  "exported_at": "2026-09-28T22:43:49.498945+00:00",
   "relations": [
     {
       "attributes": {},
