@@ -2126,9 +2126,39 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-28T00:33:39.309862+00:00"
+    },
+    {
+      "attributes": {
+        "file": "NEXT_SESSION.md",
+        "open_questions_seeded": [
+          "model quality vs alternatives (gemma4:12b, qwen3:8b) not benchmarked, only speed/tool-calling verified",
+          "num_ctx headroom recalculation now that q8_0 is live",
+          "routellm/bert upfront classifier still not built",
+          "classify() word-count false-positive risk on Hermes User:/Assistant: embedded text",
+          "post-hoc looks_inadequate() thresholds untuned against real usage"
+        ],
+        "scope_excluded": [
+          "RDP/VNC/laptop sleep settings",
+          "email",
+          "GATEWAY_ALLOW_ALL_USERS security exposure (separately tracked, deprioritized)"
+        ]
+      },
+      "body": "This session (RDP/VNC setup, laptop sleep, email, Squid routing, Ollama model selection and swap, latency root-causing) got too broad to be a good seed for continued work. Replaced NEXT_SESSION.md with a tight seed scoped only to: is qwen3-vl:8b-hermes-instruct actually the right model (only 2 candidates ever tested), should num_ctx go higher now that q8_0 KV cache is live, replacing the keyword classifier with routellm/bert, the messages-format caveat in classify(), and untuned post-hoc thresholds.",
+      "created_at": "2026-09-28T00:35:29.973585+00:00",
+      "id": "47b7705b-3de1-434f-b43d-16452e2e2dfe",
+      "key": "next-session-seed-ollama-validation-2026-09-28",
+      "name": "Rewrote NEXT_SESSION.md as a scoped seed for validating/refining the Ollama local-model setup",
+      "tags": [
+        "hermes",
+        "session-seed",
+        "ollama",
+        "documentation"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-28T00:35:29.973585+00:00"
     }
   ],
-  "exported_at": "2026-09-28T00:33:39.547935+00:00",
+  "exported_at": "2026-09-28T00:35:30.572934+00:00",
   "relations": [
     {
       "attributes": {},
@@ -3498,6 +3528,16 @@
       "object_type": "entity",
       "predicate": "supersedes",
       "subject_key": "ollama-swapped-to-instruct-variant-2026-09-28",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-28T00:35:29.994772+00:00",
+      "id": "982b3e0c-5bb1-4e61-889b-9574fae60c14",
+      "object_key": "ollama-swapped-to-instruct-variant-2026-09-28",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "next-session-seed-ollama-validation-2026-09-28",
       "subject_type": "entity"
     }
   ],
