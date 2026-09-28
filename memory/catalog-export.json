@@ -2395,6 +2395,29 @@
     },
     {
       "attributes": {
+        "codex_sessions": 25,
+        "codex_tokens": 53959007,
+        "local_sessions_combined": 11,
+        "local_tokens_combined": 111213,
+        "period": "2026-09-25 to 2026-09-28"
+      },
+      "body": "Ran hermes insights --days 7 as part of a full feature walkthrough. Over Sep 25-28 (mostly before today fixes): 25 sessions used gpt-5.6-sol totaling 53,959,007 tokens; local qwen3-vl variants combined totaled roughly 111,213 tokens across 11 sessions. This is strong quantified retrospective confirmation of the user real-usage complaint that escalation to Codex was far too eager - consistent with the keyword-heuristic false positives and the Smart Approvals misrouting bug fixed earlier today, both of which predate this token window.",
+      "created_at": "2026-09-28T22:54:43.141261+00:00",
+      "id": "2d969bfc-b2ea-4c3b-a3a4-e5eca43c9dad",
+      "key": "hermes-insights-codex-token-skew-2026-09-28",
+      "name": "hermes insights confirms massive pre-fix Codex over-escalation: 53.96M tokens on Codex vs ~111K on local models over 7 days",
+      "tags": [
+        "hermes",
+        "ollama",
+        "complexity-router",
+        "insights",
+        "cost"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-28T22:54:43.141261+00:00"
+    },
+    {
+      "attributes": {
         "action_taken": "not reused - a separate hermes-vps-brave-search-api-key was already generated and deployed; no need to consolidate right now",
         "idea_flagged_not_built": "user suggested Open WebUI itself could be wired up as another MCP server for Hermes (it already runs in their home lab) - deprioritized behind getting web_search reliability solid first, not rejected",
         "plan_limits": "1 req/sec, 2000 req/month, shared across all keys on the plan",
@@ -2642,7 +2665,7 @@
       "updated_at": "2026-09-28T22:43:48.005938+00:00"
     }
   ],
-  "exported_at": "2026-09-28T22:50:28.622431+00:00",
+  "exported_at": "2026-09-28T22:55:00.019644+00:00",
   "relations": [
     {
       "attributes": {},
@@ -4102,6 +4125,16 @@
       "object_type": "entity",
       "predicate": "supersedes",
       "subject_key": "router-llm-as-judge-rebuild-2026-09-28",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-28T22:54:43.168515+00:00",
+      "id": "e9eeb2b3-143f-4837-88d8-c3b395dfe17d",
+      "object_key": "router-llm-as-judge-rebuild-2026-09-28",
+      "object_type": "entity",
+      "predicate": "confirms",
+      "subject_key": "hermes-insights-codex-token-skew-2026-09-28",
       "subject_type": "entity"
     }
   ],
