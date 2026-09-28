@@ -2178,9 +2178,59 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-28T02:07:23.315983+00:00"
+    },
+    {
+      "attributes": {
+        "current_headroom_gib": 5.78,
+        "current_num_ctx": 65536,
+        "option_128k_headroom_gib": 1.28,
+        "option_96k_headroom_gib": 3.53,
+        "recommendation": "96K (98304) as safer raise; 128K technically fits but leaves little margin on a shared workstation GPU",
+        "weights_gib": 5.72
+      },
+      "body": "qwen3-vl:8b (36 layers, 8 KV heads, head_dim 128) at current 64K num_ctx uses 4.5GiB KV cache with q8_0 (was 9GiB fp16), leaving ~5.8GiB headroom on the 16GB A4000; raising to 128K would leave only ~1.3GiB headroom (tight), 96K leaves ~3.5GiB (safer middle ground). Not yet applied, pending user decision.",
+      "created_at": "2026-09-28T02:11:07.843829+00:00",
+      "id": "bad94d46-a156-442d-ace6-74c3f9c1d675",
+      "key": "num-ctx-headroom-recalc-q8-2026-09-28",
+      "name": "Recalculated VRAM headroom for qwen3-vl:8b-hermes-instruct num_ctx under q8_0 KV cache",
+      "tags": [
+        "hermes",
+        "ollama",
+        "vram",
+        "num_ctx"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-28T02:11:07.843829+00:00"
+    },
+    {
+      "attributes": {
+        "affects": "agent/title_generator.py (Hermes core, not this repo)",
+        "observed_completion_tokens": [
+          1727,
+          2413,
+          1449,
+          3250
+        ],
+        "reproduction_attempts": "did not reproduce with short test exchanges - content-dependent",
+        "requested_max_tokens": 500
+      },
+      "body": "Router log showed several title_generation calls (system_prompt_chars=312, matching agent/title_generator.py TITLE_PROMPT) with completion_tokens=1727-3250 despite max_tokens=500 requested and finish_reason not length; direct reproduction attempts with similar short exchanges returned correctly (6-8 tokens), so the failure is content-dependent, not a max_tokens/router bug. The router's looks_inadequate() does not catch this class (checks empty/refusal/truncation/repetition, not instruction-following/length-mismatch), so a bad title just gets silently truncated to 80 chars by title_generator.py. This is direct evidence relevant to the open model-quality-benchmarking question.",
+      "created_at": "2026-09-28T02:11:08.029331+00:00",
+      "id": "c61c289b-b6d6-460c-831c-b2623d1c57c8",
+      "key": "title-generation-runaway-output-finding-2026-09-28",
+      "name": "Found: qwen3-vl:8b-hermes-instruct occasionally ignores title-generation format instructions and free-runs 1700-3250 tokens (30-66s) instead of a 3-7 word title",
+      "tags": [
+        "hermes",
+        "ollama",
+        "model-quality",
+        "qwen3-vl",
+        "open-question"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-28T02:11:08.029331+00:00"
     }
   ],
-  "exported_at": "2026-09-28T02:07:27.502636+00:00",
+  "exported_at": "2026-09-28T02:11:19.168208+00:00",
   "relations": [
     {
       "attributes": {},
