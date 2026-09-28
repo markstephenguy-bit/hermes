@@ -2563,9 +2563,41 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-28T22:05:56.746019+00:00"
+    },
+    {
+      "attributes": {
+        "file": "scripts/complexity_router.py",
+        "hard_gates_unchanged": [
+          "has_image",
+          "bounded_task max_tokens<=32"
+        ],
+        "host": "hermes-vps",
+        "judge_max_tokens": 8,
+        "judge_timeout_s": 10.0,
+        "removed": [
+          "COMPLEX_KEYWORDS",
+          "WORD_COUNT_THRESHOLD",
+          "CODE_BLOCK_LINE_THRESHOLD"
+        ],
+        "verified_live": true
+      },
+      "body": "User corrected the architecture: local model exists purely to save Codex token usage and should lose a request the moment Codex would give a meaningfully better answer - not gated by keyword/length heuristics. Also clarified vision is a capability floor not a quality preference, since Codex's ChatGPT-OAuth backend literally rejects image_url content with HTTP 400 (confirmed in Hermes's own conversation_loop.py image-rejection-recovery code) - Codex would answer blind, not better. Rebuilt classify(): has_image() and the bounded-task max_tokens<=32 bypass stay as hard gates (capability floors), everything else now goes through judge_classify() - a bounded (max_tokens=8) call asking the local model itself LOCAL or ESCALATE, framed around local being nearly free and Codex costing real money, only escalating for meaningfully better results. Judge call fails open to local on any error/timeout. Deployed and verified live: a genuinely deep multi-step reasoning question correctly triggered escalate, a trivial factual question correctly stayed local, a properly-shaped Smart Approvals call resolved in 0.5s with no judge overhead (bounded-task bypass), and an image-bearing message stayed local regardless of complexity language (has_image gate). COMPLEX_KEYWORDS and the word-count/code-block heuristics were removed entirely.",
+      "created_at": "2026-09-28T22:39:21.308496+00:00",
+      "id": "eca9b9d8-c38d-43b1-b3ed-86141544abbc",
+      "key": "router-llm-as-judge-rebuild-2026-09-28",
+      "name": "Replaced complexity_router.py's keyword heuristic with an LLM-as-judge economic router",
+      "tags": [
+        "hermes",
+        "ollama",
+        "complexity-router",
+        "architecture",
+        "llm-as-judge"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-28T22:39:21.308496+00:00"
     }
   ],
-  "exported_at": "2026-09-28T22:05:56.888108+00:00",
+  "exported_at": "2026-09-28T22:39:22.045273+00:00",
   "relations": [
     {
       "attributes": {},
@@ -4005,6 +4037,26 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "router-bounded-task-bypass-2026-09-28",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-28T22:39:21.367072+00:00",
+      "id": "dc31fcad-7f36-4f82-9b30-cb025f873335",
+      "object_key": "router-keyword-substring-bugfix-2026-09-28",
+      "object_type": "entity",
+      "predicate": "supersedes",
+      "subject_key": "router-llm-as-judge-rebuild-2026-09-28",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-28T22:39:21.377726+00:00",
+      "id": "7c930a3f-65be-4e97-8841-840e1bf6b70c",
+      "object_key": "router-bounded-task-bypass-2026-09-28",
+      "object_type": "entity",
+      "predicate": "supersedes",
+      "subject_key": "router-llm-as-judge-rebuild-2026-09-28",
       "subject_type": "entity"
     }
   ],
