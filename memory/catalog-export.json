@@ -1993,9 +1993,41 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-27T23:47:58.860527+00:00"
+    },
+    {
+      "attributes": {
+        "considered_but_deferred": "RouteLLM (routellm/bert, self-hosted BERT classifier trained on real preference data, generalizes across model pairs without retraining) identified as the proper upfront classifier to replace the keyword heuristic with - not yet implemented, current upfront classify() is still the keyword/length heuristic",
+        "detection_signals": [
+          "empty response",
+          "refusal language patterns (I cannot / I am unable to / etc)",
+          "finish_reason == length (truncated mid-answer)",
+          "degenerate repetition (>30% repeated 6-word windows)"
+        ],
+        "host": "hermes-vps",
+        "tradeoff": "simple/qwen path no longer streams progressively to Hermes - full response is buffered and inspected before relaying, then repackaged as SSE if streaming was requested. Total latency unaffected, only the visual typing effect is lost",
+        "verified": [
+          "unit test: all 4 signals correctly flagged bad content, a genuine good answer passed clean",
+          "live test: max_tokens=5 starved qwens thinking mode of all its budget before any answer content, producing a real empty response that the router correctly caught and 503d"
+        ]
+      },
+      "body": "User identified a real gap: the upfront classifier only judges the question, never the answer - if qwen gave an empty/refusal/truncated/degenerate response to a question that looked simple, Hermes would just display it with no idea anything was wrong. Added looks_inadequate() checking Ollama actual response content for: empty, refusal-language patterns, finish_reason=length (truncation), and degenerate n-gram repetition. Requires buffering the full upstream response before relaying (forces stream:false to Ollama regardless of what Hermes requested, then repackages as SSE chunks if Hermes wanted streaming) - loses live token-by-token display on the simple path in exchange for this safety net; total wait time unaffected. Verified all 4 detection cases via direct unit test, and proved the real 503-triggering path live: a max_tokens-starved request produced a genuine empty response from qwen and was correctly caught and escalated.",
+      "created_at": "2026-09-28T00:01:29.933702+00:00",
+      "id": "560203ec-9921-427f-ba86-89432b3e4af9",
+      "key": "hermes-vps-posthoc-response-escalation-2026-09-27",
+      "name": "Added post-hoc response-quality escalation to complexity_router.py",
+      "tags": [
+        "hermes",
+        "vps",
+        "ollama",
+        "routing",
+        "reliability",
+        "milestone"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-28T00:01:29.933702+00:00"
     }
   ],
-  "exported_at": "2026-09-27T23:47:59.677520+00:00",
+  "exported_at": "2026-09-28T00:01:30.777474+00:00",
   "relations": [
     {
       "attributes": {},
@@ -3315,6 +3347,16 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-vps-to-ollama-production-path-verified-2026-09-27",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-28T00:01:29.957216+00:00",
+      "id": "0c682c10-73df-4dae-aa8b-d4d3cc4368c5",
+      "object_key": "hermes-vps-complexity-router-live-2026-09-27",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-vps-posthoc-response-escalation-2026-09-27",
       "subject_type": "entity"
     }
   ],
