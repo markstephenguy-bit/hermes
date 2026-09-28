@@ -91,7 +91,13 @@ def classify(messages: list[dict]) -> tuple[str, str]:
             return "complex", f"code_block_lines={block.count(chr(10))} > {CODE_BLOCK_LINE_THRESHOLD}"
 
     for kw in COMPLEX_KEYWORDS:
-        if kw in lower:
+        # \b before (not after) the keyword: several entries are deliberate
+        # prefix stems (e.g. "optimi" -> optimize/optimization, "architect"
+        # -> architecture), but a bare substring match also fired mid-word
+        # on unrelated text ("prove" inside "approve"/"disprove"/"improve" -
+        # seen live in production logs). Anchoring the start only fixes that
+        # false-positive class while preserving the intended prefix matches.
+        if re.search(r"\b" + re.escape(kw), lower):
             return "complex", f"keyword={kw!r}"
 
     numbered_items = len(re.findall(r"(?m)^\s*\d+[.)]\s", text))
