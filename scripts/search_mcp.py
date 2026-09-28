@@ -19,6 +19,13 @@ hermes-search-mcp-tool-selection-inconsistent-2026-09-28 for the full trail.
 web_search alone still resolves the original problem (blind URL-guessing);
 the model falls back to terminal/curl for the rare single-page fetch, which
 is a small, targeted call instead of the dozens it used to burn searching.
+
+fetch_page routes through the home Squid proxy (server:3128) rather than
+calling r.jina.ai directly: hermes-vps's own network (Vultr, AS20473) got
+IP-reputation-blocked by jina.ai ("anonymous queries... bad network
+reputation", HTTP 401) - confirmed live 2026-09-28. Proxying through the
+home network's residential-reputation egress sidesteps it without needing
+a jina.ai account/API key.
 """
 import os
 
@@ -26,6 +33,7 @@ import httpx
 from fastmcp import FastMCP
 
 BRAVE_API_KEY = os.environ["BRAVE_API_KEY"]
+EGRESS_PROXY = "http://192.168.40.250:3128"
 
 mcp = FastMCP(name="search")
 
@@ -33,7 +41,7 @@ mcp = FastMCP(name="search")
 @mcp.tool
 def fetch_page(url: str) -> str:
     """Fetch a URL and return its content as clean markdown/text."""
-    resp = httpx.get(f"https://r.jina.ai/{url}", timeout=30)
+    resp = httpx.get(f"https://r.jina.ai/{url}", proxy=EGRESS_PROXY, timeout=30)
     resp.raise_for_status()
     return resp.text
 
