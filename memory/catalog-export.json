@@ -2025,9 +2025,37 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-28T00:01:29.933702+00:00"
+    },
+    {
+      "attributes": {
+        "fix": "OLLAMA_KEEP_ALIVE=24h set at Machine level via Salt, OllamaService (NSSM) restarted to pick it up",
+        "host": "w_workstation",
+        "measured": {
+          "cold_case": "93s total (model reload + 0% cache hit)",
+          "warm_case_cache_hit": "11s (prompt_tokens=14724, cached=14715 = 99.9%)",
+          "warm_case_first_hit": "17s (prompt_tokens=14724, cached=0)"
+        },
+        "method": "diagnosis via router-level logging (elapsed time, prompt_tokens, cached_tokens from Ollama usage field); fix applied via Salt REST API, no interactive credentials",
+        "root_cause": "Ollama default OLLAMA_KEEP_ALIVE=5m evicts model+cache on idle, causing compounding cold-reload + cold-prefill on the next request after any gap over 5 minutes",
+        "structural_factor_not_fixed": "Hermes own system prompt is ~14.7K tokens (10 MCP tools + built-ins + SOUL.md) regardless of caching - a genuinely cold cache (e.g. after 24h) will still pay this prefill cost once; reducing registered tool count would lower this baseline but was not done"
+      },
+      "body": "User correctly rejected cold-load speculation and demanded real data. Added timing/token logging to complexity_router.py. Found: Hermes sends a ~14,724-token system prompt on every turn (10 MCP tools + built-ins + SOUL.md/memory), dwarfing any actual question. Ollama does prompt-prefix caching - a warm cache hit reused 14,715 of 14,724 tokens (99.9%), dropping a repeat trivial question to 6-11s total. The 93s outlier happened because Ollamas default keep_alive (5 min) evicts both the model from VRAM AND the prompt cache after any idle gap, so the next request pays full model-reload plus full 14.7K-token cold prefill simultaneously. Fixed by setting OLLAMA_KEEP_ALIVE=24h (Machine-level env var) and restarting the service.",
+      "created_at": "2026-09-28T00:19:20.843015+00:00",
+      "id": "d5a4fc57-ee84-4228-a353-c61fc6ec9e1f",
+      "key": "ollama-93s-latency-root-cause-and-fix-2026-09-28",
+      "name": "Root-caused the 93s simple-query latency: compounding cold-model-reload + cold-prompt-cache",
+      "tags": [
+        "hermes",
+        "ollama",
+        "w_workstation",
+        "performance",
+        "milestone"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-28T00:19:20.843015+00:00"
     }
   ],
-  "exported_at": "2026-09-28T00:01:30.777474+00:00",
+  "exported_at": "2026-09-28T00:19:22.107768+00:00",
   "relations": [
     {
       "attributes": {},
@@ -3357,6 +3385,16 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-vps-posthoc-response-escalation-2026-09-27",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-28T00:19:20.867144+00:00",
+      "id": "1b8fd898-81ae-43a6-8fe8-1669abbeb01a",
+      "object_key": "hermes-vps-to-ollama-production-path-verified-2026-09-27",
+      "object_type": "entity",
+      "predicate": "resolves",
+      "subject_key": "ollama-93s-latency-root-cause-and-fix-2026-09-28",
       "subject_type": "entity"
     }
   ],

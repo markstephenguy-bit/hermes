@@ -28,6 +28,7 @@ import json
 import logging
 import os
 import re
+import time
 
 import httpx
 from fastapi import FastAPI, Request
@@ -180,11 +181,13 @@ async def chat_completions(request: Request):
     wanted_stream = bool(body.get("stream"))
     ollama_body = {**body, "stream": False}  # always buffer upstream so we can inspect before relaying
 
+    t0 = time.monotonic()
     async with httpx.AsyncClient(timeout=300) as client:
         upstream = await client.post(
             f"{OLLAMA_BASE_URL}/v1/chat/completions",
             json=ollama_body,
         )
+    elapsed = time.monotonic() - t0
 
     if upstream.status_code != 200:
         return JSONResponse(status_code=upstream.status_code, content=upstream.json())
@@ -194,6 +197,14 @@ async def chat_completions(request: Request):
     message = choice.get("message", {})
     content = message.get("content", "")
     finish_reason = choice.get("finish_reason", "stop")
+    usage = data.get("usage", {})
+    log.info(
+        "timing elapsed=%.1fs prompt_tokens=%s cached_tokens=%s completion_tokens=%s system_prompt_chars=%d",
+        elapsed, usage.get("prompt_tokens"),
+        usage.get("prompt_tokens_details", {}).get("cached_tokens"),
+        usage.get("completion_tokens"),
+        sum(len(m.get("content") or "") for m in messages if m.get("role") == "system"),
+    )
 
     bad, why = looks_inadequate(content, finish_reason)
     if bad:
