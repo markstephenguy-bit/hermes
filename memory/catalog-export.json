@@ -2228,9 +2228,31 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-28T02:11:08.029331+00:00"
+    },
+    {
+      "attributes": {
+        "host": "w_workstation",
+        "method": "ollama /api/create (FROM qwen3-vl:8b-instruct)",
+        "new_num_ctx": 98304,
+        "old_num_ctx": 65536,
+        "user_approved": true
+      },
+      "body": "Recreated the qwen3-vl:8b-hermes-instruct Ollama tag via /api/create (FROM qwen3-vl:8b-instruct, same params, num_ctx 65536 to 98304). Verified live: parameters report num_ctx=98304 and a functional test call still responds correctly. Leaves ~3.5GiB VRAM headroom per prior calc.",
+      "created_at": "2026-09-28T02:13:00.461733+00:00",
+      "id": "c230ef69-188a-4c22-a495-78b8838439df",
+      "key": "num-ctx-raised-to-96k-2026-09-28",
+      "name": "Applied num_ctx=98304 (96K) to qwen3-vl:8b-hermes-instruct, user-approved after headroom recalculation",
+      "tags": [
+        "hermes",
+        "ollama",
+        "num_ctx",
+        "config-change"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-28T02:13:00.461733+00:00"
     }
   ],
-  "exported_at": "2026-09-28T02:11:19.168208+00:00",
+  "exported_at": "2026-09-28T02:13:00.826680+00:00",
   "relations": [
     {
       "attributes": {},
