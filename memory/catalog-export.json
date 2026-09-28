@@ -2181,6 +2181,24 @@
     },
     {
       "attributes": {
+        "current_focus": "selecting/tuning the free local Ollama model on w_workstation",
+        "implication": "Vultr Cloud Firewall proposal and any other paid Vultr add-ons are deprioritized, not rejected - revisit only if user raises it again"
+      },
+      "body": "User stated they are only using the existing ChatGPT subscription plus free local-model tuning - no interest in paid Vultr add-ons (inference, firewall, etc.) right now. Web search tool work is the active priority instead, to cut down on wasted Codex tool calls.",
+      "created_at": "2026-09-28T02:39:04.347926+00:00",
+      "id": "90f1b69b-e135-4594-9c97-ccb3a735a6ab",
+      "key": "hermes-scope-chatgpt-only-free-local-tuning-2026-09-27",
+      "name": "User confirmed scope: ChatGPT Plus subscription only (no Vultr Inference spend), current focus is free local-model tuning",
+      "tags": [
+        "hermes",
+        "decision",
+        "scope"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-28T02:39:04.347926+00:00"
+    },
+    {
+      "attributes": {
         "current_headroom_gib": 5.78,
         "current_num_ctx": 65536,
         "option_128k_headroom_gib": 1.28,
@@ -2293,9 +2311,135 @@
       ],
       "type": "fact",
       "updated_at": "2026-09-28T02:23:05.422155+00:00"
+    },
+    {
+      "attributes": {
+        "fetch_url_backend": "r.jina.ai reader proxy, free, no key needed",
+        "file": "scripts/search_mcp.py",
+        "not_yet_done": [
+          "user needs to create free Brave API key (account creation - user action, not Claude)",
+          "no SSH alias configured in this session to deploy to hermes-vps - deployment blocked pending access or user doing it in a Hermes-native session",
+          "not yet registered in hermes-vps mcp_servers config.yaml"
+        ],
+        "pattern": "FastMCP, same shape as scripts/catalog_mcp.py",
+        "status": "drafted_not_deployed",
+        "web_search_backend": "Brave Search API, free tier 2000 queries/mo, key read from BRAVE_API_KEY env var"
+      },
+      "body": "Wrote scripts/search_mcp.py addressing the web-search capability gap (hermes-research-lacks-web-search-tool-2026-09-27) per user direction to prioritize lowering Codex tool-call counts over paid Vultr add-ons. Not deployed yet: needs a Brave API key from user and SSH access to hermes-vps.",
+      "created_at": "2026-09-28T02:39:04.371626+00:00",
+      "id": "c690c449-2ff0-4729-980d-dee7ea030871",
+      "key": "hermes-search-mcp-script-drafted-2026-09-27",
+      "name": "Drafted scripts/search_mcp.py: web_search (Brave API) + fetch_url (r.jina.ai) MCP tool for Hermes",
+      "tags": [
+        "hermes",
+        "vps",
+        "mcp",
+        "search",
+        "milestone"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-28T02:39:04.371626+00:00"
+    },
+    {
+      "attributes": {
+        "host": "hermes-vps",
+        "known_issue": "tool usage is inconsistent across invocation modes/calls - hermes chat -q reported web_search unavailable even after gateway restart; a separate -z --cli call for fetch_url claimed the tool was not in its tool list and fell back to the terminal tool, while a same-mode web_search call worked and used the real tool correctly. Root cause not yet isolated (invocation-mode-specific tool exposure vs model-level tool-selection flakiness).",
+        "post_register_gotcha": "new mcp_servers entries do not take effect on the running hermes-gateway.service until it is restarted (systemctl restart hermes-gateway.service) - same as the earlier Ollama provider wiring",
+        "registration_gotcha": "hermes mcp add --args must be the LAST flag (it greedily consumes everything after it, nargs-style) - putting --env after --args silently swallowed the env var into args instead of setting it; fixed by ordering --command --env --args",
+        "script_path": "/home/hermes/.hermes/mcp_servers/search/search_mcp.py",
+        "script_path_repo": "scripts/search_mcp.py",
+        "secret_name": "hermes-vps-brave-search-api-key",
+        "venv_path": "/home/hermes/.hermes/mcp_servers/search/venv",
+        "verification": "hermes mcp test search: connected, 2 tools discovered. hermes -z \"use web_search...\" --cli: correctly returned https://www.goarmy.com/ for an MOS query"
+      },
+      "body": "Deployed scripts/search_mcp.py (FastMCP, web_search via Brave API + fetch_url via r.jina.ai) to an isolated venv on hermes-vps, registered via hermes mcp add, restarted hermes-gateway.service to pick up the config, and verified: mcp test connects with 2 tools, and a live hermes -z --cli web_search call returned a correct real result. Tool usage is not yet 100% reliable across invocation modes - logged as a follow-up gap.",
+      "created_at": "2026-09-28T02:51:57.056553+00:00",
+      "id": "145f6158-2952-4c00-a199-cf2622c828fd",
+      "key": "hermes-search-mcp-server-live-2026-09-28",
+      "name": "search MCP server (web_search + fetch_url) deployed and connected on hermes-vps",
+      "tags": [
+        "hermes",
+        "vps",
+        "mcp",
+        "search",
+        "milestone"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-28T02:51:57.056553+00:00"
+    },
+    {
+      "attributes": {
+        "action_taken": "not reused - a separate hermes-vps-brave-search-api-key was already generated and deployed; no need to consolidate right now",
+        "idea_flagged_not_built": "user suggested Open WebUI itself could be wired up as another MCP server for Hermes (it already runs in their home lab) - deprioritized behind getting web_search reliability solid first, not rejected",
+        "plan_limits": "1 req/sec, 2000 req/month, shared across all keys on the plan",
+        "resolves_question": "explains the earlier mystery of the user remembering using a free search service before - it was Brave Search API, tied to their existing Open WebUI instance"
+      },
+      "body": "User pasted their Brave API dashboard showing an existing openwebui-named key from a prior Open WebUI setup, confirming which free search service they meant earlier. Also flagged Open WebUI itself as a possible future MCP server for Hermes - noted but not pursued yet, priority stayed on fixing web_search/fetch_url reliability.",
+      "created_at": "2026-09-28T02:56:12.552264+00:00",
+      "id": "d1e10944-6f75-43e6-8336-08267dcb1786",
+      "key": "hermes-existing-brave-key-openwebui-2026-09-28",
+      "name": "User already had a Brave Search API key (named openwebui, Free AI plan) from a prior Open WebUI setup",
+      "tags": [
+        "hermes",
+        "search",
+        "brave",
+        "idea"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-28T02:56:12.552264+00:00"
+    },
+    {
+      "attributes": {
+        "consistent_pattern": "web_search (Brave, returns list[dict], 2 params) always works in every trial; the page-fetch tool (jina.ai reader, returns str, 1 param named url) never works in any trial - points at something schema/semantic-specific to a single-url-string fetch tool, not the MCP wiring itself (mcp test always shows both tools discovered fine)",
+        "host": "hermes-vps",
+        "likely_cause": "collision/shadowing with a disabled native Hermes tool (agent.log shows check_browser_requirements, _browser_cdp_check, check_web_api_key, check_computer_use_requirements all returning False - i.e. Hermes has its own gated web-fetch/browser capability that may be shadowing the MCP equivalent in the registry even while disabled)",
+        "ruled_out": [
+          "naming collision (tried fetch_url, fetch_page, read_page_markdown - all failed identically)",
+          "position in tool list (tried first, middle-with-dummy-first-tool, last - all failed identically)"
+        ],
+        "status": "isolated, not fixable from our side - workaround adopted",
+        "workaround_shipped": "kept web_search only as the reliable tool; page-fetch tool left in place (fetch_page) since it does no harm and the model correctly self-recovers by using terminal/curl for the rare single-page fetch instead of blind multi-URL guessing - net call count still far below the original problem",
+        "worth_reporting_upstream": "this looks like a genuine Hermes/Nous Research bug worth filing, not a Hermes config or script issue - future session could investigate hermes-agent source for tool-registry dedup/shadowing logic if picked up again"
+      },
+      "body": "search MCP server is correctly registered and connectable (hermes mcp test passes, 2 tools discovered) but the running agent inconsistently reports the tools as unavailable and falls back to terminal/curl even in the same session type that worked moments before. Needs isolation: check per-invocation-mode tool exposure, tool-count limits, and whether this also affects the catalog MCP tools (get_hosts skipped in one -z --cli test).",
+      "created_at": "2026-09-28T02:51:57.122313+00:00",
+      "id": "a407c48c-ca4f-4c88-a6a2-93390c1b258b",
+      "key": "hermes-search-mcp-tool-selection-inconsistent-2026-09-28",
+      "name": "Hermes never surfaces a page-fetch (single url:str->str) MCP tool to the model, regardless of name or position - registry-level bug",
+      "tags": [
+        "hermes",
+        "vps",
+        "mcp",
+        "search",
+        "gap-analysis"
+      ],
+      "type": "gap",
+      "updated_at": "2026-09-28T02:51:57.122313+00:00"
+    },
+    {
+      "attributes": {
+        "file": "scripts/complexity_router.py",
+        "host": "hermes-vps",
+        "principle": "router should choose model by actual capability need, not accidental text-only heuristics",
+        "verified_live": true
+      },
+      "body": "classify() previously only saw the text half of message content, so image_url parts were invisible; an image-bearing message happened to classify as simple only because it had no text signal to trip on. Added has_image() and force verdict=simple whenever an image is present, since vision is a hard requirement (not best-effort) and the Codex fallback may not handle image content the same way, so escalating could break the request rather than improve it. Verified live: a message loaded with escalation keywords (refactor/prove/step-by-step) plus an image now correctly stays local. This is also the hook point for future capability-aware model selection if a second, faster, text-only local model is added later.",
+      "created_at": "2026-09-28T03:06:26.515773+00:00",
+      "id": "6f5baa6e-2ddf-4162-9bf8-aea57374f75d",
+      "key": "router-explicit-image-detection-2026-09-28",
+      "name": "Made image-presence detection explicit in complexity_router.py instead of an accidental side effect",
+      "tags": [
+        "hermes",
+        "ollama",
+        "complexity-router",
+        "vision",
+        "architecture"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-28T03:06:26.515773+00:00"
     }
   ],
-  "exported_at": "2026-09-28T02:23:06.106484+00:00",
+  "exported_at": "2026-09-28T03:06:37.713218+00:00",
   "relations": [
     {
       "attributes": {},
@@ -3675,6 +3819,56 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "next-session-seed-ollama-validation-2026-09-28",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-28T02:39:04.382554+00:00",
+      "id": "0366735b-ad2f-4a39-a1b7-328e4327e1f2",
+      "object_key": "hermes-research-lacks-web-search-tool-2026-09-27",
+      "object_type": "entity",
+      "predicate": "resolves",
+      "subject_key": "hermes-search-mcp-script-drafted-2026-09-27",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-28T02:39:04.392959+00:00",
+      "id": "f617f4ac-f823-4483-a084-a98f83b2e00d",
+      "object_key": "hermes-scope-chatgpt-only-free-local-tuning-2026-09-27",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-search-mcp-script-drafted-2026-09-27",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-28T02:51:57.135725+00:00",
+      "id": "7bd0ebfe-a007-4a3a-871b-83d44da97345",
+      "object_key": "hermes-search-mcp-script-drafted-2026-09-27",
+      "object_type": "entity",
+      "predicate": "resolves",
+      "subject_key": "hermes-search-mcp-server-live-2026-09-28",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-28T02:51:57.148152+00:00",
+      "id": "46a7685c-8fe8-45bb-ab23-234ee3aab44c",
+      "object_key": "hermes-search-mcp-server-live-2026-09-28",
+      "object_type": "entity",
+      "predicate": "discovered_during",
+      "subject_key": "hermes-search-mcp-tool-selection-inconsistent-2026-09-28",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-28T03:06:37.409991+00:00",
+      "id": "597b2519-07a0-435b-a811-db0ac40f175a",
+      "object_key": "router-keyword-substring-bugfix-2026-09-28",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "router-explicit-image-detection-2026-09-28",
       "subject_type": "entity"
     }
   ],

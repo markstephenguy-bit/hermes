@@ -78,7 +78,36 @@ def last_user_message(messages: list[dict]) -> str:
     return ""
 
 
+def has_image(messages: list[dict]) -> bool:
+    """Whether any message carries image content (e.g. image_url parts).
+
+    classify()'s word/keyword checks only ever see the *text* half of a
+    message's content list - an attached image is otherwise invisible to
+    them. That's not a deliberate design: it means an image-bearing request
+    happens to classify as "simple" only by accident (no text signal to
+    trip on), not because the router actually knows a capability decision
+    is being made. Vision is a hard requirement (not best-effort), and the
+    Codex fallback may not accept image content the same way Ollama does -
+    so escalating an image-bearing request could break it outright rather
+    than improve it. Detecting this explicitly makes "always keep images
+    local" an intentional guarantee instead of a lucky side effect, and
+    gives future multi-model routing (e.g. a separate fast text-only model)
+    a real signal to pick the vision-capable model on.
+    """
+    for msg in messages:
+        content = msg.get("content")
+        if not isinstance(content, list):
+            continue
+        for part in content:
+            if isinstance(part, dict) and part.get("type") == "image_url":
+                return True
+    return False
+
+
 def classify(messages: list[dict]) -> tuple[str, str]:
+    if has_image(messages):
+        return "simple", "image present - vision required, forced local"
+
     text = last_user_message(messages)
     lower = text.lower()
 
