@@ -2493,6 +2493,26 @@
     },
     {
       "attributes": {
+        "fetch_page": "inconsistent - works in some sessions, model claims no capability in others",
+        "reproduced": true,
+        "web_search": "reliable - tested and correct (returned real, verified Ollama version 0.34.4)"
+      },
+      "body": "Testing search MCP end-to-end through real Hermes sessions (hermes -z --cli): one session correctly used fetch_page to fetch ollama.com and report its heading. A separate, immediately-following session with a similar fetch request claimed the available tools do not support HTTP fetching at all, despite fetch_page being registered and functional (hermes mcp test search confirms 2 tools discovered). Confirms the previously-logged hermes-search-mcp-tool-selection-inconsistent-2026-09-28 issue is still live and unresolved - a Hermes-core tool-registry issue, not fixable from this repo.",
+      "created_at": "2026-09-28T22:50:28.505906+00:00",
+      "id": "69e43445-b3e8-4183-958b-060392915884",
+      "key": "search-mcp-fetch-tool-still-inconsistent-2026-09-28b",
+      "name": "Reproduced live: fetch_page tool exposure is still inconsistent across Hermes sessions",
+      "tags": [
+        "hermes",
+        "mcp",
+        "search",
+        "known-issue"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-28T22:50:28.505906+00:00"
+    },
+    {
+      "attributes": {
         "bypass_threshold_max_tokens": 32,
         "file": "scripts/complexity_router.py",
         "root_cause_file": "tools/approval.py (_smart_approve, Hermes core)",
@@ -2622,7 +2642,7 @@
       "updated_at": "2026-09-28T22:43:48.005938+00:00"
     }
   ],
-  "exported_at": "2026-09-28T22:43:49.498945+00:00",
+  "exported_at": "2026-09-28T22:50:28.622431+00:00",
   "relations": [
     {
       "attributes": {},
