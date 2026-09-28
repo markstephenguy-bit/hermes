@@ -78,6 +78,28 @@ def last_user_message(messages: list[dict]) -> str:
     return ""
 
 
+def append_nothink(messages: list[dict]) -> list[dict]:
+    """qwen3-vl:8b's Ollama template is missing thinking-control logic
+    (confirmed upstream bug: ollama/ollama#14798), so the standard
+    think:false API parameter is silently ignored for this model. Appending
+    a literal /nothink to the prompt is a trained-behavior workaround that
+    doesn't depend on the broken template - reduces thinking token count
+    ~50% and cuts variance substantially (measured: 337-371 tokens with it
+    vs. 169-2413 without), though it doesn't eliminate thinking entirely."""
+    out = [dict(m) for m in messages]
+    for msg in reversed(out):
+        if msg.get("role") == "user":
+            content = msg.get("content", "")
+            if isinstance(content, str):
+                msg["content"] = content + " /nothink"
+            elif isinstance(content, list):
+                content = list(content)
+                content.append({"type": "text", "text": "/nothink"})
+                msg["content"] = content
+            break
+    return out
+
+
 def classify(messages: list[dict]) -> tuple[str, str]:
     text = last_user_message(messages)
     lower = text.lower()
@@ -179,7 +201,7 @@ async def chat_completions(request: Request):
         )
 
     wanted_stream = bool(body.get("stream"))
-    ollama_body = {**body, "stream": False}  # always buffer upstream so we can inspect before relaying
+    ollama_body = {**body, "stream": False, "messages": append_nothink(messages)}  # always buffer upstream so we can inspect before relaying
 
     t0 = time.monotonic()
     async with httpx.AsyncClient(timeout=300) as client:

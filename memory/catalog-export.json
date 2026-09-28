@@ -2053,9 +2053,45 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-28T00:19:20.843015+00:00"
+    },
+    {
+      "attributes": {
+        "caveat": "does not fully eliminate thinking, only reduces it - qwen3-vl:8b turn latency will still vary somewhat turn to turn, just within a much tighter band than before",
+        "host": "hermes-vps + w_workstation",
+        "measured_with_nothink": [
+          357,
+          337,
+          371,
+          461
+        ],
+        "measured_without_nothink": [
+          169,
+          216,
+          282,
+          377,
+          2413
+        ],
+        "not_viable_alternatives": "capping num_predict/max_tokens does not work - thinking consumes the whole budget leaving 0 response chars (confirmed both by community reports and our own earlier max_tokens=5 test producing an empty response)",
+        "upstream_bug": "https://github.com/ollama/ollama/issues/14798 - qwen3-vl:8b missing thinking toggle template, think:false silently ignored",
+        "verified": "real hermes chat call, capital of Brazil, correct answer, 16s total, cache hit (14715/14727 cached tokens)"
+      },
+      "body": "Root cause of wildly inconsistent completion-token counts (169 to 2413 for equally trivial questions) is a confirmed upstream Ollama bug: github.com/ollama/ollama#14798 - qwen3-vl:8b ships with a bare {{ .Prompt }} template missing the thinking-control logic that plain qwen3 has, so the standard think:false API parameter is silently ignored. Tested and deployed a workaround: appending a literal /nothink to the users message (a trained-behavior effect independent of the broken template). Measured consistently: 337-371 tokens with /nothink vs 169-2413 without across repeated identical-difficulty questions - does not eliminate thinking entirely but cuts average verbosity roughly in half and dramatically reduces variance. Added append_nothink() to complexity_router.py, applied automatically to every request forwarded to Ollama.",
+      "created_at": "2026-09-28T00:25:18.985087+00:00",
+      "id": "cc1eb389-fb2a-4d2f-ad2b-c1de20bdf72b",
+      "key": "qwen3-vl-nothink-workaround-2026-09-28",
+      "name": "Diagnosed and mitigated qwen3-vl thinking-mode inconsistency: confirmed upstream Ollama bug, /nothink workaround deployed",
+      "tags": [
+        "hermes",
+        "ollama",
+        "w_workstation",
+        "performance",
+        "milestone"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-28T00:25:18.985087+00:00"
     }
   ],
-  "exported_at": "2026-09-28T00:19:22.107768+00:00",
+  "exported_at": "2026-09-28T00:25:19.407774+00:00",
   "relations": [
     {
       "attributes": {},
@@ -3395,6 +3431,16 @@
       "object_type": "entity",
       "predicate": "resolves",
       "subject_key": "ollama-93s-latency-root-cause-and-fix-2026-09-28",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-28T00:25:19.048937+00:00",
+      "id": "f1045efe-4ec0-435f-87ad-eb2f0607d2a3",
+      "object_key": "ollama-93s-latency-root-cause-and-fix-2026-09-28",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "qwen3-vl-nothink-workaround-2026-09-28",
       "subject_type": "entity"
     }
   ],
