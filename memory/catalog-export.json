@@ -2369,6 +2369,32 @@
     },
     {
       "attributes": {
+        "checked": [
+          "gemma3:12b",
+          "granite3.2-vision",
+          "mistral-small3.2:24b",
+          "llama4"
+        ],
+        "corrected_claim": "phi-4 reasoning vision does not exist on ollama.com",
+        "verdict": "qwen3-vl:8b remains the only clean vision+tools+VRAM-fit match"
+      },
+      "body": "Corrected an earlier mistaken claim: Phi-4 Reasoning Vision does not exist in the Ollama library (was cited from an unreliable aggregator blog, never verified against ollama.com directly). Checked real candidates via ollama.com/library: gemma3 (vision, no tools), granite3.2-vision (vision, no tools), mistral-small3.2:24b (vision+tools, but 15GB weights alone on a 16GB card leaves ~1GB for KV cache/context - not a fair fast-tier comparison), llama4 (vision+tools, smallest variant 67GB, does not fit at all). No other-model pull proceeded; user chose to stop here and treat qwen3-vl:8b-hermes-instruct as confirmed best-fit given current Ollama library options, pending any future model releases.",
+      "created_at": "2026-09-28T04:03:38.352497+00:00",
+      "id": "4cbe79d5-fa90-4b20-a624-9c2cd0cde12c",
+      "key": "model-comparison-search-concluded-2026-09-28",
+      "name": "Concluded live search: no Ollama-library model beats qwen3-vl:8b on vision+tools+VRAM-fit at this size class",
+      "tags": [
+        "hermes",
+        "ollama",
+        "model-quality",
+        "qwen3-vl",
+        "open-question"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-28T04:03:38.352497+00:00"
+    },
+    {
+      "attributes": {
         "action_taken": "not reused - a separate hermes-vps-brave-search-api-key was already generated and deployed; no need to consolidate right now",
         "idea_flagged_not_built": "user suggested Open WebUI itself could be wired up as another MCP server for Hermes (it already runs in their home lab) - deprioritized behind getting web_search reliability solid first, not rejected",
         "plan_limits": "1 req/sec, 2000 req/month, shared across all keys on the plan",
@@ -2437,9 +2463,36 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-28T03:06:26.515773+00:00"
+    },
+    {
+      "attributes": {
+        "backup": "config.json.bak-2026-09-28 left inside the container at the same path",
+        "bug_1": "settings.cert was still the shipped placeholder \"myserver.mydomain.com\" instead of the real address - caused \"invalid origin in http request\" when accessed via https://192.168.40.250:8086",
+        "bug_2": "domains.\"\".allowedOrigin was explicitly set to false, which blocks all origins outright (not a no-op/disable-check as the name might suggest) - removing the key entirely (not just editing it) fixed it",
+        "cert_regen": "after fixing settings.cert, MeshCentral auto-detected the TLS cert no longer matched (old cert was for myserver.mydomain.com/localhost) and regenerated all certs (~30-45s) on the next start - expected, not an error",
+        "container": "meshcentral",
+        "data_path": "/home/mark/Projects/HomeServer/docker/configs/meshcentral/data/config.json (bind-mounted, owned by root inside the container - edits need docker exec/docker cp, not direct host access as mark)",
+        "gotcha": "deleting the allowedOrigin line left a dangling trailing comma on the prior key (_certUrl) since it was last in the object - broke JSON parsing and crash-looped the container until fixed with docker cp of a corrected file",
+        "host": "server",
+        "trigger": "user hit invalid origin error during first-run admin account setup, before ever getting a device group made"
+      },
+      "body": "MeshCentral (deployed 2026-07-25 per the services table, described then as ready pending device agents) had actually never been configured past its shipped template - cert name was still the placeholder domain and allowedOrigin was explicitly false (blocks everything). Fixed via docker exec/docker cp since the bind-mounted config.json is root-owned inside the container. This was blocking the user from even completing first-run admin setup, which is a prerequisite for the planned agent rollout to laptop/w_workstation/w_desktop/w_laptop/fileserver as an RDP-kick-resilient alternative to GNOME Remote Desktop.",
+      "created_at": "2026-09-28T03:19:50.825499+00:00",
+      "id": "9e004cb4-0a86-433e-b3b5-4c3040284c66",
+      "key": "meshcentral-config-never-initialized-fixed-2026-09-28",
+      "name": "MeshCentral was still running its shipped template config.json - fixed cert name and a blocking allowedOrigin:false",
+      "tags": [
+        "meshcentral",
+        "server",
+        "docker",
+        "bugfix",
+        "hermes"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-28T03:19:50.825499+00:00"
     }
   ],
-  "exported_at": "2026-09-28T03:06:37.713218+00:00",
+  "exported_at": "2026-09-28T04:03:39.982284+00:00",
   "relations": [
     {
       "attributes": {},
