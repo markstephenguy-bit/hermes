@@ -2490,9 +2490,36 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-28T03:19:50.825499+00:00"
+    },
+    {
+      "attributes": {
+        "bypass_threshold_max_tokens": 32,
+        "file": "scripts/complexity_router.py",
+        "root_cause_file": "tools/approval.py (_smart_approve, Hermes core)",
+        "user_reported_symptoms": [
+          "escalation stayed on codex",
+          "agentic action problems",
+          "unclear if context was understood"
+        ],
+        "verified_live": true
+      },
+      "body": "User reported real-usage problems today: escalation to Codex 'stayed there', agentic actions had problems, unclear if context was understood. Traced to tools/approval.py's Smart Approvals feature (max_tokens=16, temperature=0, asks for exactly APPROVE/DENY/ESCALATE) sending the full flagged-command text through the SAME router endpoint as real chat. Long or keyword-laden shell commands (heredocs, security-scan descriptions) tripped word_count>120 or COMPLEX_KEYWORDS, escalating a should-be-instant local yes/no to Codex - during an agentic session this fires on nearly every tool call, explaining both the perceived stickiness and agentic slowness/unpredictability. Fixed by adding a bypass: requests with max_tokens<=32 always classify simple, since a tightly bounded response can't need escalation regardless of input content. Verified live: a message containing every COMPLEX_KEYWORDS entry plus word_count>120, sent with max_tokens=16, now returns verdict=simple and resolves in 0.6s.",
+      "created_at": "2026-09-28T21:56:02.941604+00:00",
+      "id": "c167a3c8-37ea-4c10-8ef1-b69b552b740b",
+      "key": "router-bounded-task-bypass-2026-09-28",
+      "name": "Found and fixed the real cause of today's 'stuck on Codex' agentic-session complaint: Smart Approvals misrouted through the same complexity gate as chat",
+      "tags": [
+        "hermes",
+        "ollama",
+        "complexity-router",
+        "bugfix",
+        "agentic"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-28T21:56:02.941604+00:00"
     }
   ],
-  "exported_at": "2026-09-28T04:03:39.982284+00:00",
+  "exported_at": "2026-09-28T21:56:03.114526+00:00",
   "relations": [
     {
       "attributes": {},
@@ -3922,6 +3949,16 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "router-explicit-image-detection-2026-09-28",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-28T21:56:03.004054+00:00",
+      "id": "752a21ed-7796-4170-baab-8b932cd57fe5",
+      "object_key": "router-explicit-image-detection-2026-09-28",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "router-bounded-task-bypass-2026-09-28",
       "subject_type": "entity"
     }
   ],

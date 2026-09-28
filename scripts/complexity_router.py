@@ -55,6 +55,7 @@ app = FastAPI()
 
 WORD_COUNT_THRESHOLD = 120
 CODE_BLOCK_LINE_THRESHOLD = 30
+BOUNDED_TASK_MAX_TOKENS = 32
 
 COMPLEX_KEYWORDS = [
     "architect", "architecture", "refactor", "debug", "optimi", "algorithm",
@@ -104,9 +105,21 @@ def has_image(messages: list[dict]) -> bool:
     return False
 
 
-def classify(messages: list[dict]) -> tuple[str, str]:
+def classify(messages: list[dict], max_tokens: int | None = None) -> tuple[str, str]:
     if has_image(messages):
         return "simple", "image present - vision required, forced local"
+
+    if max_tokens is not None and max_tokens <= BOUNDED_TASK_MAX_TOKENS:
+        # A tightly capped max_tokens (e.g. Hermes's Smart Approvals guard,
+        # tools/approval.py: max_tokens=16, "respond APPROVE/DENY/ESCALATE")
+        # means the caller already knows the answer is short and mechanical,
+        # regardless of how long or keyword-laden the *content being
+        # reviewed* is - a multi-line flagged shell command easily trips
+        # word_count/keyword checks that were written for open-ended user
+        # questions, sending a should-be-instant local yes/no to the Codex
+        # fallback instead (seen live: approval-review text tripping the
+        # same word_count>120 and keyword checks as real conversation).
+        return "simple", f"bounded task (max_tokens={max_tokens}), skipping complexity checks"
 
     text = last_user_message(messages)
     lower = text.lower()
@@ -198,7 +211,7 @@ def _wrap_as_stream_chunks(message: dict, model: str, finish_reason: str) -> byt
 async def chat_completions(request: Request):
     body = await request.json()
     messages = body.get("messages", [])
-    verdict, reason = classify(messages)
+    verdict, reason = classify(messages, max_tokens=body.get("max_tokens"))
     log.info("verdict=%s reason=%s preview=%r", verdict, reason, last_user_message(messages)[:120])
 
     if verdict == "complex":
