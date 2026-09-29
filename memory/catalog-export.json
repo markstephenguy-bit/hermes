@@ -2801,9 +2801,34 @@
       ],
       "type": "fact",
       "updated_at": "2026-09-29T02:12:41.262881+00:00"
+    },
+    {
+      "attributes": {
+        "caveat": "sudoers path is pinned to the bundled interpreter version (python-3.14.7+20260901-linux-x64); a future hermes update that bumps the bundled Python will change this path and require updating the rule",
+        "fix": "sudoers NOPASSWD scoped to the exact bundled python3 interpreter path + gateway start/stop/restart verbs, plus 'Defaults:hermes env_keep += \"HERMES_DISABLE_LAZY_INSTALLS HOME\"'",
+        "host": "hermes-vps (207.148.2.224)",
+        "issue_1": "dashboard elevates via 'sudo -n <bundled python> -I -c <bootstrap> -p default gateway restart', not systemctl directly - the officially documented systemctl-scoped sudoers snippet (messaging/index.md) does not cover this code path",
+        "issue_2": "once sudo elevation succeeded, running the CLI as root triggered venv_sync.py's refuse_foreign_owned_venv (hermes-agent checkout owned by uid 1001) - fixed by setting HERMES_DISABLE_LAZY_INSTALLS=1 in ~/.hermes/.env",
+        "issue_3": "sudo also resets HOME to /root under elevation, breaking PM's uid/HOME-keyed dependency-generation lookup (installs_root() under $HOME/.hermes/installs) even with lazy-install check skipped - fixed by env_keep'ing HOME too",
+        "sudoers_file": "/etc/sudoers.d/hermes-gateway",
+        "verified": "full pipeline test reproducing the dashboard's exact spawn call returned RC 0, gateway restarted gracefully (drain + respawn), service confirmed active afterward"
+      },
+      "body": "Fixed the hermes-vps dashboard's 'Restart Gateway' button end-to-end: needed a sudoers rule scoped to the bundled Python interpreter (not systemctl, which is a different code path) plus env_keep for HERMES_DISABLE_LAZY_INSTALLS and HOME to work around a cross-uid dependency-resolution bug when the CLI runs as root.",
+      "created_at": "2026-09-29T02:26:54.0654+00:00",
+      "id": "42a34ca3-ded5-46b8-88dc-4b523a192998",
+      "key": "hermes-vps-dashboard-restart-button-fixed-2026-09-29",
+      "name": "Dashboard's 'Restart Gateway' button fixed end-to-end on hermes-vps",
+      "tags": [
+        "hermes",
+        "deployment",
+        "vps",
+        "bugfix"
+      ],
+      "type": "fact",
+      "updated_at": "2026-09-29T02:26:54.0654+00:00"
     }
   ],
-  "exported_at": "2026-09-29T02:12:43.708180+00:00",
+  "exported_at": "2026-09-29T02:26:57.750695+00:00",
   "relations": [
     {
       "attributes": {},
