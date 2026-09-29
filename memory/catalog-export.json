@@ -2418,6 +2418,39 @@
     },
     {
       "attributes": {
+        "action_needed": "migrate to supported install method (install.sh for this Linux VPS), not fixable by patching individual pip packages since hermes-agent 0.19.0 exact-pins them",
+        "dependency_pins_affected": [
+          "cryptography==46.0.7",
+          "mcp==1.26.0",
+          "Pillow==12.2.0",
+          "starlette==1.0.1"
+        ],
+        "installed_version": "0.19.0",
+        "interim_mitigation": "inspect .git/config for fsmonitor/hooksPath/pager/editor entries before running Hermes against any repo not self-created or git-cloned",
+        "latest_github_release": "0.21.5",
+        "rce_attack_vector": "malicious .git/config [core] fsmonitor entry executed during routine git status probe, requires repo delivered as extracted archive/zip/sync folder/USB (not via git clone)",
+        "rce_cve": "CVE-2026-71963",
+        "rce_fixed_in": "0.21.2+",
+        "rce_vulnerable_range": "0.18.2-0.21.0",
+        "root_cause": "installed via uv tool install (pip-based), which NousResearch has deprecated/unsupported - supported methods are install.sh/install.ps1/Docker/Nix"
+      },
+      "body": "Investigating dependency vulnerabilities from `hermes security audit` (51 findings: cryptography, mcp SDK, pillow, starlette all exact-pinned to vulnerable versions by hermes-agent 0.19.0 itself) led to a much bigger finding: `hermes update --check` reports 'Already up to date' but ALSO warns 'pip installs are no longer an officially supported platform and will not receive further updates.' PyPI's hermes-agent package is frozen at 0.19.0 while GitHub shows real releases up to v0.21.5 (2026-09-24) - a 7-version gap. Critically, CVE-2026-71963 (RCE via malicious .git/config core.fsmonitor entry, exploitable when Hermes runs its routine git-status probe against a working directory) affects versions 0.18.2-0.21.0 and is fixed in 0.21.2+ - this installation (0.19.0) is squarely vulnerable with no fix available via its current update channel. Docs confirm supported install methods are install.sh/install.ps1/Docker/Nix, NOT pip/uv-tool - migration to a supported channel is the real fix, not patching individual pip packages against the vendor's exact-pinned dependencies.",
+      "created_at": "2026-09-29T00:30:49.196545+00:00",
+      "id": "1466c09c-aac1-4fb1-b66e-0cb630ae2548",
+      "key": "hermes-agent-stale-install-channel-rce-2026-09-28",
+      "name": "CRITICAL: hermes-vps's Hermes install is frozen on an unsupported pip/uv-tool channel, 7 versions behind, missing an actual RCE fix (CVE-2026-71963)",
+      "tags": [
+        "hermes",
+        "security",
+        "critical",
+        "rce",
+        "install-channel"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-29T00:30:49.196545+00:00"
+    },
+    {
+      "attributes": {
         "action_taken": "not reused - a separate hermes-vps-brave-search-api-key was already generated and deployed; no need to consolidate right now",
         "idea_flagged_not_built": "user suggested Open WebUI itself could be wired up as another MCP server for Hermes (it already runs in their home lab) - deprioritized behind getting web_search reliability solid first, not rejected",
         "plan_limits": "1 req/sec, 2000 req/month, shared across all keys on the plan",
@@ -2665,7 +2698,7 @@
       "updated_at": "2026-09-28T22:43:48.005938+00:00"
     }
   ],
-  "exported_at": "2026-09-28T22:55:00.019644+00:00",
+  "exported_at": "2026-09-29T00:30:49.339357+00:00",
   "relations": [
     {
       "attributes": {},
