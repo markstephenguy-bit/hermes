@@ -2696,9 +2696,92 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-28T22:43:48.005938+00:00"
+    },
+    {
+      "attributes": {
+        "action_taken": "MeshCentral agent fully uninstalled (-fulluninstall), temp installer deleted, device record removed from the home-lab mesh group",
+        "evidence": "MeshCentral agent report showed domain BPNET\\\\MGUY, upn MGUY@bpnet.gapac.com, CrowdStrike Falcon Sensor EDR installed and enabled",
+        "prior_state": "w_laptop already had a passive Salt minion added 2026-07-26 (per hosts table) before this was caught - Salt minion enrollment was not undone this session since it predates this finding and is a separate, lower-risk mechanism (no remote desktop/control capability); worth a follow-up decision on whether to remove Salt too",
+        "relates_to": "the pre-existing Georgia Pacific constraint documented in VISION.md/BACKLOG.md (no VPN/tunnel client on company-managed devices) - this generalizes that constraint beyond VPN clients to ANY home-lab remote-management enrollment",
+        "status": "resolved (agent removed)"
+      },
+      "body": "While rolling out MeshCentral agents for remote-desktop access (replacing flaky GNOME RDP), discovered w_laptop reports domain BPNET/gapac.com and has CrowdStrike EDR active - it is very likely the users Georgia Pacific work laptop, not personal hardware. User confirmed and had the MeshCentral agent immediately uninstalled and removed from the mesh. Going forward, w_laptop should be excluded from any home-lab remote-management/monitoring rollout given the pre-existing documented GP corporate-network-activity constraint.",
+      "created_at": "2026-09-29T00:44:39.553162+00:00",
+      "id": "915513c1-1320-4c92-9021-9670a76e399a",
+      "key": "w_laptop-is-gp-corporate-device-2026-09-28",
+      "name": "w_laptop is a Georgia Pacific corporate-managed device, not a personal machine - do not enroll it in home-lab remote management",
+      "tags": [
+        "hermes",
+        "meshcentral",
+        "risk",
+        "georgia-pacific",
+        "w_laptop"
+      ],
+      "type": "risk",
+      "updated_at": "2026-09-29T00:44:39.553162+00:00"
+    },
+    {
+      "attributes": {
+        "device_group": "home-lab, meshid mesh//6R7JDielIQ$UVE2IsdSWxUWhMQumn2rQnGPyDGaOFIghYXfQ0vuIpIPa1tivjqsS",
+        "key_bugs_found": [
+          "MeshCentral config.json shipped as the unedited template: cert=myserver.mydomain.com and allowedOrigin:false (blocks everything) - see meshcentral-config-never-initialized-fixed-2026-09-28",
+          "MeshCentral needs explicit settings.aliasPort when the host-mapped external port (8086) differs from the internal container port (443, already owned by nginx-proxy-manager on this host) - without it, downloaded agents bake in the wrong internal port and never connect; fixed by setting aliasPort:8086",
+          "running the downloaded agent exe bare launches an interactive/GUI mode that hangs when run headlessly (via Salt with no interactive session) - the silent/correct method is running it with -fullinstall (matches -fulluninstall used for removal)",
+          "meshctrl.js ServerInfo/etc never print output even on success - had to drive the raw websocket protocol directly (x-meshauth header, JSON actions) instead of trusting the bundled CLI"
+        ],
+        "laptop_fileserver": "need interactive sudo password the user must run themselves - one-line install commands were provided in chat, not yet confirmed run",
+        "w_desktop": "connected successfully, conn:1",
+        "w_laptop": "connected then uninstalled/removed - GP corporate device, see hermes-w_laptop-is-gp-corporate-device-2026-09-28",
+        "w_workstation": "install got stuck - meshagent.exe launched via start /wait hung (likely a SmartScreen/interactive prompt with no session to click it), which also made the salt-minion unresponsive to ANY job including test.ping despite ICMP working fine - needs physical/console check by user, not yet resolved"
+      },
+      "body": "Rolled out MeshCentral agents to replace flaky GNOME Remote Desktop. w_desktop is live and connected. w_laptop connected but was immediately removed after discovering it is a Georgia Pacific corporate device. w_workstation got stuck mid-install (Salt minion went fully unresponsive) and needs the user to check it physically. laptop and fileserver need the user to run a one-line sudo install command themselves. Found and fixed two real MeshCentral config bugs (origin/cert template, and aliasPort for Docker port remapping) plus a silent-install gotcha (-fullinstall flag required when run headlessly).",
+      "created_at": "2026-09-29T00:44:39.612597+00:00",
+      "id": "5534ecb2-7ac0-47af-8d8b-887bef1b5c78",
+      "key": "meshcentral-agent-rollout-2026-09-28",
+      "name": "MeshCentral agent rollout: w_desktop connected, w_workstation stuck, w_laptop installed then removed (GP device), laptop/fileserver pending user action",
+      "tags": [
+        "hermes",
+        "meshcentral",
+        "server",
+        "milestone",
+        "gotcha"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-29T00:44:39.612597+00:00"
+    },
+    {
+      "attributes": {
+        "backup_taken": "hermes-backup-2026-09-29-003239.zip, label pre-migration-2026-09-28",
+        "new_version": "0.21.5+4477.g449fae0 (git install.sh, supported channel)",
+        "old_version": "0.19.0 (pip/uv-tool, unsupported channel)",
+        "rce_fixed": "CVE-2026-71963, was vulnerable (0.18.2-0.21.0), now past the 0.21.2+ fix",
+        "residual_findings": "hermes-agent==0.0.0 version-string false positives + httpx2/httpcore2==2.7.0 (lower severity, vendor-pinned, low applicability to this deployment)",
+        "services_updated": [
+          "hermes-gateway.service",
+          "hermes-dashboard.service",
+          "~/.local/bin/hermes symlink"
+        ],
+        "state_db_issue": "FTS5 index corruption found mid-migration, no auto-recovery snapshot available, fixed via hermes sessions repair - 51 sessions/4944 messages recovered",
+        "verified_live": true
+      },
+      "body": "Took a full hermes backup (306.5MB, label pre-migration-2026-09-28) before starting. Ran the official install.sh non-interactively; it cloned NousResearch/hermes-agent into ~/.hermes/hermes-agent and built a new runtime (Python 3.14.7, v0.21.5+4477.g449fae0), well past the CVE-2026-71963 RCE fix (0.21.2+). The installer left ~/.local/bin/hermes and both systemd services (hermes-gateway.service, hermes-dashboard.service) pointed at the old venv - manually repointed the symlink and both ExecStart/PATH/VIRTUAL_ENV/ExecStopPost entries at the new build, backed up the old unit files first. Restart verified clean (journal shows the new hermes binary, not the old python module invocation). Migration also surfaced FTS5 corruption in state.db (malformed inverted index) with no valid pre-update snapshot for auto-recovery; fixed via `hermes sessions repair` after stopping the gateway to checkpoint the WAL - 51 sessions and 4,944 messages recovered intact, doctor now clean on that front. Re-ran `hermes security audit` post-migration: the original cryptography/mcp/Pillow/starlette findings are completely gone (51 -> new baseline). Residual findings are a hermes-agent==0.0.0 version-string artifact from the git install (false positives against ancient fixed-in versions, real version is 0.21.5) and new httpx2/httpcore2==2.7.0 findings (lower severity, require usage patterns - SOCKS proxies, malicious multipart uploads - not applicable to this deployment). Re-verified end-to-end: LLM-as-judge router, web_search, and MCP servers all still function correctly post-migration.",
+      "created_at": "2026-09-29T00:55:47.308981+00:00",
+      "id": "0dd9d1c5-637d-4ce4-a8d6-b9a635edeceb",
+      "key": "hermes-migrated-to-supported-install-2026-09-29",
+      "name": "Migrated hermes-vps from unsupported pip/uv-tool install (0.19.0) to supported git install.sh channel (v0.21.5), fixing the RCE and resolving all original dependency CVEs",
+      "tags": [
+        "hermes",
+        "security",
+        "critical",
+        "rce",
+        "install-channel",
+        "milestone"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-29T00:55:47.308981+00:00"
     }
   ],
-  "exported_at": "2026-09-29T00:30:49.339357+00:00",
+  "exported_at": "2026-09-29T00:55:48.927545+00:00",
   "relations": [
     {
       "attributes": {},
@@ -4168,6 +4251,16 @@
       "object_type": "entity",
       "predicate": "confirms",
       "subject_key": "hermes-insights-codex-token-skew-2026-09-28",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-29T00:55:47.338894+00:00",
+      "id": "9d6569e7-2ce0-455a-a8c5-e672a32216c0",
+      "object_key": "hermes-agent-stale-install-channel-rce-2026-09-28",
+      "object_type": "entity",
+      "predicate": "resolves",
+      "subject_key": "hermes-migrated-to-supported-install-2026-09-29",
       "subject_type": "entity"
     }
   ],
