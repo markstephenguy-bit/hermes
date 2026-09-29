@@ -2779,9 +2779,31 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-29T00:55:47.308981+00:00"
+    },
+    {
+      "attributes": {
+        "env_file": "/home/hermes/.hermes/.env",
+        "host": "hermes-vps (207.148.2.224)",
+        "install_user": "hermes",
+        "token_type": "unscoped classic PAT",
+        "verified_via": "hermes doctor - GitHub token accepted by api.github.com"
+      },
+      "body": "Added an unscoped GitHub personal access token to hermes-vps's .env, raising Skills Hub API rate limit from 60/hr; hermes doctor confirms it's accepted by api.github.com.",
+      "created_at": "2026-09-29T02:12:41.262881+00:00",
+      "id": "01ae1aa6-7602-4e07-8538-1ff6dc634686",
+      "key": "hermes-github-token-configured-2026-09-29",
+      "name": "GITHUB_TOKEN configured on hermes-vps, clears Skills Hub rate-limit warning",
+      "tags": [
+        "hermes",
+        "deployment",
+        "vps",
+        "github"
+      ],
+      "type": "fact",
+      "updated_at": "2026-09-29T02:12:41.262881+00:00"
     }
   ],
-  "exported_at": "2026-09-29T00:55:48.927545+00:00",
+  "exported_at": "2026-09-29T02:12:43.708180+00:00",
   "relations": [
     {
       "attributes": {},
