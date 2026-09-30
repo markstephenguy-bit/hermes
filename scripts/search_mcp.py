@@ -33,7 +33,7 @@ import httpx
 from fastmcp import FastMCP
 
 BRAVE_API_KEY = os.environ["BRAVE_API_KEY"]
-EGRESS_PROXY = "http://192.168.40.250:3128"
+EGRESS_PROXY = "http://192.168.40.2:3128"
 
 mcp = FastMCP(name="search")
 
