@@ -34,14 +34,21 @@ something Claude Code wired up once by hand.
   installed but is not the primary path — its Electron/GUI-session model
   proved awkward for remote/Salt management compared to Ollama's headless
   service model.
-- **`server`** (192.168.40.250, Ubuntu 24.04) is the existing Docker host
-  and Salt master — already runs Nginx Proxy Manager, AdGuard (LAN DNS),
-  Portainer, the catalog (`catalog-db`/`catalog-api`), and persistent home
-  services. As of 2026-09-25, also runs the WireGuard tunnel endpoint
-  (dials out to hermes-vps, self-healing via keepalive, no home router
-  port forwarding needed) and a Squid proxy (built for a Zscaler bypass
-  that turned out unnecessary — left running, restricted to
-  `w_workstation` only, in case it's useful later).
+- **`server`** (192.168.40.250, Ubuntu 24.04) is the Docker host for
+  persistent home services — Nginx Proxy Manager, AdGuard (LAN DNS),
+  Portainer, WordPress, Plex, MeshCentral, Beszel, DuckDNS. Also still the
+  Salt master (as of 2026-09-30, pending its own move — see below) and
+  previously ran the catalog, WireGuard tunnel endpoint, and Squid — all
+  three migrated off after `server` had repeated unclean crashes
+  2026-09-29/30 with no clear software root cause.
+- **`fileserver`** (192.168.40.2, Ubuntu 24.04) — previously just Samba file
+  shares + a Beszel monitoring agent, now also home to the migrated
+  automation/networking stack, each piece a separate Docker container for
+  compartmentalization: `catalog-db`/`catalog-api` (2026-09-30), Squid
+  (2026-09-30, same ACL as before), and the WireGuard tunnel endpoint
+  (2026-09-30, same keypair/identity preserved from `server` so hermes-vps
+  needed zero config changes — WireGuard peers are keyed by public key,
+  not source IP). Salt master migration is planned next but not yet done.
 - **Remote access — decided (2026-09-22):** password-gated web UI behind the
   existing DuckDNS domain (`theguylab.duckdns.org`) or direct authenticated
   Hermes web interface / Telegram / Signal interface.
@@ -53,22 +60,24 @@ something Claude Code wired up once by hand.
 
 ## Network Topology & Subnet Tunnel
 
-**Live as of 2026-09-25** (verified end-to-end: ping + catalog API + Salt
-ports all reachable from hermes-vps over the tunnel). Tunnel subnet is
-`10.60.0.0/24` (hermes-vps `10.60.0.1`, server `10.60.0.2`). The VPS
-connects to the home fileserver via a site-to-site WireGuard tunnel,
-enabling subnet routing so Hermes can address any LAN IP directly:
+**Live as of 2026-09-30** (verified end-to-end: ping + Ollama API reachable
+from hermes-vps over the tunnel, through the new path). Tunnel subnet is
+`10.60.0.0/24` (hermes-vps `10.60.0.1`, home side `10.60.0.2` — moved from
+`server` to `fileserver` on 2026-09-30, same keypair, so hermes-vps's own
+config needed no changes). The VPS connects to the real `fileserver` via a
+site-to-site WireGuard tunnel, enabling subnet routing so Hermes can
+address any LAN IP directly:
 
 ```
 [VPS: Hermes + Dokploy] (Vultr Dallas)
          │
          │  Encrypted WireGuard Subnet Tunnel
          ▼
-[Home Fileserver: 192.168.40.250] (server)
+[fileserver: 192.168.40.2] (Docker container, moved from server 2026-09-30)
    ├── net.ipv4.ip_forward = 1
-   └── iptables NAT / IP Forwarding enabled
+   └── iptables NAT + explicit FORWARD ACCEPT (wg0<->enp4s0)
          │
-         ├──► 192.168.40.100:1234  (w_workstation / LM Studio)
+         ├──► 192.168.40.100:11434 (w_workstation / Ollama)
          ├──► 192.168.40.x         (Salt / Storage / Home Services)
          └──► Entire 192.168.40.0/24 Home Subnet
 ```
