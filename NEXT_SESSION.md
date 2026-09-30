@@ -106,9 +106,9 @@ Don't re-derive it; query the catalog if you need it (see bottom).
 ## Where the full history lives
 
 This file is a snapshot, not the source of truth.
-- Full decision history: `curl "http://192.168.40.250:3003/entities?tags=cs.%7Bhermes%7D&order=created_at.desc"`
+- Full decision history: `curl "http://192.168.40.2:3003/entities?tags=cs.%7Bhermes%7D&order=created_at.desc"`
 - Everything from tonight's model-setup work specifically:
-  `curl "http://192.168.40.250:3003/entities?tags=cs.%7Bhermes%7D&body=ilike.*ollama*"`
+  `curl "http://192.168.40.2:3003/entities?tags=cs.%7Bhermes%7D&body=ilike.*ollama*"`
 - Architecture reasoning: [ARCHITECTURE.md](ARCHITECTURE.md)
 - Open questions / non-goals: [BACKLOG.md](BACKLOG.md)
 - Repo-specific working conventions: [CLAUDE.md](CLAUDE.md)

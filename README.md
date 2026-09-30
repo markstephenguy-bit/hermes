@@ -36,6 +36,6 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) and [BACKLOG.md](BACKLOG.md).
 
 This repo describes Hermes-specific design and code. It does **not**
 re-document the home network — real hosts, services, and credentials live in
-the catalog (Postgres + PostgREST at `192.168.40.250:3003`). See
+the catalog (Postgres + PostgREST at `192.168.40.2:3003`). See
 `CLAUDE.md` in this repo for how a Claude Code session working here should
 query that catalog before assuming anything about the network.

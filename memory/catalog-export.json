@@ -2,6 +2,25 @@
   "entities": [
     {
       "attributes": {
+        "criterion": "Hermes Agent installed and running anywhere, talking to LM Studio on w_workstation for at least one real exchange",
+        "phase": 1,
+        "points": 10,
+        "status": "in_progress"
+      },
+      "body": "G1 (10 pts, Phase 1 - Free tier proven): Hermes running is done (hermes-vps), but no LM Studio exchange has happened yet - not complete.",
+      "created_at": "2026-09-25T00:47:28.087822+00:00",
+      "id": "fc4dcc5e-eb34-420e-bced-0f016d85a2ad",
+      "key": "hermes-goal-g1-2026-09-23",
+      "name": "G1: Hermes Agent running and talking to LM Studio",
+      "tags": [
+        "hermes",
+        "goal"
+      ],
+      "type": "goal",
+      "updated_at": "2026-09-25T00:47:28.087822+00:00"
+    },
+    {
+      "attributes": {
         "goal": "unify home compute/storage/capability into one accessible pool, identical experience regardless of location"
       },
       "body": "User wants to transform all home network resources into a unified, supercomputer-like pool of capability, reachable with the same experience from anywhere.",
@@ -16,6 +35,43 @@
       ],
       "type": "decision",
       "updated_at": "2026-09-24T02:12:39.369626+00:00"
+    },
+    {
+      "attributes": {
+        "implication": "mostly clean high-contrast text-in-image (OCR-like), not complex natural-scene understanding",
+        "use_case": "screenshots of errors and UI states"
+      },
+      "body": "User confirmed vision is used mostly for screenshots of errors and UI states, not photos of physical objects or documents.",
+      "created_at": "2026-09-29T03:25:25.681974+00:00",
+      "id": "a4b51614-3c1f-468c-8646-a58c90bd4a7d",
+      "key": "hermes-vision-use-case-screenshots-2026-09-28",
+      "name": "Vision use case is mostly error/UI screenshots, not photos of physical objects",
+      "tags": [
+        "hermes",
+        "vision",
+        "local-model"
+      ],
+      "type": "fact",
+      "updated_at": "2026-09-29T03:25:25.681974+00:00"
+    },
+    {
+      "attributes": {
+        "criterion": "LM Studio running multiple models concurrently, confirmed reachable",
+        "phase": 1,
+        "points": 15,
+        "status": "done"
+      },
+      "body": "G2 (15 pts, Phase 1): already satisfied before this project even started - w_workstation LM Studio has gemma-4-12b-it@q4_k_m, @q8_0, and a nomic embedding model all available.",
+      "created_at": "2026-09-25T00:47:28.144254+00:00",
+      "id": "122f6e0e-22be-4046-8255-8491e99ab372",
+      "key": "hermes-goal-g2-2026-09-23",
+      "name": "G2: LM Studio running multiple models concurrently",
+      "tags": [
+        "hermes",
+        "goal"
+      ],
+      "type": "goal",
+      "updated_at": "2026-09-25T00:47:28.144254+00:00"
     },
     {
       "attributes": {
@@ -38,6 +94,27 @@
       ],
       "type": "decision",
       "updated_at": "2026-09-24T01:48:29.693422+00:00"
+    },
+    {
+      "attributes": {
+        "credentials": "root password and basic_auth hash live on the box / in Vultr console only - not stored in the catalog or repo",
+        "ip": "207.148.2.224",
+        "public_url": "https://0095e5d9-9994-48de-92c1-99f6817c6564.vultropenclaw.com",
+        "security": "Caddy reverse proxy with auto-TLS + HTTP Basic Auth in front of the dashboard; ufw firewall allows only 22/80/443 in, dashboard port not internet-reachable despite 0.0.0.0 bind",
+        "services": "hermes-dashboard.service (:9119) and hermes-gateway.service both active since deployment"
+      },
+      "body": "Verified via SSH: hermes-vps is real, reachable, and already properly secured (Caddy auto-TLS + Basic Auth, firewalled to 22/80/443 only) - no exposure issue despite the dashboard binding to 0.0.0.0.",
+      "created_at": "2026-09-25T00:43:17.668683+00:00",
+      "id": "89b0a316-5452-4f4b-b525-dcdaa1cde8ea",
+      "key": "hermes-vps-verified-reachable-2026-09-24",
+      "name": "hermes-vps verified reachable and correctly secured",
+      "tags": [
+        "hermes",
+        "deployment",
+        "vps"
+      ],
+      "type": "fact",
+      "updated_at": "2026-09-25T00:43:17.668683+00:00"
     },
     {
       "attributes": {
@@ -315,6 +392,24 @@
       ],
       "type": "goal",
       "updated_at": "2026-09-25T00:47:28.207723+00:00"
+    },
+    {
+      "attributes": {
+        "blocks": "Dokploy installation (web/container-hosting plan)",
+        "status": "open"
+      },
+      "body": "Docker is not installed on hermes-vps yet, which blocks installing Dokploy per the planned web-presence/Docker-hosting architecture.",
+      "created_at": "2026-09-25T00:43:17.743161+00:00",
+      "id": "c403b86d-d392-4389-b7b5-1f46937f0855",
+      "key": "hermes-vps-docker-not-installed-2026-09-24",
+      "name": "Docker not installed on hermes-vps - blocks Dokploy setup",
+      "tags": [
+        "hermes",
+        "deployment",
+        "vps"
+      ],
+      "type": "open-item",
+      "updated_at": "2026-09-25T00:43:17.743161+00:00"
     },
     {
       "attributes": {},
@@ -910,83 +1005,6 @@
       ],
       "type": "fact",
       "updated_at": "2026-09-25T00:40:53.510399+00:00"
-    },
-    {
-      "attributes": {
-        "credentials": "root password and basic_auth hash live on the box / in Vultr console only - not stored in the catalog or repo",
-        "ip": "207.148.2.224",
-        "public_url": "https://0095e5d9-9994-48de-92c1-99f6817c6564.vultropenclaw.com",
-        "security": "Caddy reverse proxy with auto-TLS + HTTP Basic Auth in front of the dashboard; ufw firewall allows only 22/80/443 in, dashboard port not internet-reachable despite 0.0.0.0 bind",
-        "services": "hermes-dashboard.service (:9119) and hermes-gateway.service both active since deployment"
-      },
-      "body": "Verified via SSH: hermes-vps is real, reachable, and already properly secured (Caddy auto-TLS + Basic Auth, firewalled to 22/80/443 only) - no exposure issue despite the dashboard binding to 0.0.0.0.",
-      "created_at": "2026-09-25T00:43:17.668683+00:00",
-      "id": "89b0a316-5452-4f4b-b525-dcdaa1cde8ea",
-      "key": "hermes-vps-verified-reachable-2026-09-24",
-      "name": "hermes-vps verified reachable and correctly secured",
-      "tags": [
-        "hermes",
-        "deployment",
-        "vps"
-      ],
-      "type": "fact",
-      "updated_at": "2026-09-25T00:43:17.668683+00:00"
-    },
-    {
-      "attributes": {
-        "blocks": "Dokploy installation (web/container-hosting plan)",
-        "status": "open"
-      },
-      "body": "Docker is not installed on hermes-vps yet, which blocks installing Dokploy per the planned web-presence/Docker-hosting architecture.",
-      "created_at": "2026-09-25T00:43:17.743161+00:00",
-      "id": "c403b86d-d392-4389-b7b5-1f46937f0855",
-      "key": "hermes-vps-docker-not-installed-2026-09-24",
-      "name": "Docker not installed on hermes-vps - blocks Dokploy setup",
-      "tags": [
-        "hermes",
-        "deployment",
-        "vps"
-      ],
-      "type": "open-item",
-      "updated_at": "2026-09-25T00:43:17.743161+00:00"
-    },
-    {
-      "attributes": {
-        "criterion": "Hermes Agent installed and running anywhere, talking to LM Studio on w_workstation for at least one real exchange",
-        "phase": 1,
-        "points": 10,
-        "status": "in_progress"
-      },
-      "body": "G1 (10 pts, Phase 1 - Free tier proven): Hermes running is done (hermes-vps), but no LM Studio exchange has happened yet - not complete.",
-      "created_at": "2026-09-25T00:47:28.087822+00:00",
-      "id": "fc4dcc5e-eb34-420e-bced-0f016d85a2ad",
-      "key": "hermes-goal-g1-2026-09-23",
-      "name": "G1: Hermes Agent running and talking to LM Studio",
-      "tags": [
-        "hermes",
-        "goal"
-      ],
-      "type": "goal",
-      "updated_at": "2026-09-25T00:47:28.087822+00:00"
-    },
-    {
-      "attributes": {
-        "criterion": "LM Studio running multiple models concurrently, confirmed reachable",
-        "phase": 1,
-        "points": 15,
-        "status": "done"
-      },
-      "body": "G2 (15 pts, Phase 1): already satisfied before this project even started - w_workstation LM Studio has gemma-4-12b-it@q4_k_m, @q8_0, and a nomic embedding model all available.",
-      "created_at": "2026-09-25T00:47:28.144254+00:00",
-      "id": "122f6e0e-22be-4046-8255-8491e99ab372",
-      "key": "hermes-goal-g2-2026-09-23",
-      "name": "G2: LM Studio running multiple models concurrently",
-      "tags": [
-        "hermes",
-        "goal"
-      ],
-      "type": "goal",
-      "updated_at": "2026-09-25T00:47:28.144254+00:00"
     },
     {
       "attributes": {
@@ -2722,6 +2740,36 @@
     },
     {
       "attributes": {
+        "method": "pg_dump --data-only -Fc from old catalog-db, pg_restore into fresh pgvector/pgvector:pg16 container on fileserver using identical schema/init scripts and credentials",
+        "new_location": "192.168.40.2:3003 (fileserver)",
+        "old_containers": "stopped (not deleted) on server to prevent split-brain writes",
+        "old_location": "192.168.40.250:3003 (server)",
+        "reason": "server had repeated unclean crashes; fileserver has 72 days uptime and is far more lightly loaded",
+        "unchanged": "Squid (192.168.40.250:3128) and Salt API (192.168.40.250:8000) remain on server - only the catalog moved",
+        "updated_consumers": [
+          "repo CLAUDE.md/AGENTS.md/README.md/NEXT_SESSION.md/scripts",
+          "shared Home Claude CLAUDE.md on SMB share",
+          "hermes-vps catalog_mcp.py (CATALOG_URL default, redeployed + hermes-gateway.service restarted)"
+        ],
+        "verified": "entities/relations/secrets row counts matched exactly (181/149/9), spot-checked entity content + full-text search vector + pgcrypto secret decryption all correct on new instance"
+      },
+      "body": "Migrated the catalog database off server (which had repeated unclean crashes) onto fileserver (72 days stable uptime); all data verified intact and every known consumer repointed to the new location.",
+      "created_at": "2026-09-30T23:16:21.44552+00:00",
+      "id": "85870883-d894-4e94-a626-5248f97322ae",
+      "key": "catalog-migrated-to-fileserver-2026-09-30",
+      "name": "Catalog (Postgres+PostgREST) migrated from server to fileserver",
+      "tags": [
+        "hermes",
+        "server",
+        "fileserver",
+        "infrastructure",
+        "catalog"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-30T23:16:21.44552+00:00"
+    },
+    {
+      "attributes": {
         "device_group": "home-lab, meshid mesh//6R7JDielIQ$UVE2IsdSWxUWhMQumn2rQnGPyDGaOFIghYXfQ0vuIpIPa1tivjqsS",
         "key_bugs_found": [
           "MeshCentral config.json shipped as the unedited template: cert=myserver.mydomain.com and allowedOrigin:false (blocks everything) - see meshcentral-config-never-initialized-fixed-2026-09-28",
@@ -2826,9 +2874,129 @@
       ],
       "type": "fact",
       "updated_at": "2026-09-29T02:26:54.0654+00:00"
+    },
+    {
+      "attributes": {
+        "gpu": "RTX A4000",
+        "gpu_vram_gb": 16,
+        "source": "Get-CimInstance Win32_ComputerSystem via salt-api cmd.run",
+        "total_physical_memory_bytes": 68433559552,
+        "total_physical_memory_gib": 63.7
+      },
+      "body": "w_workstation has ~64GiB system RAM alongside its 16GB RTX A4000, giving roughly 80GB combined pool for CPU-offloaded MoE expert weights plus GPU-resident attention/active-expert weights.",
+      "created_at": "2026-09-29T03:28:32.299652+00:00",
+      "id": "f5fa2ebd-2112-406c-8c84-345affbbaf1e",
+      "key": "w-workstation-ram-spec-2026-09-28",
+      "name": "w_workstation has 64GiB system RAM (16GB RTX A4000 VRAM separately)",
+      "tags": [
+        "hermes",
+        "hardware",
+        "w_workstation",
+        "local-model"
+      ],
+      "type": "fact",
+      "updated_at": "2026-09-29T03:28:32.299652+00:00"
+    },
+    {
+      "attributes": {
+        "cpu": "Intel Xeon W-2225 @ 4.10GHz, 4 cores/8 threads, LGA2066 quad-channel-capable",
+        "disk_c": "OSDisk, Samsung MZVL2512HCJQ NVMe SSD, 475GB total / 64.6GB free",
+        "disk_e": "CUDA-labeled volume, Seagate ZP4000GM30073 SSD, 3726GB total / 3562GB free",
+        "gpu": "NVIDIA RTX A4000, 16GB VRAM (WMI Win32_VideoController misreports AdapterRAM as 4GB - known 32-bit overflow quirk on cards >4GB, not an actual hardware change)",
+        "os": "Windows 11 Enterprise, 64-bit",
+        "ram_installed_gb": 64,
+        "ram_modules": "2x32GB Samsung DDR4-3200 (M393A4K40EB3-CWE) - only 2 sticks populated on a quad-channel-capable platform, likely 2 free DIMM slots"
+      },
+      "body": "w_workstation: Xeon W-2225 (4c/8t quad-channel platform) with only 2 of likely 4 DIMM slots populated (64GB total) - adding 2 more matched DIMMs would both double capacity and unlock quad-channel bandwidth, which directly speeds up CPU-side MoE expert compute for --n-cpu-moe offload. E: drive (labeled CUDA) has 3.5TB free for model weight storage.",
+      "created_at": "2026-09-29T03:30:48.449878+00:00",
+      "id": "2e1e4735-9ac6-435a-bde3-d7a031edd1f9",
+      "key": "w-workstation-full-hw-spec-2026-09-28",
+      "name": "w_workstation full hardware spec (CPU, RAM channels, disks, GPU)",
+      "tags": [
+        "hermes",
+        "hardware",
+        "w_workstation",
+        "local-model"
+      ],
+      "type": "fact",
+      "updated_at": "2026-09-29T03:30:48.449878+00:00"
+    },
+    {
+      "attributes": {
+        "free_slots": 6,
+        "inference": "DIMM1+DIMM8 (first and last of 8) suggests one-per-channel population on a quad-channel board - likely only 2 of 4 memory channels active",
+        "populated_capacity_each_gb": 32,
+        "populated_slots": [
+          "CPU0-DIMM1",
+          "CPU0-DIMM8"
+        ],
+        "total_slots": 8
+      },
+      "body": "w_workstation motherboard has 8 total DIMM slots; only CPU0-DIMM1 and CPU0-DIMM8 are populated (32GB each, 64GB total), leaving 6 free slots and likely only 2 of 4 memory channels active on this quad-channel Xeon W-2225 platform.",
+      "created_at": "2026-09-29T03:33:12.334602+00:00",
+      "id": "7d07c36c-22b3-4048-a2ac-4bb513d9125a",
+      "key": "w-workstation-dimm-slots-2026-09-28",
+      "name": "w_workstation has 8 DIMM slots, only 2 populated (6 free)",
+      "tags": [
+        "hermes",
+        "hardware",
+        "w_workstation",
+        "local-model"
+      ],
+      "type": "fact",
+      "updated_at": "2026-09-29T03:33:12.334602+00:00"
+    },
+    {
+      "attributes": {
+        "current_dimm_population": "2 of 8 slots",
+        "current_ram_gb": 64,
+        "status": "deferred"
+      },
+      "body": "User decided not to pursue the 6-free-DIMM-slot RAM upgrade at this time; MoE model exploration should proceed within the current 64GB RAM / 16GB VRAM envelope.",
+      "created_at": "2026-09-29T03:35:47.304439+00:00",
+      "id": "46bf404b-6d19-4851-9a73-5b5b98854936",
+      "key": "w-workstation-no-ram-upgrade-2026-09-28",
+      "name": "Decided against RAM upgrade for w_workstation at this time",
+      "tags": [
+        "hermes",
+        "hardware",
+        "w_workstation",
+        "local-model"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-29T03:35:47.304439+00:00"
+    },
+    {
+      "attributes": {
+        "mitigation_applied": "systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target - blocks every OS-level path into sleep; if crashes stop, confirms sleep was the cause, if they continue points to hardware",
+        "ruled_out": [
+          "OOM",
+          "full disk (22% used)",
+          "NVMe failure (SMART passed, 0 errors)",
+          "thermal (idle temps normal post-boot)",
+          "MCE/EDAC errors (none logged, though board has no ECC so this is a blind spot)",
+          "systemd-triggered sleep (sleep.target/suspend.target never activated in logs, GNOME auto-suspend was already off)"
+        ],
+        "still_possible": "BIOS/ACPI-level sleep bypassing systemd logging (mem_sleep was configured s2idle[deep], fully armed), or hardware fault (PSU/RAM) given no ECC to catch it",
+        "symptom": "server (192.168.40.250) went fully unreachable (ICMP/ARP/SSH all down) during session; last -x shows 3+ consecutive boots ending in crash, not clean shutdown",
+        "unrelated_finding": "tailscale container was crash-looping continuously (100+ restarts/boot, exitCode=1 every ~25s) - dormant/never-joined-tailnet since 2026-07-25, not the crash cause but worth fixing separately"
+      },
+      "body": "server went down with repeated unclean crashes across 3+ boots; no software/hardware-error root cause found in logs, so masked all systemd sleep targets as a test-and-mitigate step, while flagging PSU/RAM as the leading alternative suspect given this board lacks ECC memory monitoring.",
+      "created_at": "2026-09-30T22:41:48.894386+00:00",
+      "id": "b78f27d0-2d80-4651-9dc6-08e5b3592f09",
+      "key": "server-unclean-crash-investigation-2026-09-30",
+      "name": "server had repeated unclean crashes; sleep targets masked as mitigation, root cause unconfirmed",
+      "tags": [
+        "hermes",
+        "server",
+        "hardware",
+        "incident"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-09-30T22:41:48.894386+00:00"
     }
   ],
-  "exported_at": "2026-09-29T02:26:57.750695+00:00",
+  "exported_at": "2026-09-30T23:16:25.690760+00:00",
   "relations": [
     {
       "attributes": {},
@@ -4309,7 +4477,19 @@
       "predicate": "resolves",
       "subject_key": "hermes-migrated-to-supported-install-2026-09-29",
       "subject_type": "entity"
+    },
+    {
+      "attributes": {
+        "note": "narrows the vision capability-floor requirement to a specific, lighter-weight workload"
+      },
+      "created_at": "2026-09-29T03:25:25.700905+00:00",
+      "id": "1aa0b002-a689-49f1-bf10-1dd745316342",
+      "object_key": "router-explicit-image-detection-2026-09-28",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-vision-use-case-screenshots-2026-09-28",
+      "subject_type": "entity"
     }
   ],
-  "source": "http://192.168.40.250:3003 (Postgres+PostgREST on `server`, live copy is authoritative)"
+  "source": "http://192.168.40.2:3003 (Postgres+PostgREST on `server`, live copy is authoritative)"
 }

@@ -11,7 +11,7 @@ import os
 import httpx
 from fastmcp import FastMCP
 
-CATALOG_URL = os.environ.get("CATALOG_URL", "http://192.168.40.250:3003")
+CATALOG_URL = os.environ.get("CATALOG_URL", "http://192.168.40.2:3003")
 
 mcp = FastMCP(name="catalog")
 

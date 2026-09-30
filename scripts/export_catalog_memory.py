@@ -8,7 +8,7 @@ import json
 import urllib.request
 from datetime import datetime, timezone
 
-CATALOG = "http://192.168.40.250:3003"
+CATALOG = "http://192.168.40.2:3003"
 
 
 def get(path):
