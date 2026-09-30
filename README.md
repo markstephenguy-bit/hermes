@@ -25,12 +25,12 @@ thinking on how much to share vs. build separately.
 
 ## Status
 
-Infrastructure deployed (2026-09-24) — `hermes-vps` provisioned on Vultr
-High Performance AMD (Dallas, TX) running the official Nous Research `HermesAgent`
-Ubuntu 24.04 image. Next step is linking the user's existing $20/mo ChatGPT Plus
-subscription via native link+code flow, followed by transitioning to Hermes
-self-configuring Dokploy and the WireGuard home subnet tunnel back to `server`.
-See [ARCHITECTURE.md](ARCHITECTURE.md) and [BACKLOG.md](BACKLOG.md).
+As clarified by the user on 2026-09-30, Hermes uses local AI with Codex as
+its second model for more complex prompts. Claude Code currently handles
+setup while local AI and home network configuration are still in progress.
+The user intends to move that setup role to Codex and retire Claude Code
+later; no immediate removal is planned. This setup role is separate from
+Codex's model role inside Hermes.
 
 ## Source of truth
 

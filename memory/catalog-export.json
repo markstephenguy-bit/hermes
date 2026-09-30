@@ -1162,6 +1162,31 @@
     },
     {
       "attributes": {
+        "codex_in_hermes": "second model for complex prompts",
+        "current_setup_tool": "Claude Code",
+        "intended_setup_tool": "Codex",
+        "ongoing_work": [
+          "local AI setup",
+          "home network settings"
+        ],
+        "source": "user clarification 2026-09-30",
+        "transition_timing": "eventually; no removal requested now"
+      },
+      "body": "User reports Codex is Hermes's second model for complex prompts and wants Codex to eventually replace Claude Code for setup work; Claude Code remains in use while local AI and home network setup continues.",
+      "created_at": "2026-09-30T23:56:25.029987+00:00",
+      "id": "e1917196-ec45-45f0-90c0-11e437866fae",
+      "key": "hermes-model-and-setup-roles-2026-09-30",
+      "name": "Codex model and setup roles",
+      "tags": [
+        "hermes",
+        "codex",
+        "bootstrap"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-30T23:56:25.029987+00:00"
+    },
+    {
+      "attributes": {
         "base_url": "https://chatgpt.com/backend-api/codex",
         "config_path": "/home/hermes/.hermes/config.yaml",
         "host": "hermes-vps",
@@ -2994,9 +3019,66 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-09-30T22:41:48.894386+00:00"
+    },
+    {
+      "attributes": {
+        "acl_preserved": "workstation (192.168.40.100) and hermes_vps (10.60.0.1) only, same as before",
+        "new_location": "192.168.40.2:3128 (docker container ubuntu/squid:latest on fileserver)",
+        "old_location": "192.168.40.250:3128 (native systemd service on server)",
+        "status": "phase 1 of 3 - WireGuard and Salt master migration still pending, same reason (server had repeated unclean crashes)",
+        "updated_consumers": [
+          "w_workstation machine-level HTTP_PROXY/HTTPS_PROXY (via Salt)",
+          "hermes-vps search_mcp.py EGRESS_PROXY (redeployed, gateway restarted)",
+          "shared Home Claude CLAUDE.md"
+        ],
+        "verified": "denied for unauthorized source, HTTP 200 for w_workstation via the new proxy, confirmed via live Salt command"
+      },
+      "body": "Moved Squid off server onto fileserver as a Docker container, same ACL, all consumers repointed and verified; first of a planned three-part migration (Squid done, WireGuard and Salt master still pending).",
+      "created_at": "2026-09-30T23:34:22.755835+00:00",
+      "id": "0785aa24-213c-4313-9e68-19bcf04f2c50",
+      "key": "squid-migrated-to-fileserver-2026-09-30",
+      "name": "Squid proxy moved from server to fileserver, dockerized",
+      "tags": [
+        "hermes",
+        "server",
+        "fileserver",
+        "infrastructure",
+        "squid",
+        "migration"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-30T23:34:22.755835+00:00"
+    },
+    {
+      "attributes": {
+        "identity_preserved": "copied the exact keypair/wg0.conf from server - hermes-vps peer config keyed by public key not source IP, so zero changes needed on hermes-vps side",
+        "issues_hit_and_fixed": [
+          "fileserver lost its default route during interface setup churn (RTNETLINK Network unreachable) - restored via netplan apply, root config was already correct, was a live-state disruption not a persistent misconfig",
+          "FORWARD chain default policy was DROP - added explicit iptables FORWARD ACCEPT rules for wg0<->enp4s0 (persisted in the containers PostUp/PostDown, not just live)"
+        ],
+        "new_location": "fileserver (192.168.40.2), docker container linuxserver/wireguard, --net=host",
+        "old_location": "server (192.168.40.250), native wg-quick@wg0.service",
+        "status": "phase 2 of 3 complete (Squid + WireGuard done); Salt master migration still pending",
+        "verified": "handshake confirmed both sides, ping + Ollama API (192.168.40.100:11434) reachable end-to-end from hermes-vps through fileserver, re-verified after a clean container restart"
+      },
+      "body": "Moved the WireGuard tunnel endpoint from server to fileserver as a Docker container, preserving the exact keypair so hermes-vps required no config changes; hit and fixed a lost default route and a DROP-policy FORWARD chain along the way, verified fully working end-to-end including a clean restart.",
+      "created_at": "2026-09-30T23:43:11.729184+00:00",
+      "id": "023cb27a-c3c3-4c32-a4c1-8bafd4deb142",
+      "key": "wireguard-migrated-to-fileserver-2026-09-30",
+      "name": "WireGuard tunnel endpoint moved from server to fileserver, dockerized, identity preserved",
+      "tags": [
+        "hermes",
+        "server",
+        "fileserver",
+        "infrastructure",
+        "wireguard",
+        "migration"
+      ],
+      "type": "decision",
+      "updated_at": "2026-09-30T23:43:11.729184+00:00"
     }
   ],
-  "exported_at": "2026-09-30T23:16:25.690760+00:00",
+  "exported_at": "2026-09-30T23:56:26.450273+00:00",
   "relations": [
     {
       "attributes": {},
@@ -4488,6 +4570,26 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-vision-use-case-screenshots-2026-09-28",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-30T23:56:25.062018+00:00",
+      "id": "4c07b97a-211e-411b-a7aa-4f72f00e3210",
+      "object_key": "hermes-bootstrap-handoff-plan-2026-09-24",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-model-and-setup-roles-2026-09-30",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-09-30T23:56:25.062018+00:00",
+      "id": "f702e2c1-39e2-440c-b45c-cb6c0037f2fa",
+      "object_key": "hermes-tiered-routing-by-complexity-2026-09-23",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-model-and-setup-roles-2026-09-30",
       "subject_type": "entity"
     }
   ],
