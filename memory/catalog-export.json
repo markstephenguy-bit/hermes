@@ -1784,6 +1784,42 @@
     },
     {
       "attributes": {
+        "constraints_to_evaluate": [
+          "Windows and Linux capabilities",
+          "reuse existing infrastructure",
+          "MCP integration maturity",
+          "ongoing cost and maintenance"
+        ],
+        "deployment_authorized": false,
+        "existing_catalog_services": [
+          "Salt",
+          "MeshCentral",
+          "Portainer",
+          "Beszel"
+        ],
+        "recommendation_not_decision": "Evaluate Rundeck as an orchestration layer; Tactical RMM as a more packaged endpoint-management alternative",
+        "sources": [
+          "https://docs.rundeck.com/docs/mcp/",
+          "https://docs.rundeck.com/docs/about/introduction.html",
+          "https://docs.tacticalrmm.com/faq/"
+        ],
+        "status": "exploring"
+      },
+      "body": "User likes Salt through AI but wants a fuller administration solution for the mixed local ecosystem, preferably with MCP access.",
+      "created_at": "2026-10-01T00:41:47.754853+00:00",
+      "id": "1474224c-d720-46a7-b6e7-952add3cf673",
+      "key": "hermes-unified-administration-exploration-2026-09-30",
+      "name": "Unified mixed-OS administration with AI",
+      "tags": [
+        "hermes",
+        "administration",
+        "mcp"
+      ],
+      "type": "open-item",
+      "updated_at": "2026-10-01T00:41:47.754853+00:00"
+    },
+    {
+      "attributes": {
         "reasoning": "MCP access lets Hermes self-discover the Ollama endpoint and self-log to the catalog, directly serving the bootstrap-handoff mandate; local-LLM routing is narrower and easier once MCP exists",
         "security_status": "deprioritized, not resolved - external firewall mitigates but tunnel/LAN exposure is still open"
       },
@@ -3146,7 +3182,7 @@
       "updated_at": "2026-10-01T00:00:48.240765+00:00"
     }
   ],
-  "exported_at": "2026-10-01T00:26:39.540452+00:00",
+  "exported_at": "2026-10-01T00:41:49.145569+00:00",
   "relations": [
     {
       "attributes": {},
@@ -4680,6 +4716,16 @@
       "object_type": "entity",
       "predicate": "completes",
       "subject_key": "salt-migrated-to-fileserver-2026-09-30",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-01T00:41:47.783291+00:00",
+      "id": "10c7a67f-ed74-45df-83b5-6b63562bf7bb",
+      "object_key": "hermes-claude-to-codex-handoff-audit-2026-09-30",
+      "object_type": "entity",
+      "predicate": "relates_to",
+      "subject_key": "hermes-unified-administration-exploration-2026-09-30",
       "subject_type": "entity"
     }
   ],
