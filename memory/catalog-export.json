@@ -3076,9 +3076,42 @@
       ],
       "type": "decision",
       "updated_at": "2026-09-30T23:43:11.729184+00:00"
+    },
+    {
+      "attributes": {
+        "claude_project": "/home/mark/.claude/projects/-home-mark-projects-Hermes",
+        "handoff_tasks": [
+          "Preserve durable preferences and unresolved work from Claude transcripts in catalog",
+          "Correct shared instructions reference and stale project summaries",
+          "Verify authenticated Salt management and resolve workstation connectivity",
+          "Validate a real setup task under Codex before retiring Claude"
+        ],
+        "instruction_gap": "/share/Projects/Home Codex/AGENTS.md missing; /share/Projects/Home Claude/CLAUDE.md readable via server SSH",
+        "scope": "Assessment only; no subscription cancellation or service configuration changes",
+        "unfinished_work": "Latest Claude transcript reports w_workstation Salt minion unresponsive following master migration; current recovery status unverified",
+        "verified": [
+          "Claude project transcripts and memory readable locally",
+          "SSH access to Hermes VPS and server works from Codex",
+          "Hermes gateway/dashboard/router active",
+          "Hermes provider ollama and fallback openai-codex/gpt-5.6-sol",
+          "Salt API on fileserver responds HTTP 200; authenticated control not tested"
+        ]
+      },
+      "body": "User wants to consolidate Hermes setup work and context in Codex to retire the Claude subscription; inspection found shared code and catalog access available, with instruction and management-access gaps remaining.",
+      "created_at": "2026-10-01T00:00:48.240765+00:00",
+      "id": "16d3654f-0225-46fe-92d9-b166089e3404",
+      "key": "hermes-claude-to-codex-handoff-audit-2026-09-30",
+      "name": "Claude Code to Codex handoff assessment",
+      "tags": [
+        "hermes",
+        "codex",
+        "bootstrap"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-01T00:00:48.240765+00:00"
     }
   ],
-  "exported_at": "2026-09-30T23:56:26.450273+00:00",
+  "exported_at": "2026-10-01T00:00:51.613188+00:00",
   "relations": [
     {
       "attributes": {},
@@ -4590,6 +4623,16 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-model-and-setup-roles-2026-09-30",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-01T00:00:48.289901+00:00",
+      "id": "ba4542b1-bbed-4a4a-9e1a-ec50ede172bc",
+      "object_key": "hermes-model-and-setup-roles-2026-09-30",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-claude-to-codex-handoff-audit-2026-09-30",
       "subject_type": "entity"
     }
   ],
