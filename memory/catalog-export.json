@@ -3180,9 +3180,34 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-10-01T00:00:48.240765+00:00"
+    },
+    {
+      "attributes": {
+        "fix_applied": "disabled systemd-resolved stub listener on fileserver (DNSStubListener=no) to free port 53 - fileserver's own resolution confirmed still working via direct upstream fallback",
+        "new_location": "fileserver 192.168.40.2, docker container, config/data copied from server, VERIFIED working but not yet live - no clients point here yet",
+        "old_location": "server 192.168.40.250, still running, still the active DNS server for the LAN",
+        "remaining_step": "DHCP server is the Adtran 845-v6 gateway at 192.168.40.1 - user will update its DHCP DNS setting from .250 to .2 themselves once ready, no router credentials in catalog",
+        "risk_note": "LAN-wide blast radius if done wrong - deliberately left as a user-driven cutover step rather than automated",
+        "verified": "basic resolution, duckdns rewrite, homepage.server and beszel.server internal rewrites all correct on the new instance"
+      },
+      "body": "Stood up AdGuard DNS on fileserver with server config preserved and fully verified, but deliberately left the actual cutover (DHCP DNS setting on the Adtran gateway) to the user given the LAN-wide impact of getting it wrong.",
+      "created_at": "2026-10-01T03:10:03.105442+00:00",
+      "id": "14a3f7ed-1b96-4ff9-9f17-ec97bde91e28",
+      "key": "adguard-dns-standing-up-fileserver-2026-09-30",
+      "name": "AdGuard DNS stood up on fileserver, not yet cut over (DHCP still points at server)",
+      "tags": [
+        "hermes",
+        "server",
+        "fileserver",
+        "infrastructure",
+        "dns",
+        "migration"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-01T03:10:03.105442+00:00"
     }
   ],
-  "exported_at": "2026-10-01T00:41:49.145569+00:00",
+  "exported_at": "2026-10-01T03:10:08.049120+00:00",
   "relations": [
     {
       "attributes": {},
