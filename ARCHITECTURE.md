@@ -35,20 +35,26 @@ something Claude Code wired up once by hand.
   proved awkward for remote/Salt management compared to Ollama's headless
   service model.
 - **`server`** (192.168.40.250, Ubuntu 24.04) is the Docker host for
-  persistent home services — Nginx Proxy Manager, AdGuard (LAN DNS),
-  Portainer, WordPress, Plex, MeshCentral, Beszel, DuckDNS. Also still the
-  Salt master (as of 2026-09-30, pending its own move — see below) and
-  previously ran the catalog, WireGuard tunnel endpoint, and Squid — all
-  three migrated off after `server` had repeated unclean crashes
-  2026-09-29/30 with no clear software root cause.
+  persistent home services unrelated to the automation/networking backbone
+  — Nginx Proxy Manager, AdGuard (LAN DNS), Portainer, WordPress, Plex,
+  MeshCentral, Beszel, DuckDNS. Previously also ran the catalog, WireGuard
+  tunnel endpoint, Squid, and Salt master/API — all four migrated off
+  after `server` had repeated unclean crashes 2026-09-29/30 with no clear
+  software root cause (still unconfirmed; sleep targets masked as a
+  mitigation/test). Still runs its own `salt-minion`, pointed at the new
+  master like every other minion.
 - **`fileserver`** (192.168.40.2, Ubuntu 24.04) — previously just Samba file
-  shares + a Beszel monitoring agent, now also home to the migrated
+  shares + a Beszel monitoring agent, now home to the entire migrated
   automation/networking stack, each piece a separate Docker container for
-  compartmentalization: `catalog-db`/`catalog-api` (2026-09-30), Squid
-  (2026-09-30, same ACL as before), and the WireGuard tunnel endpoint
-  (2026-09-30, same keypair/identity preserved from `server` so hermes-vps
-  needed zero config changes — WireGuard peers are keyed by public key,
-  not source IP). Salt master migration is planned next but not yet done.
+  compartmentalization: `catalog-db`/`catalog-api`, Squid (same ACL as
+  before), the WireGuard tunnel endpoint (same keypair/identity preserved
+  from `server` so hermes-vps needed zero config changes — WireGuard
+  peers are keyed by public key, not source IP), and `salt-master`+`salt-api`
+  (`cdalvaro/docker-salt-master`, minion *identity*/accepted-keys preserved
+  from `server`'s PKI, though the container generated its own new master
+  keypair on first start regardless — each of the 6 minions had their
+  cached master-pubkey cleared and `master:` config repointed). All four
+  migrations completed and verified 2026-09-30.
 - **Remote access — decided (2026-09-22):** password-gated web UI behind the
   existing DuckDNS domain (`theguylab.duckdns.org`) or direct authenticated
   Hermes web interface / Telegram / Signal interface.

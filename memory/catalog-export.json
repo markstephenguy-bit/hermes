@@ -1314,6 +1314,41 @@
     },
     {
       "attributes": {
+        "auth_preserved": "salt-api PAM auth for mark user recreated inside container via SALT_API_USER/SALT_API_USER_PASS env vars with the same password - zero change to how the user or Claude Code logs in",
+        "fix_applied": "deleted each of the 6 minions cached minion_master.pub and repointed master: config, letting them re-trust on reconnect - no salt-key re-acceptance needed since minion identities were untouched",
+        "friction_hit": "w_workstation and w_laptop minions went fully unresponsive after a PowerShell Set-Content config edit (likely BOM/encoding breaking YAML parse) - w_workstation had a pre-staged SSH fallback (workstation_llm_ed25519/llm@) but it was ALSO unreachable (port 22 timeout) until manually restarted via RDP; w_desktop/w_laptop have no SSH/WinRM fallback at all, pure RDP recovery",
+        "identity_preservation": "minion accepted-keys preserved via copying /etc/salt/pki/master/, but the container generated a NEW master keypair on first start anyway despite mounted files - root mechanism not identified, worth investigating if redone",
+        "minions_migrated": [
+          "fileserver",
+          "laptop",
+          "server",
+          "w_desktop",
+          "w_laptop",
+          "w_workstation"
+        ],
+        "new_location": "fileserver (192.168.40.2), docker container ghcr.io/cdalvaro/docker-salt-master:3008.2_3 (matches exact prior Salt version)",
+        "old_location": "server (192.168.40.250), native salt-master/salt-api systemd services",
+        "open_followup": "user flagged Salt gives poor diagnostic feedback when a minion dies silently - evaluating Netdata (native MCP support since Feb 2026) for independent observability and a WinRM-based MCP server for more reliable/diagnosable Windows execution, not yet started",
+        "status": "phase 3 of 3 complete - catalog, Squid, WireGuard, and Salt all now on fileserver, server fully decommissioned from the automation/networking backbone role"
+      },
+      "body": "Completed the third and final piece of the server-to-fileserver migration: Salt master+API dockerized on fileserver, all 6 minions repointed and verified, old master decommissioned. Hit real friction with 2 of 3 Windows minions going unresponsive mid-migration with no remote fix path, resolved via user intervention at the console.",
+      "created_at": "2026-10-01T00:26:32.433933+00:00",
+      "id": "76bb5209-2d9c-4e35-9f11-a3481bb2f54f",
+      "key": "salt-migrated-to-fileserver-2026-09-30",
+      "name": "Salt master + API moved from server to fileserver, dockerized - all 6 minions repointed",
+      "tags": [
+        "hermes",
+        "server",
+        "fileserver",
+        "infrastructure",
+        "salt",
+        "migration"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-01T00:26:32.433933+00:00"
+    },
+    {
+      "attributes": {
         "dokploy_version": "v0.30.7",
         "host": "hermes-vps",
         "panel_access": "localhost-only via iptables DOCKER-USER rule; use SSH tunnel: ssh -L 3000:127.0.0.1:3000 root@207.148.2.224 then browse localhost:3000",
@@ -3111,7 +3146,7 @@
       "updated_at": "2026-10-01T00:00:48.240765+00:00"
     }
   ],
-  "exported_at": "2026-10-01T00:00:51.613188+00:00",
+  "exported_at": "2026-10-01T00:26:39.540452+00:00",
   "relations": [
     {
       "attributes": {},
@@ -4633,6 +4668,18 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-claude-to-codex-handoff-audit-2026-09-30",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {
+        "note": "third of three planned migrations off server, same reason (repeated unclean crashes)"
+      },
+      "created_at": "2026-10-01T00:26:32.462795+00:00",
+      "id": "f1d5df7f-ca5c-4630-b260-c6d33177e04c",
+      "object_key": "squid-migrated-to-fileserver-2026-09-30",
+      "object_type": "entity",
+      "predicate": "completes",
+      "subject_key": "salt-migrated-to-fileserver-2026-09-30",
       "subject_type": "entity"
     }
   ],
