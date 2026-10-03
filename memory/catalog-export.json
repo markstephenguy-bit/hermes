@@ -3053,6 +3053,33 @@
     },
     {
       "attributes": {
+        "connect_flow": "Guacamole REST API creates/returns a connection identifier -> direct client URL computed (base64 of '<id>\\x00c\\x00postgresql') -> opened via xdg-open on the user's actual desktop (the sandboxed Browser tool cannot reach the LAN at all, confirmed)",
+        "containers": [
+          "guac-db (postgres:16-alpine)",
+          "guacd (guacamole/guacd)",
+          "guacamole (guacamole/guacamole, port 8095)"
+        ],
+        "first_connection": "w_workstation RDP using the existing llm local-admin account (DameWare-style single service account, already in local Administrators group, no new account created)",
+        "login": "mark/463453551 (matches the standard home-lab passphrase) - default guacadmin account disabled after rotation",
+        "not_yet_done": "connections for w_desktop, w_laptop, and SSH connections for the Linux boxes - same pattern, not yet repeated for each"
+      },
+      "body": "Deployed Apache Guacamole on fileserver as the remote-desktop gateway (RDP/SSH native, no agents needed), replacing the MeshCentral approach that kept failing. First connection (w_workstation) proven end-to-end including auto-launching the session via xdg-open on the user's real desktop.",
+      "created_at": "2026-10-03T02:01:51.050285+00:00",
+      "id": "4bb4da7a-9df8-4066-ad30-b2e3d0df6eaa",
+      "key": "guacamole-deployed-fileserver-2026-10-01",
+      "name": "Apache Guacamole deployed on fileserver - remote desktop gateway, no per-machine agents",
+      "tags": [
+        "hermes",
+        "fileserver",
+        "infrastructure",
+        "guacamole",
+        "remote-desktop"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-03T02:01:51.050285+00:00"
+    },
+    {
+      "attributes": {
         "cpu": "Intel Xeon W-2225 @ 4.10GHz, 4 cores/8 threads, LGA2066 quad-channel-capable",
         "disk_c": "OSDisk, Samsung MZVL2512HCJQ NVMe SSD, 475GB total / 64.6GB free",
         "disk_e": "CUDA-labeled volume, Seagate ZP4000GM30073 SSD, 3726GB total / 3562GB free",
@@ -3177,6 +3204,106 @@
       ],
       "type": "decision",
       "updated_at": "2026-09-30T23:34:22.755835+00:00"
+    },
+    {
+      "attributes": {
+        "free_ram_gib": 41.98,
+        "inventory": {
+          "Board": {
+            "Manufacturer": "HP",
+            "Product": "81C5"
+          },
+          "CPU": [
+            {
+              "MaxClockSpeed": 4104,
+              "Name": "Intel(R) Xeon(R) W-2225 CPU @ 4.10GHz",
+              "NumberOfCores": 4,
+              "NumberOfLogicalProcessors": 8
+            }
+          ],
+          "Computer": {
+            "Manufacturer": "HP",
+            "Model": "HP Z4 G4 Workstation",
+            "TotalPhysicalMemory": 68433559552
+          },
+          "DIMMs": [
+            {
+              "BankLabel": "CPU0",
+              "Capacity": 34359738368,
+              "ConfiguredClockSpeed": 2933,
+              "DeviceLocator": "CPU0-DIMM1",
+              "Manufacturer": "Samsung",
+              "PartNumber": "M393A4K40EB3-CWE",
+              "Speed": 3200
+            },
+            {
+              "BankLabel": "CPU0",
+              "Capacity": 34359738368,
+              "ConfiguredClockSpeed": 2933,
+              "DeviceLocator": "CPU0-DIMM8",
+              "Manufacturer": "Samsung",
+              "PartNumber": "M393A4K40EB3-CWE",
+              "Speed": 3200
+            }
+          ],
+          "Disks": [
+            {
+              "InterfaceType": "SCSI",
+              "Model": "Seagate ZP4000GM30073",
+              "Size": 4000784417280
+            },
+            {
+              "InterfaceType": "SCSI",
+              "Model": "SAMSUNG MZVL2512HCJQ-00BH1",
+              "Size": 512105932800
+            }
+          ],
+          "GPU": "NVIDIA RTX A4000, 16376 MiB, 969 MiB, 552.22, 00000000:21:00.0, 3, 3, 16, 16\r\n",
+          "MemoryArray": [
+            {
+              "MaxCapacityEx": 3298534883328,
+              "MemoryDevices": 8
+            }
+          ],
+          "OS": {
+            "BuildNumber": "26200",
+            "Caption": "Microsoft Windows 11 Enterprise",
+            "FreePhysicalMemory": 44014404,
+            "Version": "10.0.26200"
+          },
+          "PowerPlan": "Power Scheme GUID: 381b4222-f694-41f0-9685-ff5bb260df2e  (Koch - Balanced)\r\n",
+          "Volumes": [
+            {
+              "DeviceID": "C:",
+              "FreeSpace": 76066119680,
+              "Size": 510363955200,
+              "VolumeName": "OSDisk"
+            },
+            {
+              "DeviceID": "E:",
+              "FreeSpace": 3824792707072,
+              "Size": 4000769372160,
+              "VolumeName": "CUDA"
+            }
+          ]
+        },
+        "method": "SSH fileserver docker exec salt-master salt w_workstation cmd.run shell=powershell",
+        "performance_status": "No model benchmark performed",
+        "upgrade_status": "Live inventory still reports 2x32GB, 64GB total",
+        "wsl_inspection_limitation": "WSL listing rejected because Salt runs as LocalSystem; user WSL distributions not determined"
+      },
+      "body": "Salt confirms w_workstation has 64GB installed RAM in two 32GB DIMMs at 2933 MT/s, a four-core Xeon W-2225, and an RTX A4000 with 16GB VRAM on a PCIe 3.0 x16 link.",
+      "created_at": "2026-10-03T02:04:33.209548+00:00",
+      "id": "7d4810b8-f9c7-450d-9dc9-d49789d703ce",
+      "key": "w-workstation-salt-hardware-verified-2026-10-03",
+      "name": "Workstation hybrid inference hardware verified through Salt",
+      "tags": [
+        "hermes",
+        "hardware",
+        "inference"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-03T02:04:33.209548+00:00"
     },
     {
       "attributes": {
@@ -3336,7 +3463,7 @@
       "updated_at": "2026-10-03T01:50:46.72676+00:00"
     }
   ],
-  "exported_at": "2026-10-03T02:00:33.633638+00:00",
+  "exported_at": "2026-10-03T02:04:36.210203+00:00",
   "relations": [
     {
       "attributes": {},
@@ -4910,6 +5037,26 @@
       "object_type": "entity",
       "predicate": "supersedes",
       "subject_key": "hermes-excludes-ollama-hybrid-inference-2026-10-02",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-03T02:04:33.298004+00:00",
+      "id": "7a959f99-20a5-49a4-8577-79766d440773",
+      "object_key": "w-workstation-full-hw-spec-2026-09-28",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "w-workstation-salt-hardware-verified-2026-10-03",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-03T02:04:33.33833+00:00",
+      "id": "5de07557-4fa0-4616-86a1-51b77401bf69",
+      "object_key": "hermes-excludes-ollama-hybrid-inference-2026-10-02",
+      "object_type": "entity",
+      "predicate": "informs",
+      "subject_key": "w-workstation-salt-hardware-verified-2026-10-03",
       "subject_type": "entity"
     }
   ],

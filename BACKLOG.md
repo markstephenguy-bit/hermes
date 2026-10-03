@@ -65,8 +65,8 @@ determines where the code lives and what gets reused.
 User excludes Ollama-based hosting for the future local inference setup. Evaluate
 vLLM and other runtimes that use GPU plus system RAM for larger models, including
 ik_llama.cpp and KTransformers. Near-100-token/s reports are an evaluation target,
-not verified workstation performance. Current RAM capacity after the mentioned
-addition remains to be confirmed. Earlier Ollama pull/configuration steps below
+not verified workstation performance. Salt verified 64GB RAM (2x32GB at 2933 MT/s),
+a Xeon W-2225 (4c/8t), and RTX A4000 16GB on PCIe 3.0 x16 on 2026-10-03. Earlier Ollama pull/configuration steps below
 are historical and superseded by this runtime evaluation. No replacement is deployed.
 
 ## Immediate Next Steps
