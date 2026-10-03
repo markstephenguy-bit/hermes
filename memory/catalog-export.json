@@ -3205,9 +3205,80 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-01T03:10:03.105442+00:00"
+    },
+    {
+      "attributes": {
+        "agents_installed": "none yet on any host - this was already true before the move (dormant since July), still an open task",
+        "fix_applied": "config.json's cert field updated from 192.168.40.250 to 192.168.40.2 - MeshCentral auto-detected the TLS hostname mismatch on startup and self-regenerated certs correctly",
+        "new_location": "fileserver 192.168.40.2:8086, docker container, full data+files preserved (accounts, certs, existing login token)",
+        "next_step": "build infra_mcp.py wrapping Salt (execution, with auto-refreshing auth token) + MeshCentral (device status, remote desktop links via the WebSocket control API) + Beszel (resource status), deployed to hermes-vps matching the catalog_mcp.py/search_mcp.py pattern",
+        "old_location": "server 192.168.40.250, now stopped",
+        "verified": "web UI returns 200, existing meshcentral-claude-login-token secret still valid (same preserved database)"
+      },
+      "body": "Moved MeshCentral from server to fileserver with its database and certs preserved intact; now building a unified infra_mcp.py to wrap Salt/MeshCentral/Beszel as one MCP tool surface for Claude Code and Hermes.",
+      "created_at": "2026-10-01T03:14:49.245564+00:00",
+      "id": "f8286f3d-35d2-42a0-84e3-28407ca24b5c",
+      "key": "meshcentral-migrated-to-fileserver-2026-09-30",
+      "name": "MeshCentral moved from server to fileserver, database preserved",
+      "tags": [
+        "hermes",
+        "server",
+        "fileserver",
+        "infrastructure",
+        "meshcentral",
+        "migration"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-01T03:14:49.245564+00:00"
+    },
+    {
+      "attributes": {
+        "cause": "used yaml.safe_load + yaml.dump to add the infra mcp_servers entry, which round-trips data but not comments",
+        "impact": "all documentation comments in config.yaml lost, functional values all intact",
+        "lesson": "use targeted text insertion or a comment-preserving YAML library (ruamel.yaml) for future config.yaml edits, not full parse+dump",
+        "recovery": "not attempted - most recent state-snapshot predates other legitimate changes made tonight, restoring from it would regress those"
+      },
+      "body": "Added the infra MCP server entry to hermes-vps's config.yaml via a full YAML parse+dump, which silently stripped all comments from the file - functional values are all intact, but should use targeted edits or ruamel.yaml next time.",
+      "created_at": "2026-10-01T03:20:17.492515+00:00",
+      "id": "1782f8d5-3948-4f89-ac3b-fb6202d045f7",
+      "key": "config-yaml-comments-stripped-2026-09-30",
+      "name": "Mistake: full YAML rewrite stripped all comments from hermes-vps config.yaml",
+      "tags": [
+        "hermes",
+        "mistake",
+        "config"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-01T03:20:17.492515+00:00"
+    },
+    {
+      "attributes": {
+        "context": "explicit user decision to grant all three agents shared standing access to the secrets vault, for use against connected networks - discussed and confirmed across several messages",
+        "deployed_to": [
+          "hermes-vps (config.yaml mcp_servers.vault, live/gateway restarted)",
+          "Claude Code (.mcp.json in repo root)",
+          "Codex (~/.codex/config.toml mcp_servers.vault)"
+        ],
+        "passcode_model": "not stored in any config - each get_secret/set_secret call requires the passcode supplied at call time",
+        "tool": "scripts/vault_mcp.py - wraps existing secret_get/secret_set RPCs, no new crypto"
+      },
+      "body": "Built and deployed vault_mcp.py so Claude Code, Codex, and Hermes all share one MCP-accessible secrets vault, per explicit user direction to unify agentic access to stored credentials.",
+      "created_at": "2026-10-03T01:50:46.72676+00:00",
+      "id": "a30442f9-72e8-400c-a26f-ed613e5f8968",
+      "key": "vault-mcp-deployed-2026-10-01",
+      "name": "Shared secrets vault exposed as MCP tool to Claude Code, Codex, and Hermes",
+      "tags": [
+        "hermes",
+        "infrastructure",
+        "mcp",
+        "vault",
+        "security"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-03T01:50:46.72676+00:00"
     }
   ],
-  "exported_at": "2026-10-01T03:10:08.049120+00:00",
+  "exported_at": "2026-10-03T01:50:49.999952+00:00",
   "relations": [
     {
       "attributes": {},
