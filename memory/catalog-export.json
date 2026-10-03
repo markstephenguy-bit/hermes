@@ -2515,6 +2515,32 @@
     },
     {
       "attributes": {
+        "candidate_runtimes": [
+          "vLLM",
+          "ik_llama.cpp",
+          "llama.cpp",
+          "KTransformers"
+        ],
+        "excluded_runtime": "Ollama",
+        "performance_target_tokens_per_second": 100,
+        "ram_upgrade_status": "User mentions added system RAM; current capacity and DIMM layout awaiting clarification",
+        "scope": "discussion; no deployment or removal authorized"
+      },
+      "body": "User excludes all Ollama-based inference hosts and wants vLLM or another runtime that uses system RAM for a larger model, with interest in near-100-token/s configurations.",
+      "created_at": "2026-10-03T02:00:32.491387+00:00",
+      "id": "38c2103e-2ba1-4a27-a369-444fe6d3846b",
+      "key": "hermes-excludes-ollama-hybrid-inference-2026-10-02",
+      "name": "Exclude Ollama from future Hermes inference hosting",
+      "tags": [
+        "hermes",
+        "local-model",
+        "inference"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-03T02:00:32.491387+00:00"
+    },
+    {
+      "attributes": {
         "checked": [
           "gemma3:12b",
           "granite3.2-vision",
@@ -3310,7 +3336,7 @@
       "updated_at": "2026-10-03T01:50:46.72676+00:00"
     }
   ],
-  "exported_at": "2026-10-03T01:58:25.749922+00:00",
+  "exported_at": "2026-10-03T02:00:33.633638+00:00",
   "relations": [
     {
       "attributes": {},
@@ -4874,6 +4900,16 @@
       "object_type": "entity",
       "predicate": "informed_by",
       "subject_key": "hermes-large-local-model-discussion-2026-10-02",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-03T02:00:32.536905+00:00",
+      "id": "0a7f2d35-f0ae-486b-8a43-f7f403e06026",
+      "object_key": "hermes-large-local-model-discussion-2026-10-02",
+      "object_type": "entity",
+      "predicate": "supersedes",
+      "subject_key": "hermes-excludes-ollama-hybrid-inference-2026-10-02",
       "subject_type": "entity"
     }
   ],

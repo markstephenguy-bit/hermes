@@ -60,6 +60,15 @@ determines where the code lives and what gets reused.
   Hermes takes over to execute its own remaining setup (Dokploy, WireGuard
   tunnel to home fileserver, LM Studio bridge).
 
+## Local inference direction (2026-10-02)
+
+User excludes Ollama-based hosting for the future local inference setup. Evaluate
+vLLM and other runtimes that use GPU plus system RAM for larger models, including
+ik_llama.cpp and KTransformers. Near-100-token/s reports are an evaluation target,
+not verified workstation performance. Current RAM capacity after the mentioned
+addition remains to be confirmed. Earlier Ollama pull/configuration steps below
+are historical and superseded by this runtime evaluation. No replacement is deployed.
+
 ## Immediate Next Steps
 
 Steps 1-3 below (connect, onboard Codex, Dokploy+WireGuard) are done as of
