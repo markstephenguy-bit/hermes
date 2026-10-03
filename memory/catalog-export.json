@@ -1935,6 +1935,38 @@
     },
     {
       "attributes": {
+        "benchmark_status": "candidate not benchmarked on workstation",
+        "candidate_for_evaluation": "Qwen3.6-35B-A3B Q4_K_M",
+        "installed_models": [
+          "qwen3-vl:4b-hermes-instruct",
+          "qwen3-vl:4b-instruct",
+          "qwen3-vl:8b-hermes-instruct",
+          "qwen3-vl:8b-instruct",
+          "gemma4:e4b"
+        ],
+        "live_api_verified": true,
+        "runtime_options": [
+          "Ollama",
+          "llama.cpp llama-server with selective CPU expert offload"
+        ],
+        "scope": "discussion only",
+        "source": "https://ollama.com/library/qwen3.6"
+      },
+      "body": "User wants to discuss the inference runtime and a larger local model for Hermes on w_workstation; no replacement model or runtime has been selected.",
+      "created_at": "2026-10-03T01:58:25.445753+00:00",
+      "id": "e2de2f73-1cdc-4ab4-8fb0-d6e4aff30adb",
+      "key": "hermes-large-local-model-discussion-2026-10-02",
+      "name": "Large local model and inference runtime evaluation reopened",
+      "tags": [
+        "hermes",
+        "local-model",
+        "inference"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-03T01:58:25.445753+00:00"
+    },
+    {
+      "attributes": {
         "config_path": "/home/hermes/.hermes/config.yaml",
         "expected_endpoint": "Ollama on w_workstation via 10.60.0.0/24 tunnel",
         "host": "hermes-vps",
@@ -3278,7 +3310,7 @@
       "updated_at": "2026-10-03T01:50:46.72676+00:00"
     }
   ],
-  "exported_at": "2026-10-03T01:50:49.999952+00:00",
+  "exported_at": "2026-10-03T01:58:25.749922+00:00",
   "relations": [
     {
       "attributes": {},
@@ -4822,6 +4854,26 @@
       "object_type": "entity",
       "predicate": "relates_to",
       "subject_key": "hermes-unified-administration-exploration-2026-09-30",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-03T01:58:25.552535+00:00",
+      "id": "303a986d-4cd0-4a30-aa3c-869dd42efe15",
+      "object_key": "w-workstation-no-ram-upgrade-2026-09-28",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-large-local-model-discussion-2026-10-02",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-03T01:58:25.594605+00:00",
+      "id": "94495560-f4c8-4df5-ac5c-be3896e4e3b2",
+      "object_key": "w-workstation-full-hw-spec-2026-09-28",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-large-local-model-discussion-2026-10-02",
       "subject_type": "entity"
     }
   ],
