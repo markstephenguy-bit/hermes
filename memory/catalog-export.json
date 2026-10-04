@@ -3499,9 +3499,26 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-10-04T00:22:50.216893+00:00"
+    },
+    {
+      "attributes": {
+        "file": "Hermes_Way.xlsx",
+        "reason": "workbook is a feature backlog the user wants built, not an audit log Claude runs on its own judgment"
+      },
+      "body": "User decided the workbook's Status column is Done/Partial/Not Started only -- no Risk/Violation audit labels. Anything worth flagging about exposure or scope-creep goes in the Notes column, not Status.",
+      "created_at": "2026-10-04T01:17:55.93609+00:00",
+      "id": "9f28797f-13da-4a7d-9dc1-34487ea9bbfd",
+      "key": "hermes-way-workbook-status-features-only-2026-10-04",
+      "name": "Hermes_Way.xlsx Status column tracks feature completion only",
+      "tags": [
+        "hermes",
+        "decision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-04T01:17:55.93609+00:00"
     }
   ],
-  "exported_at": "2026-10-04T00:23:16.453494+00:00",
+  "exported_at": "2026-10-04T01:18:01.946087+00:00",
   "relations": [
     {
       "attributes": {},
