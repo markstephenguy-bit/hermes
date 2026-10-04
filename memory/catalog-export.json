@@ -3418,6 +3418,24 @@
     },
     {
       "attributes": {
+        "relates_to_goal": "GV-02 bootstrap sunset plan",
+        "tracked_in": "Hermes_Way.xlsx tab 14_Claude_Code_Parity"
+      },
+      "body": "User wants every Claude Code capability used on this project mapped to the Hermes-native capability needed to replace it, as a standing lens applied going forward, not a one-time pass.",
+      "created_at": "2026-10-04T00:22:50.129605+00:00",
+      "id": "7f8f29b8-d3fe-4305-a1f8-9f5cbaa5899c",
+      "key": "hermes-claude-code-replacement-lens-2026-10-03",
+      "name": "Track Claude Code capabilities against Hermes-native equivalents",
+      "tags": [
+        "hermes",
+        "decision",
+        "claude-code-retirement"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-04T00:22:50.129605+00:00"
+    },
+    {
+      "attributes": {
         "cause": "used yaml.safe_load + yaml.dump to add the infra mcp_servers entry, which round-trips data but not comments",
         "impact": "all documentation comments in config.yaml lost, functional values all intact",
         "lesson": "use targeted text insertion or a comment-preserving YAML library (ruamel.yaml) for future config.yaml edits, not full parse+dump",
@@ -3461,9 +3479,29 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-03T01:50:46.72676+00:00"
+    },
+    {
+      "attributes": {
+        "gap": "no password-manager-backed entry point for the vault passcode",
+        "tracked_in": "Hermes_Way.xlsx row SV-13 (status escalated to Risk)",
+        "value_persisted": false
+      },
+      "body": "User shared the vault/Salt passphrase as plaintext in conversation. Not persisted by Claude in any memory, file, or catalog entity. Reinforces an existing gap: no human-side passcode storage policy exists.",
+      "created_at": "2026-10-04T00:22:50.216893+00:00",
+      "id": "495953ff-06f3-43b3-8e9e-4564d18fd4b9",
+      "key": "vault-salt-passcode-shared-in-chat-2026-10-03",
+      "name": "Vault/Salt passcode shared directly in a chat session",
+      "tags": [
+        "hermes",
+        "log-entry",
+        "security",
+        "secrets"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-04T00:22:50.216893+00:00"
     }
   ],
-  "exported_at": "2026-10-03T02:04:36.210203+00:00",
+  "exported_at": "2026-10-04T00:23:16.453494+00:00",
   "relations": [
     {
       "attributes": {},
@@ -5057,6 +5095,26 @@
       "object_type": "entity",
       "predicate": "informs",
       "subject_key": "w-workstation-salt-hardware-verified-2026-10-03",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-04T00:23:02.793418+00:00",
+      "id": "e097aa79-db1a-4f98-9dac-adafebcaec42",
+      "object_key": "vault-mcp-deployed-2026-10-01",
+      "object_type": "entity",
+      "predicate": "relates_to",
+      "subject_key": "vault-salt-passcode-shared-in-chat-2026-10-03",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-04T00:23:09.901243+00:00",
+      "id": "33107096-69c1-45a3-a8ef-1654e9408e35",
+      "object_key": "hermes-goal-g9-2026-09-23",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-claude-code-replacement-lens-2026-10-03",
       "subject_type": "entity"
     }
   ],
