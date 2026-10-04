@@ -3516,9 +3516,67 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-04T01:17:55.93609+00:00"
+    },
+    {
+      "attributes": {
+        "done": 24,
+        "earned_points": 167.5,
+        "feature_rows": 133,
+        "findings": [
+          "duplicate scored requirements",
+          "fixed-range totals do not safely support growth",
+          "no filters, tables, or validation",
+          "missing verification dates and explicit acceptance tests",
+          "incomplete everyday productivity workflows",
+          "stale version, backup, Salt, and MeshCentral claims",
+          "core autonomy conflicts with home-hosted vault and catalog dependencies"
+        ],
+        "not_started": 102,
+        "partial": 7,
+        "recommendations_status": "proposed, not adopted",
+        "sheets": 18,
+        "weighted_points": 834
+      },
+      "body": "Reviewed Hermes_Way.xlsx for presentation, completeness, scoring, and consistency with catalog decisions; the original workbook was not edited.",
+      "created_at": "2026-10-04T01:42:19.251036+00:00",
+      "id": "1cc862aa-ce27-4221-8620-c0d5ccd040e4",
+      "key": "hermes-way-review-2026-10-04",
+      "name": "Hermes Way workbook review",
+      "tags": [
+        "hermes",
+        "workbook",
+        "review"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-04T01:42:19.251036+00:00"
+    },
+    {
+      "attributes": {
+        "integration_candidates": [
+          "Drive",
+          "Docs",
+          "Sheets",
+          "Slides",
+          "Gmail",
+          "Calendar"
+        ],
+        "status": "preference only; no subscription or deployment authorized"
+      },
+      "body": "User prefers a Google office solution for agentic work because they expect it to be more mature and useful.",
+      "created_at": "2026-10-04T01:42:19.251036+00:00",
+      "id": "16520644-5fd9-4955-a6e6-09f18c66a5ed",
+      "key": "hermes-google-office-preference-2026-10-04",
+      "name": "Google office ecosystem preference",
+      "tags": [
+        "hermes",
+        "office",
+        "preference"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-04T01:42:19.251036+00:00"
     }
   ],
-  "exported_at": "2026-10-04T01:18:01.946087+00:00",
+  "exported_at": "2026-10-04T01:42:47.448534+00:00",
   "relations": [
     {
       "attributes": {},
@@ -5132,6 +5190,56 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-claude-code-replacement-lens-2026-10-03",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-04T01:42:35.670111+00:00",
+      "id": "6f320a66-ba0e-41c7-a3d7-1d144d3b8404",
+      "object_key": "hermes-way-workbook-status-features-only-2026-10-04",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-way-review-2026-10-04",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-04T01:42:35.670111+00:00",
+      "id": "777b9c56-0ba8-4082-bbbe-9905a9655483",
+      "object_key": "hermes-migrated-to-supported-install-2026-09-29",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-way-review-2026-10-04",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-04T01:42:35.670111+00:00",
+      "id": "b4d72492-6771-4fcf-b653-515dd2a709f2",
+      "object_key": "hermes-vpn-scope-includes-salt-2026-09-23",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-way-review-2026-10-04",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-04T01:42:35.670111+00:00",
+      "id": "a1ffd2fb-e8f2-4b80-8e6e-72e44dfd7339",
+      "object_key": "hermes-google-office-preference-2026-10-04",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-way-review-2026-10-04",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-04T01:42:35.670111+00:00",
+      "id": "7f5b9b76-a44a-4b3b-afdc-c6f5ab846e3d",
+      "object_key": "hermes-unified-persistent-environment-2026-09-23",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-google-office-preference-2026-10-04",
       "subject_type": "entity"
     }
   ],
