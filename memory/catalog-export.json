@@ -3676,9 +3676,31 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-04T20:26:25.781291+00:00"
+    },
+    {
+      "attributes": {
+        "detail_location": "Hermes_Way.xlsx tab D1_Vultr_Services_Audit",
+        "high_priority_findings": [
+          "Managed Database fixes SV-15",
+          "Cloud Firewall could close HN-05/SH-02 at network layer",
+          "VPC relevant once multi-instance (CR-15) exists"
+        ]
+      },
+      "body": "Researched the full Vultr product lineup (compute, managed DB, storage, networking, inference, marketplace) and mapped each against whether Hermes should use it. Full detail lives in Hermes_Way.xlsx tab D1_Vultr_Services_Audit, not in the catalog, per user preference to keep discovery content in one file.",
+      "created_at": "2026-10-04T20:48:57.658155+00:00",
+      "id": "b231baf4-27a5-4541-b488-db82e3f94d4c",
+      "key": "hermes-vultr-services-audit-2026-10-04",
+      "name": "Vultr full product catalog audited against Hermes needs",
+      "tags": [
+        "hermes",
+        "log-entry",
+        "discovery"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-04T20:48:57.658155+00:00"
     }
   ],
-  "exported_at": "2026-10-04T20:29:13.981971+00:00",
+  "exported_at": "2026-10-04T20:49:09.789468+00:00",
   "relations": [
     {
       "attributes": {},
