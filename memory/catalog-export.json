@@ -3574,9 +3574,111 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-04T01:42:19.251036+00:00"
+    },
+    {
+      "attributes": {
+        "architecture": "MoE, 35B total / 3B active",
+        "model": "Qwen3.6-35B-A3B",
+        "rejected": [
+          "Qwen3.8-27B-dense",
+          "Qwen3.8-Flash-Next-180B",
+          "Qwen3.8-35B-A3B-Distill-community"
+        ],
+        "runtime_still_open": true
+      },
+      "body": "User locked in Qwen3.6-35B-A3B as the local model, after ruling out Qwen3.8-27B (dense, forfeits MoE RAM-offload) and Qwen3.8-Flash-Next (MoE but ~2x oversized for w_workstation RAM/VRAM); a community Qwen3.8-distilled 35B-A3B variant was also checked and performs worse on real agentic tasks (10/20 vs 16/20) than base 3.6.",
+      "created_at": "2026-10-04T02:53:41.710137+00:00",
+      "id": "38ae1b24-538e-418d-a308-0177a5e55bbe",
+      "key": "hermes-local-model-locked-qwen3.6-35b-a3b-2026-10-04",
+      "name": "Local model locked: Qwen3.6-35B-A3B",
+      "tags": [
+        "hermes",
+        "decision",
+        "local-model"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-04T02:53:41.710137+00:00"
+    },
+    {
+      "attributes": {
+        "exception": "local LLM only, hardware-bound to w_workstation GPU",
+        "immediate_violation": "catalog + vault currently live on fileserver (home), must move to VPS or Vultr Managed Database",
+        "not_a_violation": [
+          "Salt (manages home hardware by definition)",
+          "Guacamole remote-desktop (same reason)"
+        ]
+      },
+      "body": "User decision: everything hermes-vps needs to function must be on the VPS or in the cloud, with the sole exception of the local LLM (which stays on w_workstation because that is where the GPU is). Anything else currently on the home network is a violation of this rule.",
+      "created_at": "2026-10-04T19:53:53.686217+00:00",
+      "id": "7c982493-dfe9-49f8-a553-d2d69e7de8c5",
+      "key": "hermes-vps-self-sufficiency-rule-2026-10-04",
+      "name": "hermes-vps must be self-sufficient except for the local LLM",
+      "tags": [
+        "hermes",
+        "decision",
+        "architecture"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-04T19:53:53.686217+00:00"
+    },
+    {
+      "attributes": {
+        "image": "HermesAgent marketplace image, same as hermes-vps",
+        "local_model_access": "not yet decided \u2014 w_workstation GPU would be shared/contended if her instance also uses it",
+        "plan": "Vultr High Performance AMD, 1 vCPU / 2GB RAM / 50GB NVMe, $12/mo",
+        "status": "planned, not provisioned"
+      },
+      "body": "User decided sister gets a fully separate Hermes instance on its own Vultr VPS, not a restricted-user account on the existing hermes-vps, so neither agents memory/context bleeds into the others.",
+      "created_at": "2026-10-04T20:26:19.145689+00:00",
+      "id": "8132d3b0-9be4-47fc-a3c4-f2beeb85bd55",
+      "key": "hermes-sister-separate-agent-2026-10-04",
+      "name": "Sister gets her own separate Hermes, not shared access",
+      "tags": [
+        "hermes",
+        "decision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-04T20:26:19.145689+00:00"
+    },
+    {
+      "attributes": {
+        "scope": "full VPS disk snapshot, covers config.yaml/SOUL.md/MCP venvs automatically",
+        "source": "Vultr console screenshot, 2026-10-04",
+        "supersedes": "hermes-migrated-to-supported-install-2026-09-29 one-off backup note"
+      },
+      "body": "Vultr console (Manage 207.148.2.224) confirms Auto Backups: Enabled on hermes-vps itself -- a full-disk snapshot service at the infrastructure level, separate from and broader than the earlier one-off pre-migration app backup.",
+      "created_at": "2026-10-04T20:26:22.664781+00:00",
+      "id": "b6158422-4c42-46aa-b28b-00602b19008d",
+      "key": "hermes-vps-vultr-auto-backups-enabled-2026-10-04",
+      "name": "Vultr native Auto Backups confirmed enabled on hermes-vps",
+      "tags": [
+        "hermes",
+        "fact",
+        "backup"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-04T20:26:22.664781+00:00"
+    },
+    {
+      "attributes": {
+        "closes_gap": "SV-14 (catalog/vault unreachable if WireGuard tunnel drops)",
+        "status": "decided, not executed",
+        "target": "Vultr Managed Database (Postgres)"
+      },
+      "body": "Direct consequence of hermes-vps-self-sufficiency-rule-2026-10-04: the catalog and vault currently live on fileserver (home network), which violates the rule. Vultr Managed Database (Postgres, supports pgvector) was identified as the natural target.",
+      "created_at": "2026-10-04T20:26:25.781291+00:00",
+      "id": "b9dfb543-04cb-48c9-b6a9-c24ba7e1011e",
+      "key": "hermes-catalog-vault-migration-required-2026-10-04",
+      "name": "Catalog and vault must migrate off fileserver per VPS self-sufficiency rule",
+      "tags": [
+        "hermes",
+        "decision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-04T20:26:25.781291+00:00"
     }
   ],
-  "exported_at": "2026-10-04T01:42:47.448534+00:00",
+  "exported_at": "2026-10-04T20:29:13.981971+00:00",
   "relations": [
     {
       "attributes": {},
@@ -5240,6 +5342,26 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-google-office-preference-2026-10-04",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-04T20:26:36.049442+00:00",
+      "id": "b287521c-4ee8-4159-aca5-fc8f8ce03ba3",
+      "object_key": "hermes-vps-self-sufficiency-rule-2026-10-04",
+      "object_type": "entity",
+      "predicate": "implements",
+      "subject_key": "hermes-catalog-vault-migration-required-2026-10-04",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-04T20:26:36.093383+00:00",
+      "id": "e67bdcf1-ed26-4eb4-ac6b-a54112715d65",
+      "object_key": "hermes-migrated-to-supported-install-2026-09-29",
+      "object_type": "entity",
+      "predicate": "corrects",
+      "subject_key": "hermes-vps-vultr-auto-backups-enabled-2026-10-04",
       "subject_type": "entity"
     }
   ],
