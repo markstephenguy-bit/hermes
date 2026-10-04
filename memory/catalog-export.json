@@ -3698,9 +3698,34 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-10-04T20:48:57.658155+00:00"
+    },
+    {
+      "attributes": {
+        "corrects": "an earlier same-session claim that SOUL.md should be renamed MEMORY.md",
+        "crons_self_improvement_status": "not yet researched, flagged in workbook Read_Me",
+        "five_pillars": [
+          "Memory",
+          "Skills",
+          "Soul",
+          "Crons",
+          "Self-Improvement"
+        ]
+      },
+      "body": "A prior correction this session wrongly claimed SOUL.md was not real and renamed it to MEMORY.md. Deeper research confirmed both files are real and distinct: SOUL.md (~/.hermes/SOUL.md, 2200 chars) defines WHO the agent is -- persona/tone/values; MEMORY.md (same cap) defines WHAT it has learned -- facts/conventions. Nous frames this as part of Five Pillars: Memory, Skills, Soul, Crons, Self-Improvement.",
+      "created_at": "2026-10-04T20:56:59.954105+00:00",
+      "id": "08621f14-aabe-4a2b-ac3a-07271d9bb112",
+      "key": "hermes-soul-memory-distinction-corrected-2026-10-04",
+      "name": "Corrected: SOUL.md and MEMORY.md are both real, distinct files",
+      "tags": [
+        "hermes",
+        "log-entry",
+        "correction"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-04T20:56:59.954105+00:00"
     }
   ],
-  "exported_at": "2026-10-04T20:49:09.789468+00:00",
+  "exported_at": "2026-10-04T20:57:15.061143+00:00",
   "relations": [
     {
       "attributes": {},
