@@ -4181,9 +4181,57 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-10-05T16:18:26.82363+00:00"
+    },
+    {
+      "attributes": {
+        "configuration_checks": "direct default routes, no inspected bandwidth cap, laptop proxy disabled, diagnostic proxy bypass",
+        "fileserver_cubic_bbr_cubic_mbps": [
+          8.61,
+          266.05,
+          7.81
+        ],
+        "fixed_endpoint_cubic_bbr_mbps": [
+          8.88,
+          290.59
+        ],
+        "interpretation": "BBR masks severity relative to CUBIC; does not establish unaffected computers or prove ISP causality",
+        "lan_download_mbps": 930.16,
+        "lan_upload_mbps": 933.42,
+        "mss1200_cubic": "write timeout",
+        "mtu1500_df": "3/3 passed",
+        "next_step": "technician independent device and router/ONT isolation",
+        "permanent_changes": false,
+        "recent_handshake_verified": true,
+        "report": "ISP-test-report.txt",
+        "scope": "network-wide customer report, not limited to Linux or laptop",
+        "unverified": [
+          "router QoS and firmware",
+          "ONT and upstream counters",
+          "ISP provisioning and policing"
+        ],
+        "wireguard_64mib_on_off_on_mbps": [
+          162.71,
+          90.57,
+          454.48
+        ],
+        "wireguard_restored": true
+      },
+      "body": "User confirms Speedtest.net upload trouble on every tested Windows and Linux computer; controlled tests found near-gigabit LAN performance and no consistent improvement with WireGuard stopped.",
+      "created_at": "2026-10-05T16:41:41.241041+00:00",
+      "id": "555b6f9d-dfbd-4b28-b5fa-9a1618d05f2a",
+      "key": "hermes-isp-visit-network-isolation-2026-10-05",
+      "name": "ISP visit configuration isolation tests",
+      "tags": [
+        "hermes",
+        "network",
+        "performance",
+        "isp"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-05T16:41:41.241041+00:00"
     }
   ],
-  "exported_at": "2026-10-05T16:18:27.021602+00:00",
+  "exported_at": "2026-10-05T16:41:41.449130+00:00",
   "relations": [
     {
       "attributes": {},
@@ -6037,6 +6085,16 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-network-wide-upload-correction-2026-10-05",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-05T16:41:41.290929+00:00",
+      "id": "edb4df53-65f1-4479-b14f-309cdb06e0ef",
+      "object_key": "hermes-network-wide-upload-correction-2026-10-05",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-isp-visit-network-isolation-2026-10-05",
       "subject_type": "entity"
     }
   ],
