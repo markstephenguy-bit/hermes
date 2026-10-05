@@ -4078,9 +4078,51 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-10-05T04:39:12.51107+00:00"
+    },
+    {
+      "attributes": {
+        "actionable_gotchas": [
+          "Docker terminal.container_memory defaults to 5GB, hermes-vps has 4GB total",
+          "local model tool-calling needs a per-server flag (--jinja etc) or fails silently",
+          "model.context_length usually needs explicit setting, auto-detect often wrong",
+          "systemd linger required for gateway to survive an actual reboot, not just logout -- CR-03 needs re-verification"
+        ],
+        "blockers_closed": [
+          "IM-01 SOUL.md template ready to draft",
+          "IA-05 exact verified Telegram setup sequence"
+        ],
+        "corrections": [
+          "TM-07 Nous Tool Gateway was mis-described as 5 exec backends; actually 4 Portal-gated tools, separate from the 7 terminal backends"
+        ],
+        "detail_location": "Hermes_Way.xlsx tab D8_Advanced_Reference",
+        "execution_decisions_2026-10-05": {
+          "access_method": "SSH access chosen over dashboard-chat routing -- credential not yet provided, new row CR-18",
+          "home_assistant": "existence on home network unconfirmed, user said not sure -- new row HN-09, not blocking",
+          "voice_interface": "explicitly deferred, not in this execution wave -- IA-08 updated"
+        },
+        "new_capabilities_found": [
+          "GEPA offline skill evolution (4th self-improvement mechanism, companion repo)",
+          "hermes egress / iron-proxy + Bitwarden credential protection stack",
+          "hermes import-agent (imports Claude Code/Codex setup into Hermes)",
+          "hermes security audit (OSV.dev supply-chain scan)"
+        ]
+      },
+      "body": "Processed two large reference sources (255-page community PDF, hermesbible.com bulk download) to find remaining setup gaps, per user request. Found real corrections and new capabilities, logged to D8_Advanced_Reference and cross-referenced into affected 01-15 rows. User then made three execution-phase decisions: SSH access for Claude Code (not yet provided, CR-18), Home Assistant left open (HN-09), voice interface deferred (IA-08). Workbook is now the accurate source of truth for starting execution.",
+      "created_at": "2026-10-05T15:20:20.500947+00:00",
+      "id": "afc72415-e0ad-4ed7-b475-3f0737cc626a",
+      "key": "hermes-advanced-reference-and-execution-decisions-2026-10-05",
+      "name": "Processed Practitioner Reference PDF + hermesbible.com; execution-phase decisions made",
+      "tags": [
+        "hermes",
+        "log-entry",
+        "discovery",
+        "decision"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-05T15:20:20.500947+00:00"
     }
   ],
-  "exported_at": "2026-10-05T04:39:12.729169+00:00",
+  "exported_at": "2026-10-05T15:21:32.373328+00:00",
   "relations": [
     {
       "attributes": {},
