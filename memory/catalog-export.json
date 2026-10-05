@@ -4019,9 +4019,31 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-10-05T02:35:34.26933+00:00"
+    },
+    {
+      "attributes": {
+        "detail_location": "Hermes_Way.xlsx tab D7_Setup_Execution_Workflow",
+        "local_model_caution": "community report: Qwen3.5-35B-A3B (one version behind locked Qwen3.6-35B-A3B) defaults to curl/exec-python over specialized tools -- confidence heuristic in smaller models, fixable via explicit tool-prioritization prompt; cross-referenced into LI-04",
+        "rejected": "hermify.io third-party one-click deployer (Docker+Tailscale+Cloudflare Tunnel) -- noted but not recommended, would duplicate/override already-locked infra decisions (Vultr-preferred, WireGuard not Tailscale)",
+        "security_finding": "SH-06 RESOLVED: fresh unauthenticated browser request to the live dashboard URL returned HTTP 401 -- auth gate confirmed active despite open-internet exposure (user confirmed open internet)",
+        "source": "r/hermesagent Complete Hermes Agent Setup Guide, user-supplied PDF, ~7 months stale",
+        "verification_method": "every CLI command spot-checked against current github.com/NousResearch/hermes-agent source (hermes_cli/gateway.py, cron.py, tools/skills_hub.py, doctor.py, pairing.py) before being kept"
+      },
+      "body": "User supplied a community Hermes Agent setup guide (PDF of a Reddit post) and asked it be used to refine discovery into an execution workflow. Verified every command against current source given the guide is ~7 months old on a fast-moving project. Built D7_Setup_Execution_Workflow as a sequenced runbook for the eventual execution phase -- not run yet. Along the way, resolved the open SH-06 security question (dashboard auth gate confirmed active via a 401 response) and surfaced two real-world cautions about the already-locked local model, cross-referenced into LI-04.",
+      "created_at": "2026-10-05T04:35:20.752952+00:00",
+      "id": "cd1eda92-9e81-4659-89b4-6a417e617a44",
+      "key": "hermes-setup-execution-workflow-2026-10-05",
+      "name": "Built verified setup execution runbook from a community guide; resolved dashboard auth exposure",
+      "tags": [
+        "hermes",
+        "log-entry",
+        "discovery"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-05T04:35:20.752952+00:00"
     }
   ],
-  "exported_at": "2026-10-05T02:35:45.574082+00:00",
+  "exported_at": "2026-10-05T04:36:30.579266+00:00",
   "relations": [
     {
       "attributes": {},
@@ -5815,6 +5837,26 @@
       "object_type": "entity",
       "predicate": "informs",
       "subject_key": "hermes-web-dashboard-survey-2026-10-05",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-05T04:35:45.770703+00:00",
+      "id": "12ee86b0-ff37-44af-95fe-9648480d118f",
+      "object_key": "hermes-five-provider-choices-locked-2026-10-04",
+      "object_type": "entity",
+      "predicate": "informs",
+      "subject_key": "hermes-setup-execution-workflow-2026-10-05",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-05T04:36:30.466038+00:00",
+      "id": "1455ab65-95e6-49e5-b3de-bdcab2e92080",
+      "object_key": "hermes-web-dashboard-survey-2026-10-05",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-setup-execution-workflow-2026-10-05",
       "subject_type": "entity"
     }
   ],
