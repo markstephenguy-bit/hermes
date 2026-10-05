@@ -3821,9 +3821,43 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-05T00:53:26.055151+00:00"
+    },
+    {
+      "attributes": {
+        "detail_location": "Hermes_Way.xlsx tab D3_Skills_System",
+        "relevant_bundled_categories": [
+          "autonomous-ai-agents",
+          "devops",
+          "productivity",
+          "research",
+          "email"
+        ],
+        "relevant_optional_categories": [
+          "mcp",
+          "devops",
+          "smart-home",
+          "security",
+          "data-science"
+        ],
+        "skill_count": "166 tracked (87 bundled + 79 optional)",
+        "storage_path": "~/.hermes/skills/<category>/<skill-name>/SKILL.md",
+        "write_approval_recommendation": "skills.write_approval: true, same review-before-trust posture as Obscura"
+      },
+      "body": "Researched how hermes-agent Skills pillar works: SKILL.md progressive-disclosure format, bundled (87) vs optional (79) catalogs, self-authored skill creation via skill_manage tool, and hub/project security scanning. No skill categories installed yet -- still discovery phase. Full detail in Hermes_Way.xlsx tab D3_Skills_System.",
+      "created_at": "2026-10-05T01:17:02.934902+00:00",
+      "id": "6444a9ac-bf6e-4966-a78a-19ab2e9b93ad",
+      "key": "hermes-skills-pillar-research-2026-10-04",
+      "name": "Skills pillar researched: SKILL.md system, bundled/optional catalogs, self-authoring",
+      "tags": [
+        "hermes",
+        "log-entry",
+        "discovery"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-05T01:17:02.934902+00:00"
     }
   ],
-  "exported_at": "2026-10-05T00:54:11.526988+00:00",
+  "exported_at": "2026-10-05T01:17:21.088772+00:00",
   "relations": [
     {
       "attributes": {},
@@ -5507,6 +5541,16 @@
       "object_type": "entity",
       "predicate": "corrects",
       "subject_key": "hermes-vps-vultr-auto-backups-enabled-2026-10-04",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-05T01:17:18.331947+00:00",
+      "id": "d1ffab02-465e-4385-a6e2-6be5ba86d657",
+      "object_key": "hermes-memory-provider-locked-hindsight-2026-10-04",
+      "object_type": "entity",
+      "predicate": "sibling_pillar_of",
+      "subject_key": "hermes-skills-pillar-research-2026-10-04",
       "subject_type": "entity"
     }
   ],
