@@ -3773,9 +3773,33 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-05T00:36:06.253365+00:00"
+    },
+    {
+      "attributes": {
+        "detail_location": "Hermes_Way.xlsx tab D2_Providers_And_Deps",
+        "new_unchosen": [
+          "STT",
+          "image generation",
+          "browser automation backend",
+          "embedding provider"
+        ],
+        "telegram_dependency": "BotFather bot token -- new vault-worthy credential, not yet created"
+      },
+      "body": "Searched for provider gaps and dependencies. New unchosen categories: STT (speech-to-text, separate from TTS), image generation (FAL.ai, no free option), browser automation backend, embedding provider (resolves the catalogs long-idle search_similar). Also got concrete install dependencies for ik_llama.cpp, Docker terminal backend, Telegram gateway, Vultr fallback model, and Edge TTS. Full detail in Hermes_Way.xlsx tab D2_Providers_And_Deps.",
+      "created_at": "2026-10-05T00:42:29.571972+00:00",
+      "id": "87bd8a72-03df-4d3b-b46c-114d183b3340",
+      "key": "hermes-more-providers-dependencies-audit-2026-10-04",
+      "name": "Found 4 more unchosen provider categories; got real dependencies for the 5 locked providers",
+      "tags": [
+        "hermes",
+        "log-entry",
+        "discovery"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-05T00:42:29.571972+00:00"
     }
   ],
-  "exported_at": "2026-10-05T00:38:49.824285+00:00",
+  "exported_at": "2026-10-05T00:42:44.433055+00:00",
   "relations": [
     {
       "attributes": {},
