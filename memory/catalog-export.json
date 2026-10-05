@@ -4154,9 +4154,36 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-10-05T15:32:07.853941+00:00"
+    },
+    {
+      "attributes": {
+        "changes_made": false,
+        "diagnosis": "Shared router/ONT/ISP problem remains possible; attack neither demonstrated nor excluded without WAN traffic/connection counters",
+        "fileserver_load_1m": 0.03,
+        "internet_ping_loss_percent": 0,
+        "ping_samples_each": 10,
+        "router_ping_loss_percent": 0,
+        "user_report": "all computers affected; concerned about DoS and WireGuard",
+        "wg_counter_delta_bytes": {
+          "receive": 192,
+          "send": 384
+        }
+      },
+      "body": "User reports upload trouble on all computers; earlier sequential tests do not justify isolating the fault to the laptop, and current measurements show no WireGuard traffic flood.",
+      "created_at": "2026-10-05T16:18:26.82363+00:00",
+      "id": "46e7d86d-7699-4767-8fdf-e3dca4f006ec",
+      "key": "hermes-network-wide-upload-correction-2026-10-05",
+      "name": "Network-wide slowdown correction and tunnel check",
+      "tags": [
+        "hermes",
+        "network",
+        "performance"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-05T16:18:26.82363+00:00"
     }
   ],
-  "exported_at": "2026-10-05T15:32:08.049222+00:00",
+  "exported_at": "2026-10-05T16:18:27.021602+00:00",
   "relations": [
     {
       "attributes": {},
@@ -6000,6 +6027,16 @@
       "object_type": "host",
       "predicate": "affects",
       "subject_key": "hermes-laptop-wired-upload-loss-2026-10-05",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-05T16:18:26.863662+00:00",
+      "id": "30b43788-d6fe-4077-a524-ffed73c5e4a3",
+      "object_key": "hermes-laptop-wired-upload-loss-2026-10-05",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-network-wide-upload-correction-2026-10-05",
       "subject_type": "entity"
     }
   ],
