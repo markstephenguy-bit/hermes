@@ -3723,9 +3723,38 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-10-04T20:56:59.954105+00:00"
+    },
+    {
+      "attributes": {
+        "depends_on": "SV-15 (catalog/vault migration) for the shared-database option",
+        "mode": "local Docker, own Postgres, no cloud dependency",
+        "provider": "Hindsight",
+        "rejected": [
+          "ByteRover (vendor-self-reported top benchmark)",
+          "Supermemory",
+          "Mem0",
+          "Honcho",
+          "OpenViking",
+          "Holographic",
+          "RetainDB",
+          "Mnemosyne"
+        ]
+      },
+      "body": "User locked in Hindsight as the extended memory provider, after comparing all 8 official Hermes memory plugins. Hindsight has the best independently-verified benchmark (94.6% LongMemEval, officially reproduced leaderboard result) vs ByteRovers higher but vendor-self-reported LoCoMo number. Its reflect operation also directly matches the stated requirement: broad scope but curated, not raw total recall.",
+      "created_at": "2026-10-05T00:17:06.095662+00:00",
+      "id": "bb6a3b5a-42a7-43a8-93c5-ba8a87158551",
+      "key": "hermes-memory-provider-locked-hindsight-2026-10-04",
+      "name": "Extended memory provider locked: Hindsight",
+      "tags": [
+        "hermes",
+        "decision",
+        "local-model"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-05T00:17:06.095662+00:00"
     }
   ],
-  "exported_at": "2026-10-04T20:57:15.061143+00:00",
+  "exported_at": "2026-10-05T00:17:57.282384+00:00",
   "relations": [
     {
       "attributes": {},
