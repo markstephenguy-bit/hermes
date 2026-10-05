@@ -4229,9 +4229,47 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-10-05T16:41:41.241041+00:00"
+    },
+    {
+      "attributes": {
+        "codex_local_db_counts": "18 threads / 276 turns / 5171 items in ~/.codex (thread_history_1.sqlite, state_5.sqlite)",
+        "local_gateway_state": "idle: active_agents=0, 0 queued items (queue_1.sqlite), no fallback providers configured, hermes auth list empty",
+        "no_errors_found": "agent.log/errors.log show no rate-limit/429/exhaustion entries - only routine openai-codex image_gen plugin registration on each hermes startup"
+      },
+      "body": "At investigation time the local hermes gateway (laptop) was idle with nothing queued, so the Codex quota hit is cumulative/plan-limit rather than an active runaway loop on this host.",
+      "created_at": "2026-10-05T17:48:24.69391+00:00",
+      "id": "ef6f0893-5f48-4f1b-a45f-02122b736a5f",
+      "key": "hermes-codex-runaway-investigation-2026-10-05",
+      "name": "Diagnosed local state after user reported Hermes maxed out Codex usage",
+      "tags": [
+        "hermes",
+        "codex",
+        "investigation"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-05T17:48:24.69391+00:00"
+    },
+    {
+      "attributes": {
+        "evidence": "agent.log logs Plugin openai-codex registered image_gen provider on every hermes startup even though hermes auth list and hermes fallback list are both empty for this profile",
+        "implication": "codex usage can be driven by image-gen requests through Hermes without ever appearing in hermes auth/fallback config - not visible via hermes fallback list",
+        "mechanism": "hermes config.yaml documents borrowing ~/.codex/auth.json (local ChatGPT/Codex desktop app login) instead of a separate hermes auth add openai-codex credential"
+      },
+      "body": "Hermes codex image-generation support piggybacks on the already-logged-in local Codex CLI/desktop app OAuth session rather than a dedicated pooled credential, so it will not show up in hermes auth list or hermes fallback list.",
+      "created_at": "2026-10-05T17:48:29.14824+00:00",
+      "id": "86880ff6-a1a0-4722-b07c-9a77c852d170",
+      "key": "hermes-openai-codex-borrows-local-oauth-2026-10-05",
+      "name": "openai-codex plugin auto-registers as image_gen provider, borrowing local ChatGPT app OAuth",
+      "tags": [
+        "hermes",
+        "codex",
+        "config"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-05T17:48:29.14824+00:00"
     }
   ],
-  "exported_at": "2026-10-05T16:41:41.449130+00:00",
+  "exported_at": "2026-10-05T17:48:53.317311+00:00",
   "relations": [
     {
       "attributes": {},
@@ -6095,6 +6133,26 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-isp-visit-network-isolation-2026-10-05",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-05T17:48:47.645637+00:00",
+      "id": "7e5befc4-79ce-4b76-a071-3c45082c5239",
+      "object_key": "hermes-model-and-setup-roles-2026-09-30",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-openai-codex-borrows-local-oauth-2026-10-05",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-05T17:48:47.686717+00:00",
+      "id": "0892d325-8fcf-4fbd-b7ee-2245303b4338",
+      "object_key": "hermes-openai-codex-borrows-local-oauth-2026-10-05",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-codex-runaway-investigation-2026-10-05",
       "subject_type": "entity"
     }
   ],
