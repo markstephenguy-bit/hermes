@@ -3923,9 +3923,37 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-10-05T01:25:33.89189+00:00"
+    },
+    {
+      "attributes": {
+        "cross_pillar_gotcha": "cron sessions pass skip_memory=True -- Hindsight does not see or inform cron job runs",
+        "detail_location": "Hermes_Way.xlsx tab D4_Crons_System",
+        "hard_prerequisite": "persistent gateway process (ticker runs inside it) -- already satisfied, see CR-03 (hermes-gateway.service, systemd, Done)",
+        "schedule_formats": [
+          "relative one-shot",
+          "recurring interval",
+          "natural language",
+          "5-field cron expr",
+          "ISO timestamp"
+        ],
+        "scope": "capability confirmed only, no cron jobs created -- explicit user instruction",
+        "verification_method": "raw GitHub source (cron/AGENTS.md, cron/scheduler_provider.py) + official cron.md docs, not secondary blog summaries"
+      },
+      "body": "Researched hermes-agent Crons pillar at the users request to confirm the system CAN schedule work, not to design actual jobs. Verified via primary source: mature, production-hardened scheduler (bug-numbered fixes in internal docs), persistent-gateway requirement already satisfied by CR-03. Flagged a real cross-pillar interaction: cron runs skip memory providers entirely. Full detail in Hermes_Way.xlsx tab D4_Crons_System.",
+      "created_at": "2026-10-05T01:53:28.147796+00:00",
+      "id": "181f3555-565b-457f-9d46-d657ecd1e027",
+      "key": "hermes-crons-pillar-research-2026-10-05",
+      "name": "Crons pillar researched and verified: scheduler is real, persistent-gateway prereq already Done",
+      "tags": [
+        "hermes",
+        "log-entry",
+        "discovery"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-05T01:53:28.147796+00:00"
     }
   ],
-  "exported_at": "2026-10-05T01:25:40.008161+00:00",
+  "exported_at": "2026-10-05T01:53:34.049855+00:00",
   "relations": [
     {
       "attributes": {},
@@ -5659,6 +5687,26 @@
       "object_type": "entity",
       "predicate": "corrects",
       "subject_key": "hermes-hindsight-benchmark-correction-2026-10-05",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-05T01:53:33.88793+00:00",
+      "id": "b999f0c2-d60f-4ea2-bac6-6de5c3141bc2",
+      "object_key": "hermes-skills-pillar-research-2026-10-04",
+      "object_type": "entity",
+      "predicate": "sibling_pillar_of",
+      "subject_key": "hermes-crons-pillar-research-2026-10-05",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-05T01:53:33.940673+00:00",
+      "id": "17bfecc1-4655-4035-bf1c-adba163060cb",
+      "object_key": "hermes-memory-provider-locked-hindsight-2026-10-04",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-crons-pillar-research-2026-10-05",
       "subject_type": "entity"
     }
   ],
