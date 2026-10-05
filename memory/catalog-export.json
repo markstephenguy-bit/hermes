@@ -3901,9 +3901,31 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-10-05T01:18:26.439336+00:00"
+    },
+    {
+      "attributes": {
+        "competing_claim_checked": "Mastra Observational Memory 94.87% -- vendor-self-reported, not independently reproduced, does not overturn the decision",
+        "correct_figure": "91.4% overall (Gemini-3 variant), 89.0% (OSS-120B)",
+        "method": "Checked claims from secondary blog/doc summaries against primary source: GitHub API repo contents, raw SKILL.md files, and the actual vectorize-io/hindsight-benchmarks leaderboard table",
+        "skills_count_correct": "203 (58 bundled across 12 categories + 145 optional across 22 categories), verified via GitHub API against NousResearch/hermes-agent source tree 2026-10-05",
+        "skills_count_wrong": "166 (87 bundled + 79 optional)",
+        "wrong_figure": "94.6% (was actually the single-session-assistant sub-metric)"
+      },
+      "body": "User asked to test/verify prior Five Pillars discovery claims rather than trust secondary sources. Found two numeric errors: Hindsight benchmark figure (94.6% sub-metric misread as overall score) and Skills catalog counts (166 vs actual 203). Both corrected in Hermes_Way.xlsx (02_Identity_Memory IM-05, D3_Skills_System). Hindsight decision itself stands -- the competing Mastra claim is vendor-self-reported and does not meet the independent-verification bar already applied. SOUL.md, cron scheduler, and skill_manage tool all confirmed real and substantial via direct source inspection.",
+      "created_at": "2026-10-05T01:25:33.89189+00:00",
+      "id": "3272faa0-857d-4d02-9cfc-05502d424440",
+      "key": "hermes-hindsight-benchmark-correction-2026-10-05",
+      "name": "Corrected Hindsight LongMemEval figure; verified Skills counts against primary source",
+      "tags": [
+        "hermes",
+        "log-entry",
+        "correction"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-05T01:25:33.89189+00:00"
     }
   ],
-  "exported_at": "2026-10-05T01:18:26.594612+00:00",
+  "exported_at": "2026-10-05T01:25:40.008161+00:00",
   "relations": [
     {
       "attributes": {},
@@ -5617,6 +5639,26 @@
       "object_type": "entity",
       "predicate": "informed_by",
       "subject_key": "hermes-way-second-review-2026-10-05",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-05T01:25:39.858717+00:00",
+      "id": "e9757425-7a3d-4fa2-b405-70a059879e86",
+      "object_key": "hermes-memory-provider-locked-hindsight-2026-10-04",
+      "object_type": "entity",
+      "predicate": "corrects",
+      "subject_key": "hermes-hindsight-benchmark-correction-2026-10-05",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-05T01:25:39.883168+00:00",
+      "id": "53b579bf-d74b-456a-9913-016f75960e43",
+      "object_key": "hermes-skills-pillar-research-2026-10-04",
+      "object_type": "entity",
+      "predicate": "corrects",
+      "subject_key": "hermes-hindsight-benchmark-correction-2026-10-05",
       "subject_type": "entity"
     }
   ],
