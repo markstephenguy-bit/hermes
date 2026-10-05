@@ -3951,9 +3951,35 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-10-05T01:53:28.147796+00:00"
+    },
+    {
+      "attributes": {
+        "detail_location": "Hermes_Way.xlsx tab D5_Self_Improvement",
+        "mechanisms": [
+          "agent/background_review.py (per-turn fork, writes memory+skills directly)",
+          "agent/curator.py (skill lifecycle: active->stale->archived, self-authored skills only)",
+          "tools/session_search_tool.py (FTS5 over state.db, free, ~20ms)"
+        ],
+        "open_question": "whether background_review/curator are suppressed during cron (skip_memory=True is confirmed for memory PROVIDERS only, not necessarily these)",
+        "routing_overlap": "auxiliary.background_review.provider/model/defer directly overlaps the existing local-model-tool-tier / Codex-thinking-tier routing decision (03_Model_Routing_Resilience) -- third consumer of same routing logic",
+        "scope": "discovery only, nothing configured",
+        "write_approval_recommendation": "memory.write_approval: true, paired with skills.write_approval -- same review-before-trust posture as Obscura"
+      },
+      "body": "Completed the Five Pillars discovery set (Memory, Soul, Skills, Crons, Self-Improvement all now researched and verified against primary source). Self-Improvement is three real mechanisms: per-turn background review (forks agent, writes memory/skills directly, configurable model routing), skill Curator (deterministic + optional LLM lifecycle management, self-authored skills only, never touches bundled/hub-installed), and free FTS5 cross-session search. Full detail in Hermes_Way.xlsx tab D5_Self_Improvement.",
+      "created_at": "2026-10-05T01:57:10.402875+00:00",
+      "id": "67e612de-bad3-46ae-ab14-0c9960b5b7a2",
+      "key": "hermes-self-improvement-pillar-research-2026-10-05",
+      "name": "Self-Improvement pillar researched and verified: background review, Curator, session search",
+      "tags": [
+        "hermes",
+        "log-entry",
+        "discovery"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-05T01:57:10.402875+00:00"
     }
   ],
-  "exported_at": "2026-10-05T01:53:34.049855+00:00",
+  "exported_at": "2026-10-05T01:57:41.621388+00:00",
   "relations": [
     {
       "attributes": {},
@@ -5707,6 +5733,26 @@
       "object_type": "entity",
       "predicate": "informed_by",
       "subject_key": "hermes-crons-pillar-research-2026-10-05",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-05T01:57:16.927541+00:00",
+      "id": "62a834c1-b743-4f80-96c8-480e8c299a1f",
+      "object_key": "hermes-crons-pillar-research-2026-10-05",
+      "object_type": "entity",
+      "predicate": "sibling_pillar_of",
+      "subject_key": "hermes-self-improvement-pillar-research-2026-10-05",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-05T01:57:34.112995+00:00",
+      "id": "7b19def5-9ab6-4eb5-8ec3-9c4388549afd",
+      "object_key": "router-llm-as-judge-rebuild-2026-09-28",
+      "object_type": "entity",
+      "predicate": "overlaps_with",
+      "subject_key": "hermes-self-improvement-pillar-research-2026-10-05",
       "subject_type": "entity"
     }
   ],
