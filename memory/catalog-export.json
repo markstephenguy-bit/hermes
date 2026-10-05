@@ -4267,9 +4267,31 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-05T17:48:29.14824+00:00"
+    },
+    {
+      "attributes": {
+        "boot_time_utc": "2026-10-05T17:57:00",
+        "linger_note": "enabled loginctl linger for hermes user defensively but confirmed NOT load-bearing since the unit is system-level, not systemd --user",
+        "unit_path": "/etc/systemd/system/hermes-gateway.service",
+        "unit_type": "system-level systemd unit (not --user)",
+        "verification": "actual reboot command run on hermes-vps, gateway active again with zero login sessions (who=empty), dashboard HTTP 302 post-boot",
+        "wanted_by": "multi-user.target.wants"
+      },
+      "body": "Re-verified CR-03 with an actual reboot of hermes-vps (not just systemctl status): hermes-gateway.service is a real system-level unit and came back active automatically with no login session.",
+      "created_at": "2026-10-05T17:58:02.097518+00:00",
+      "id": "f1516637-7979-4bdc-b633-500a08e96b1d",
+      "key": "hermes-cr03-reboot-verified-2026-10-05",
+      "name": "CR-03 reboot survival genuinely verified via real reboot",
+      "tags": [
+        "hermes",
+        "cr-03",
+        "verification"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-05T17:58:02.097518+00:00"
     }
   ],
-  "exported_at": "2026-10-05T17:48:53.317311+00:00",
+  "exported_at": "2026-10-05T17:58:07.905626+00:00",
   "relations": [
     {
       "attributes": {},
