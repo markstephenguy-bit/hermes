@@ -3752,9 +3752,30 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-05T00:17:06.095662+00:00"
+    },
+    {
+      "attributes": {
+        "messaging": "Telegram",
+        "runtime": "ik_llama.cpp",
+        "status": "decided, not deployed",
+        "terminal_backend": "docker",
+        "tts": "edge",
+        "vultr_fallback_model": "DeepSeek-V4-Flash"
+      },
+      "body": "User locked in: ik_llama.cpp (local inference runtime, native Windows build vs vLLMs unofficial-fork-only Windows support), Docker (terminal backend, closes part of the HN-05/SH-02 exposure), Edge (TTS, free default, voice already a deferred non-goal), DeepSeek-V4-Flash (Vultr Serverless Inference fallback-tier model, cheapest of the 8 available), Telegram (messaging gateway, official Bot API vs Signals unofficial signal-cli).",
+      "created_at": "2026-10-05T00:36:06.253365+00:00",
+      "id": "b573fc3a-dc0e-4cf2-b69a-f2ab91db18d6",
+      "key": "hermes-five-provider-choices-locked-2026-10-04",
+      "name": "Five provider/backend choices locked: runtime, terminal, TTS, Vultr fallback model, messaging",
+      "tags": [
+        "hermes",
+        "decision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-05T00:36:06.253365+00:00"
     }
   ],
-  "exported_at": "2026-10-05T00:17:57.282384+00:00",
+  "exported_at": "2026-10-05T00:38:49.824285+00:00",
   "relations": [
     {
       "attributes": {},
