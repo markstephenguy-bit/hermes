@@ -3797,9 +3797,33 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-10-05T00:42:29.571972+00:00"
+    },
+    {
+      "attributes": {
+        "install": "hermes plugins install SGavrl/hermes-plugin-obscura --enable",
+        "provider": "Obscura",
+        "rejected": [
+          "local Chrome/Chromium CDP (too heavy for 4GB VPS)",
+          "Camofox",
+          "Browserbase (cloud, paid)",
+          "Browser Use (cloud, paid)"
+        ],
+        "risk": "unofficial community plugin, not first-party"
+      },
+      "body": "User locked in Obscura (Rust headless browser, ~30MB/instance) over local Chrome/Camofox (200-400MB+/instance, too heavy for the 4GB VPS) and cloud options (Browserbase/Browser Use, paid). Known risk: Obscura is NOT officially supported by hermes-agent core (the integration request was closed as not planned) -- only available via the community plugin hermes-plugin-obscura.",
+      "created_at": "2026-10-05T00:53:26.055151+00:00",
+      "id": "b2d81a8f-0f79-4992-aad7-011b2d6649c0",
+      "key": "hermes-browser-automation-obscura-2026-10-04",
+      "name": "Browser automation backend locked: Obscura",
+      "tags": [
+        "hermes",
+        "decision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-05T00:53:26.055151+00:00"
     }
   ],
-  "exported_at": "2026-10-05T00:42:44.433055+00:00",
+  "exported_at": "2026-10-05T00:54:11.526988+00:00",
   "relations": [
     {
       "attributes": {},
