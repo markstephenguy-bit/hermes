@@ -3977,9 +3977,51 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-10-05T01:57:10.402875+00:00"
+    },
+    {
+      "attributes": {
+        "builtin_features_found": [
+          "form-based Config editor (150+ fields)",
+          "native local Credential Vault (Fernet, browser-fill passwords, distinct from catalog vault)",
+          "Credential Pools (multi-key rotation per provider)",
+          "Analytics page (cost/token/cache tracking)",
+          "Checkpoints & Rollback (automatic shadow-git change history)",
+          "Pairing page (approve messaging users)",
+          "Home Assistant plugin integration"
+        ],
+        "cross_referenced_rows": [
+          "CR-13",
+          "CR-14",
+          "SV-01 (clarified)",
+          "SV-16 (new)",
+          "SH-06",
+          "IA-02",
+          "IA-05",
+          "CS-05",
+          "GV-03",
+          "BD-04",
+          "BD-05"
+        ],
+        "detail_location": "Hermes_Way.xlsx tab D6_Web_Dashboard",
+        "open_security_question": "SH-06: dashboard auth model (loopback=none, else=forced OAuth/OIDC/password) vs how the live instance is actually exposed at the vultropenclaw.com domain -- flagged, not resolved, needs direct answer from user",
+        "trigger": "user shared live dashboard screenshots of hermes-vps and asked to check each sidebar menu for discoveries",
+        "verification_method": "primary source: website/docs/user-guide/features/web-dashboard.md, credential-vault.md, credential-pools.md, checkpoints-and-rollback.md, profiles.md, messaging/homeassistant.md, messaging/webhooks.md, plugins/hermes-achievements/README.md"
+      },
+      "body": "User shared screenshots of their live hermes-vps dashboard sidebar and asked to check every menu item for additional discoveries. Found the dashboard exposes substantial built-in machinery not previously tracked: a form config editor, native credential vault + pools, cost analytics, automatic checkpoints/rollback, and a pairing flow -- several directly answer open rows across 01_Core_Runtime, 05_Secrets_Vault, 08_Interfaces_Access, 10_Backup_DR, 11_Cost_Subscriptions, 12_Security_Hardening, and 13_Governance_Change_Mgmt. Flagged one real open security question (dashboard auth exposure) rather than assuming an answer. Full detail in Hermes_Way.xlsx tab D6_Web_Dashboard.",
+      "created_at": "2026-10-05T02:35:34.26933+00:00",
+      "id": "013c5c6f-e8ac-4374-af80-8d9a7afd935c",
+      "key": "hermes-web-dashboard-survey-2026-10-05",
+      "name": "Surveyed live hermes-vps web dashboard page-by-page; resolved several open workbook rows",
+      "tags": [
+        "hermes",
+        "log-entry",
+        "discovery"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-05T02:35:34.26933+00:00"
     }
   ],
-  "exported_at": "2026-10-05T01:57:41.621388+00:00",
+  "exported_at": "2026-10-05T02:35:45.574082+00:00",
   "relations": [
     {
       "attributes": {},
@@ -5753,6 +5795,26 @@
       "object_type": "entity",
       "predicate": "overlaps_with",
       "subject_key": "hermes-self-improvement-pillar-research-2026-10-05",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-05T02:35:45.415127+00:00",
+      "id": "dbe9c5c9-6562-4483-8b8e-8e25d1eea3e7",
+      "object_key": "hermes-self-improvement-pillar-research-2026-10-05",
+      "object_type": "entity",
+      "predicate": "sibling_pillar_of",
+      "subject_key": "hermes-web-dashboard-survey-2026-10-05",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-05T02:35:45.467137+00:00",
+      "id": "14d8180f-5cfd-447e-99d5-d9685f31ee26",
+      "object_key": "hermes-memory-provider-locked-hindsight-2026-10-04",
+      "object_type": "entity",
+      "predicate": "informs",
+      "subject_key": "hermes-web-dashboard-survey-2026-10-05",
       "subject_type": "entity"
     }
   ],
