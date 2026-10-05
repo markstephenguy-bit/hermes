@@ -4351,9 +4351,71 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-05T20:35:15.063641+00:00"
+    },
+    {
+      "attributes": {
+        "from_hermes_vps_wg0": "wg0 peer 66.170.221.155 advertises allowed-ips 192.168.40.0/24 and ip route confirms 192.168.40.100 dev wg0, but TCP 22 still times out",
+        "from_sandbox": "connection timed out, no route at all (only 192.168.40.2:3003 catalog is reachable from this Claude Code environment)",
+        "likely_cause": "Windows firewall on w_workstation probably scopes the OpenSSH inbound rule to a specific local subnet profile, not the WireGuard-originated 10.60.0.0/24 source; unconfirmed, needs a look from inside the LAN",
+        "target": "192.168.40.100:22 (w_workstation)"
+      },
+      "body": "LI-03/04/06/07 (local model pull+benchmark on w_workstation) is blocked on network reachability, not credentials: port 22 on w_workstation is unreachable both directly from the Claude Code sandbox and via hermes-vps own WireGuard tunnel to the home LAN.",
+      "created_at": "2026-10-05T20:39:00.749202+00:00",
+      "id": "f7fe590d-aee8-4c22-b6df-a7ffe6b6c82a",
+      "key": "hermes-li-workstation-unreachable-2026-10-05",
+      "name": "w_workstation port 22 unreachable from both Claude Code sandbox and hermes-vps WireGuard peer",
+      "tags": [
+        "hermes",
+        "li-03",
+        "li-04",
+        "home-network-boundary",
+        "verification"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-05T20:39:00.749202+00:00"
+    },
+    {
+      "attributes": {
+        "actual_master": "192.168.40.2 (fileserver)",
+        "stale_note_said": "192.168.40.250 (server)",
+        "verification": "port 8000 open on fileserver, refused on server; live Get-Content of w_workstation minion.d/local.conf shows master: 192.168.40.2; test.ping against * succeeded for hermes-vps, fileserver, server, laptop, w_workstation, w_desktop"
+      },
+      "body": "Corrected three stale Salt Minion service notes (ids 13,14,15) that said master: 192.168.40.250 - the master actually migrated to fileserver (192.168.40.2) at some point, matching the Postgres/PostgREST migration already documented in CLAUDE.md.",
+      "created_at": "2026-10-05T22:47:39.692137+00:00",
+      "id": "3ea3a420-431b-44c3-90f0-31d7915d8c41",
+      "key": "hermes-salt-master-location-corrected-2026-10-05",
+      "name": "Salt master confirmed at fileserver (192.168.40.2), stale catalog notes said server",
+      "tags": [
+        "hermes",
+        "salt",
+        "infrastructure",
+        "verification"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-05T22:47:39.692137+00:00"
+    },
+    {
+      "attributes": {
+        "fix": "Remove-WindowsCapability + Add-WindowsCapability for OpenSSH.Server via Salt (detached process to survive Salt call timeouts), then Start-Service + Set-Service Automatic for sshd and ssh-agent",
+        "root_cause": "OpenSSH.Server Windows capability was marked Installed but the sshd service was never registered (likely corrupted after original July setup)",
+        "verification": "ssh llm@192.168.40.100 with the pre-staged key (~/.ssh/workstation_llm_ed25519) now succeeds"
+      },
+      "body": "Fixed w_workstation SSH access: sshd service was never registered despite the capability showing Installed. Re-added the capability and started/enabled sshd+ssh-agent via Salt. SSH login confirmed working again.",
+      "created_at": "2026-10-05T23:12:43.077265+00:00",
+      "id": "edc1a658-772d-4e8d-90ce-2348ded35425",
+      "key": "hermes-w-workstation-sshd-fixed-2026-10-05",
+      "name": "w_workstation SSH access restored",
+      "tags": [
+        "hermes",
+        "li-03",
+        "w_workstation",
+        "verification"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-05T23:12:43.077265+00:00"
     }
   ],
-  "exported_at": "2026-10-05T20:35:15.185209+00:00",
+  "exported_at": "2026-10-05T23:12:43.215990+00:00",
   "relations": [
     {
       "attributes": {},
