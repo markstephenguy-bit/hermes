@@ -3855,9 +3855,55 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-10-05T01:17:02.934902+00:00"
+    },
+    {
+      "attributes": {
+        "done": 25,
+        "earned": 212,
+        "feature_rows": 154,
+        "file": "Hermes_Way.xlsx",
+        "fixed": [
+          "quoted scorecard formulas render correctly",
+          "feature tables with filters",
+          "ID and feature frozen",
+          "productivity requirements",
+          "catalog authority clarified",
+          "version, backup, Salt and cost corrections"
+        ],
+        "not_started": 111,
+        "original_modified": false,
+        "partial": 18,
+        "points": 936,
+        "recommendations_status": "review only, not adopted",
+        "remaining": [
+          "Standards backup and Salt summaries stale",
+          "D2 browser undecided contradicts TM-14 Obscura choice",
+          "LI-05 vLLM/WSL requirement obsolete after ik_llama.cpp choice",
+          "30 empty rows per feature tab",
+          "no validation or navigation links",
+          "remaining duplicate weights including SV-14/SV-15",
+          "decisions alone earn Partial credit",
+          "skills discovery lacks linked implementation criteria",
+          "missing verification dates and explicit per-feature tests"
+        ],
+        "review_local_date": "2026-10-04",
+        "sheets": 22
+      },
+      "body": "The updated workbook improves functionality and coverage but still contains contradictory summaries, duplicate scoring, and incomplete acceptance criteria.",
+      "created_at": "2026-10-05T01:18:26.439336+00:00",
+      "id": "90f62ac7-c94e-4609-a741-80beddfc3bea",
+      "key": "hermes-way-second-review-2026-10-05",
+      "name": "Updated Hermes Way workbook review",
+      "tags": [
+        "hermes",
+        "workbook",
+        "review"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-05T01:18:26.439336+00:00"
     }
   ],
-  "exported_at": "2026-10-05T01:17:21.088772+00:00",
+  "exported_at": "2026-10-05T01:18:26.594612+00:00",
   "relations": [
     {
       "attributes": {},
@@ -5551,6 +5597,26 @@
       "object_type": "entity",
       "predicate": "sibling_pillar_of",
       "subject_key": "hermes-skills-pillar-research-2026-10-04",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-05T01:18:26.486969+00:00",
+      "id": "e0938bc9-304f-4a95-9c82-43aca625be91",
+      "object_key": "hermes-way-review-2026-10-04",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-way-second-review-2026-10-05",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-05T01:18:26.486969+00:00",
+      "id": "8e0689e1-1658-4fe6-b1f0-1d927f1b0292",
+      "object_key": "hermes-five-provider-choices-locked-2026-10-04",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-way-second-review-2026-10-05",
       "subject_type": "entity"
     }
   ],
