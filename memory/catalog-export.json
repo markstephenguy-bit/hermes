@@ -3879,6 +3879,29 @@
     },
     {
       "attributes": {
+        "current_isp_gbps": 1,
+        "purchase_status": "researching",
+        "required_port_count": "unconfirmed",
+        "router_model": "unconfirmed",
+        "target_isp_gbps": 2
+      },
+      "body": "User currently has 1 Gbps ISP service and wants to buy a network switch to support an upgrade to 2 Gbps.",
+      "created_at": "2026-10-06T15:21:07.848259+00:00",
+      "id": "281d409a-07f6-4f10-9509-1dc503438d4b",
+      "key": "hermes-network-2gig-upgrade-intent-2026-10-06",
+      "name": "Planned 2 Gbps ISP upgrade and switch purchase",
+      "tags": [
+        "hermes",
+        "network",
+        "isp",
+        "switch",
+        "purchase"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-06T15:21:07.848259+00:00"
+    },
+    {
+      "attributes": {
         "done": 25,
         "earned": 212,
         "feature_rows": 154,
@@ -4482,7 +4505,7 @@
       "updated_at": "2026-10-06T15:16:36.223119+00:00"
     }
   ],
-  "exported_at": "2026-10-06T15:16:36.387943+00:00",
+  "exported_at": "2026-10-06T15:21:08.010271+00:00",
   "relations": [
     {
       "attributes": {},
@@ -6386,6 +6409,16 @@
       "object_type": "entity",
       "predicate": "closes",
       "subject_key": "hermes-cr03-reboot-verified-2026-10-05",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-06T15:21:07.88128+00:00",
+      "id": "151e8bd2-c6d6-450a-bcc6-149ac122f3db",
+      "object_key": "switch-detail-2026-07-21",
+      "object_type": "entity",
+      "predicate": "relates_to",
+      "subject_key": "hermes-network-2gig-upgrade-intent-2026-10-06",
       "subject_type": "entity"
     }
   ],
