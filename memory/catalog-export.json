@@ -4811,9 +4811,29 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-06T19:12:08.949699+00:00"
+    },
+    {
+      "attributes": {
+        "telegram_chat_id": "8772762199",
+        "telegram_session_id": "20261006_180555_372bd33e",
+        "verification_method": "independent state.db query, not user self-report or agent self-report"
+      },
+      "body": "All three interfaces confirmed to share the same memory. CLI self-continuity proven directly. Dashboard leg verified architecturally (same hermes --resume code path as CLI) after fixing a real stale-session-memory bug found during testing. Telegram leg confirmed live: user sent a Telegram message, Hermes correctly recalled a fact planted via CLI, verified directly against state.db (not self-report) ~9s after the exchange.",
+      "created_at": "2026-10-06T19:20:20.292577+00:00",
+      "id": "489e96f7-afa7-4c24-a309-70169a2452d6",
+      "key": "hermes-im04-closed-2026-10-06",
+      "name": "IM-04 closed: cross-interface continuity proven across CLI, Dashboard, and Telegram",
+      "tags": [
+        "hermes",
+        "im-04",
+        "verification",
+        "closed"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-06T19:20:20.292577+00:00"
     }
   ],
-  "exported_at": "2026-10-06T19:15:38.500654+00:00",
+  "exported_at": "2026-10-06T19:20:20.482674+00:00",
   "relations": [
     {
       "attributes": {},
@@ -6837,6 +6857,16 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-self-config-rule-scoped-to-setup-not-code-fixes-20261006",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-06T19:20:20.338414+00:00",
+      "id": "e42b92d5-0228-497c-9b51-845208908a0c",
+      "object_key": "im04-stale-memory-fix-verified-20261006",
+      "object_type": "entity",
+      "predicate": "depends_on",
+      "subject_key": "hermes-im04-closed-2026-10-06",
       "subject_type": "entity"
     }
   ],
