@@ -4543,9 +4543,30 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-06T17:33:50.013573+00:00"
+    },
+    {
+      "attributes": {
+        "im03": "single state.db confirmed shared across gateway+CLI",
+        "im06": "scripts/export_hermes_memory.py",
+        "im08": "3 independent sessions, identical SOUL.md-driven identity"
+      },
+      "body": "Closed three Identity & Memory rows: confirmed single shared session store (not per-interface), built a Hermes-memory backup script parallel to the catalog one, and actually verified (not assumed) identity consistency across independent fresh sessions.",
+      "created_at": "2026-10-06T17:39:25.191056+00:00",
+      "id": "abea1619-7ab6-4791-8feb-9873edda9aa1",
+      "key": "hermes-im03-06-08-closed-2026-10-06",
+      "name": "IM-03/IM-06/IM-08 closed: shared session store, memory backup script, identity verified",
+      "tags": [
+        "hermes",
+        "im-03",
+        "im-06",
+        "im-08",
+        "verification"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-06T17:39:25.191056+00:00"
     }
   ],
-  "exported_at": "2026-10-06T17:33:50.174735+00:00",
+  "exported_at": "2026-10-06T17:39:25.373355+00:00",
   "relations": [
     {
       "attributes": {},
