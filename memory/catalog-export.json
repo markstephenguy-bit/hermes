@@ -4503,9 +4503,28 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-06T15:16:36.223119+00:00"
+    },
+    {
+      "attributes": {
+        "admin_email": "mark.stephen.guy@gmail.com",
+        "test_deployment": "hello-world:latest via tRPC API, created and deleted"
+      },
+      "body": "Completed Dokploy first-run signup (zero users existed), vaulted the real credential, then proved end-to-end deployment via its tRPC API: created a project+application, deployed hello-world as a real Swarm service, confirmed via docker service ls, then deleted both.",
+      "created_at": "2026-10-06T15:27:23.159776+00:00",
+      "id": "fdd7f860-fb22-485c-8b05-3cc8c723fff4",
+      "key": "hermes-cr06-07-dokploy-closed-2026-10-06",
+      "name": "CR-06/CR-07 closed: Dokploy admin set up, exercised end-to-end",
+      "tags": [
+        "hermes",
+        "cr-06",
+        "cr-07",
+        "verification"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-06T15:27:23.159776+00:00"
     }
   ],
-  "exported_at": "2026-10-06T15:21:08.010271+00:00",
+  "exported_at": "2026-10-06T15:27:23.331720+00:00",
   "relations": [
     {
       "attributes": {},
