@@ -4435,9 +4435,35 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-06T06:45:20.482171+00:00"
+    },
+    {
+      "attributes": {
+        "points": 44,
+        "rows_closed": [
+          "CR-09",
+          "CR-10",
+          "CR-11",
+          "CR-12",
+          "CR-13",
+          "CR-14",
+          "CR-18"
+        ]
+      },
+      "body": "Closed 7 Core Runtime rows in one pass: hermes-vps + services registered in catalog, SSH access vault confirmed, config-edit method validated in practice, OS patching already auto-enabled, upgrade policy written, memory ceiling check deployed, checkpoints auto-snapshot confirmed real.",
+      "created_at": "2026-10-06T15:04:51.518063+00:00",
+      "id": "840272dc-4296-4840-b0ec-088748d5c548",
+      "key": "hermes-cr-batch-closed-2026-10-06",
+      "name": "Core Runtime batch closed: CR-09,10,11,12,13,14,18",
+      "tags": [
+        "hermes",
+        "core-runtime",
+        "verification"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-06T15:04:51.518063+00:00"
     }
   ],
-  "exported_at": "2026-10-06T06:45:20.614683+00:00",
+  "exported_at": "2026-10-06T15:04:51.667245+00:00",
   "relations": [
     {
       "attributes": {},
