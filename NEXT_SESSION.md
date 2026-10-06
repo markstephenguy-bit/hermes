@@ -1,107 +1,67 @@
-# Session Seed — Post-Migration State + Resume the vLLM MoE Work
+# Session Seed — Hermes Way Execution, Continued
 
 Paste this whole file as your opening message.
 
-## What happened this session (2026-09-29/30), all verified live
+## Ground rules already established this project (don't relitigate)
 
-**`server` (192.168.40.250) had repeated unclean crashes** (3+ boots in a row
-ending in "crash" per `last -x`, no OOM/disk/NVMe/MCE root cause found, no
-ECC RAM to catch a memory fault if that's the cause). Masked all systemd
-sleep targets as a test/mitigation (`sleep.target`, `suspend.target`,
-`hibernate.target`, `hybrid-sleep.target`) — root cause still unconfirmed,
-watch for recurrence. A separate, unrelated finding: the `tailscale`
-container on `server` has been crash-looping continuously since July
-(dormant, never joined a tailnet) — not the crash cause, still unfixed.
+- Setup/config on hermes-vps happens BY Hermes itself (its own CLI/chat), not by editing files directly where avoidable. Claude Code orchestrates and verifies.
+- Memory and git upkeep are Claude's job, not the user's — log to the catalog (tag `hermes`) and commit/push as work lands, don't batch silently.
+- Source of truth: `Hermes_Way.xlsx` (tabs 01-15 tracked backlog, D1-D8 discovery/reference only, no points). The catalog has full decision history. Query the catalog, don't trust cached assumptions.
+- **General identity files (SOUL.md, memories/USER.md, memories/MEMORY.md) are about Hermes in general, never project-specific.** Project-specific facts belong in their own `hermes project create <name> <folder>`, with their own files.
 
-**Migrated the automation/networking backbone off `server` onto
-`fileserver` (192.168.40.2)**, each piece its own Docker container:
-1. **Catalog** (`catalog-db`/`catalog-api`) — data verified via matching
-   row counts + spot checks. All consumers repointed (this repo, shared
-   `Home Claude/CLAUDE.md`, hermes-vps's `catalog_mcp.py`).
-2. **Squid** — same ACL, consumers repointed (`w_workstation`'s proxy env
-   vars, hermes-vps's `search_mcp.py`).
-3. **WireGuard** — exact keypair preserved from `server`, so hermes-vps
-   needed zero config changes (peers keyed by public key, not IP). Hit and
-   fixed two issues: a knocked-out default route on fileserver (netplan
-   config was fine, just needed reapplying) and a `DROP`-policy FORWARD
-   chain silently blocking LAN forwarding (added explicit ACCEPT rules,
-   persisted in the container's PostUp/PostDown).
-4. **Salt master + API** (`cdalvaro/docker-salt-master:3008.2_3`, matches
-   the exact Salt version already in use) — minion *identity* (accepted
-   keys) preserved via copying `/etc/salt/pki/master/`, but **the
-   container generated a brand-new master keypair on first start despite
-   the mounted files** (silently overwrote the symlinks — never found the
-   exact mechanism to stop this; worth investigating if redone). Fixed by
-   deleting each minion's cached `minion_master.pub` and letting it
-   re-trust on reconnect. All 6 minions (`fileserver`, `laptop`, `server`,
-   `w_desktop`, `w_laptop`, `w_workstation`) now on the new master, old
-   master/API stopped+disabled on `server`.
+## Behavioral workflow the user wants (established hard, after real friction)
 
-   **Real friction hit along the way, useful if this happens again:**
-   `w_workstation`'s and `w_laptop`'s minions went fully unresponsive
-   (likely a PowerShell `Set-Content` BOM/encoding issue breaking the
-   minion's YAML config parse) with no remote fix possible — `w_workstation`
-   has a pre-staged SSH fallback (`workstation_llm_ed25519` key, `llm@`
-   user) but it was *also* unreachable (port 22 timeout, not an auth
-   failure) until the user manually restarted the service via RDP.
-   `w_desktop`/`w_laptop` have **no SSH/WinRM fallback at all** — pure
-   RDP-only recovery. User raised this as a real pain point: Salt's
-   feedback when something breaks is close to useless ("not connected",
-   no why). Open thread: evaluate Netdata (shipped native MCP support Feb
-   2026) for independent observability, and a WinRM-based MCP server for
-   Windows execution specifically, as a more diagnosable layer alongside
-   or instead of Salt's Windows minion. Not started yet.
+1. Every chunk of work starts by naming a row: `Row: <ID> (<pts>pts, <tab>) — target: <what done looks like>`.
+2. **One-hop rule**: if executing a row surfaces something broken that isn't itself a row, diagnose to root cause, then stop and report before fixing — don't chain fix after fix without checking in.
+3. **Host-boundary check**: if a row's "Must Live On" is Hermes-VPS but the work is about to touch a different host, that's a stop-and-ask.
+4. Every response ends with: `Row: <ID> | Status: <unchanged/partial/done> | Next: <single action>`.
+5. **Take simple instructions directly — do not interject with nuance, caveats, or clarifying questions for things that are actually simple.** Execute, then report. Ask only when something is genuinely ambiguous or requires info only the user has.
+6. **Never self-report success without independent verification.** Hermes's own chat sessions have hallucinated "wrote the file" when nothing was written — always confirm on disk / via an independent check, not the agent's own narration.
+7. Batch work — do a full chunk via tool calls before producing chat text. Don't narrate every poll tick or intermediate step.
 
-## Open thread, paused mid-work by the server crash: local model upgrade
+## Critical non-obvious facts discovered this session (would cost real time to rediscover)
 
-Before the crash was discovered, the actual goal in progress was moving
-Hermes's local-tier model from `qwen3-vl:4b-hermes-instruct` (Ollama) to a
-MoE model for more capability at comparable speed, decided as follows:
+- **`terminal.docker_mount_cwd_to_workspace` must be `true`** (config.yaml, default `false`). Without it, every file Hermes writes via its sandboxed terminal/file tools vanishes when the ephemeral sandbox container exits — zero host persistence. Already fixed and set to `true` on hermes-vps. If this is ever a fresh install, set it immediately.
+- **SOUL.md lives at `~/.hermes/SOUL.md` (top-level)**. **USER.md and MEMORY.md live at `~/.hermes/memories/USER.md` and `~/.hermes/memories/MEMORY.md`** — NOT top-level. They are agent-grown stores populated through real use, not static docs to hand-author. `memories/USER.md` already has real pre-existing content from genuine prior Hermes usage (predates this whole project thread) — never overwrite it blindly.
+- **`HERMES_DISABLE_LAZY_INSTALLS=1`** is set in `.env` — blocks Hermes's own auto-install of optional deps (e.g. `python-telegram-bot`). To install manually: the runtime venv has **no pip**, use `uv pip install --python <venv>/bin/python <package>`. Runtime venv path: `/home/hermes/.hermes/installs/019d0d114d22b7e6/environments/b6f36e8a90d54eddb9e48660acb56fbb/venv` (may change on upgrade — find via `hermes doctor`'s "Runtime venv staged" line).
+- **`hermes-gateway.service` is a persistent SYSTEM-level systemd unit** (survives reboot, verified via an actual reboot test). Any `.env`/config change affecting the gateway needs `systemctl restart hermes-gateway` — it won't pick up changes on its own. Don't run `hermes gateway install` casually — it creates a separate USER-level service alongside the system one, causing duplicate/ambiguous gateways (had to uninstall one tonight).
+- **`complexity-router.service`** (systemd, port 11500, source `/home/hermes/.hermes/complexity_router/complexity_router.py`) is a custom LLM-as-judge proxy: routes between local Ollama (`OLLAMA_BASE_URL=http://192.168.40.100:11434`, i.e. w_workstation) and Codex fallback. `model.provider=ollama` + `base_url=http://127.0.0.1:11500/v1` in config.yaml points here, not at real Ollama directly.
+- **Local model reality**: Ollama is live and working RIGHT NOW on w_workstation (RTX A4000), serving `qwen3-vl:4b/8b-hermes-instruct` variants — this is the ACTIVE provider. Separately, `ik_llama.cpp` was built from source on w_workstation (CUDA, sm_86) at `C:\ik_llama.cpp\build\bin\llama-server.exe` as the planned upgrade (LI-03/04 target: Qwen3.6-35B-A3B) — built but **not yet pulled a model, not yet wired into the router, not yet benchmarked**. Don't assume ik_llama.cpp is in use — Ollama is.
+- **Salt master is at `fileserver` (192.168.40.2:8000)**, not `server` (192.168.40.250) — a stale catalog note said otherwise, corrected. Salt eauth: scoped user `hermes-infra` (perms: cmd/disk/network/service/status/test only), credential in vault as `salt-hermes-infra`. Login: `POST /login` with `eauth=pam`.
+- **w_workstation SSH** (192.168.40.100, user `llm`, key `~/.ssh/workstation_llm_ed25519`) had a broken `sshd` service (capability showed Installed but service was never registered) — fixed by removing+re-adding the `OpenSSH.Server` Windows capability via Salt, then starting/enabling `sshd`+`ssh-agent`. If it breaks again, that's the fix.
+- **Dokploy** was never set up (zero users) despite being installed. Signup completed: `mark.stephen.guy@gmail.com` (vault: `hermes-vps-dashboard-basic-auth`... actually vault key is `hermes-vps-dokploy-admin` — **password reuses the vault master passcode, recommend rotating**). Its API is tRPC at `/api/trpc/<procedure>` — e.g. `project.create`, `application.create`, `application.saveDockerProvider`, `application.deploy`.
+- **Windows build toolchain on w_workstation**: the pre-existing VS2022 Community install only has the OneCore/UWP library variant (no `msvcrt.lib`), not usable for normal desktop builds. A fresh, independent Build Tools install was done at `C:\BuildTools2022` with the full desktop C++ workload — use that one for any future native builds, not the pre-existing Community install. Standalone CMake at `C:\Program Files\CMake`, standalone Ninja at `C:\ninja`, CUDA Toolkit 12.6.3 (+ cuBLAS dev libs, installed separately) at the default path.
+- **SSH/PowerShell quoting over the Salt/SSH bridge is fragile** — prefer writing scripts to disk via base64 round-trip (`[IO.File]::WriteAllText(path, [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('...')))`) over inline quoted PowerShell one-liners with pipes.
+- **Salt `cmd.run` has no reliable long-running/background primitive** — `Start-Job` is scoped to the invoking process (dies when the Salt call returns), and Salt itself may kill long calls on its own timeout. For long Windows operations, use `Start-Process ... -RedirectStandardOutput/-RedirectStandardError` to a log file (fully detached OS process), then poll the log file separately.
 
-- **Model**: `Qwen3-VL-30B-A3B-Instruct` (31B total/3.3B active, vision
-  confirmed, native Hermes tool-calling format). Quant: `QuantTrio/Qwen3-VL-30B-A3B-Instruct-AWQ`
-  (~17GB, needs partial VRAM/RAM split on the 16GB A4000 — real-world
-  precedent exists for this exact model size on 16GB-class cards).
-- **Engine**: vLLM, not Ollama — Ollama has no MoE-aware expert-offload
-  control (confirmed open unresolved upstream issue). vLLM has
-  `VLLM_EXPERTS_LOAD_DEVICE=cpu` (merged) for GPU/CPU mixed expert
-  placement, and native `--tool-call-parser hermes` support (Qwen3's own
-  chat template already uses Hermes-style tool-call format — unrelated
-  naming coincidence, not about this project).
-- **Windows caveat**: vLLM has no official Windows build. Decided path:
-  WSL2 + real upstream pip install (not the unofficial native Windows
-  fork, not Docker Model Runner) — need the genuine latest vLLM for the
-  MoE offload feature.
-- **Context window**: Hermes has a hard-coded `MINIMUM_CONTEXT_LENGTH =
-  64_000` floor (`agent/model_metadata.py:272` on hermes-vps) — vLLM's
-  `--max-model-len` must be ≥65536, matched exactly in `config.yaml`'s
-  `context_window` for the new provider entry (`discover_models: false`,
-  so Hermes trusts the static config value, doesn't live-probe).
-- **Ollama removal**: plan was to fully verify the new vLLM setup working
-  end-to-end (including this context-window matching) while Ollama stays
-  running as a fallback, only then decommission Ollama on `w_workstation`.
-- **Not yet done**: installing WSL2 (if not already present) on
-  `w_workstation`, installing vLLM inside it, pulling the model, wiring
-  the new provider into `config.yaml`, and the actual head-to-head
-  benchmark (speed + tool-call correctness) against the current 4B.
+## Credentials vaulted this session (passcode: ask the user, don't assume it's still `463453551` — that's also reused as the Dokploy password, flagged for rotation)
 
-## Where the full history lives
+- `hermes-vps-ssh` — root@207.148.2.224, same key as default `~/.ssh/id_ed25519`
+- `hermes-vps-telegram-bot-token` — bot `@hermesagent_mark_bot`
+- `hermes-vps-dokploy-admin` — mark.stephen.guy@gmail.com
 
-- Full decision history: `curl "http://192.168.40.2:3003/entities?tags=cs.%7Bhermes%7D&order=created_at.desc"`
-- This session's infra migration specifically: `curl "http://192.168.40.2:3003/entities?tags=cs.%7Bhermes%7D&body=ilike.*migrat*"`
-- Architecture reasoning: [ARCHITECTURE.md](ARCHITECTURE.md)
-- Open questions / non-goals: [BACKLOG.md](BACKLOG.md)
-- Repo-specific working conventions: [CLAUDE.md](CLAUDE.md)
+## Current state vs the workbook (verify fresh — this will have moved)
 
-## Ground rules (apply automatically — do not ask permission for these)
+**01_Core_Runtime**: 16/18 Done. Only CR-15/CR-16 open, and those are **explicitly deferred per the user** (sister's Hermes — separate project, don't touch until this Hermes instance is complete).
 
-- **Memory and git upkeep are your job.** Log decisions/facts to the
-  catalog as they happen — tagged `hermes`, atomic format. Commit and push
-  to `git@github.com:markstephenguy-bit/hermes.git` as work lands. Run
-  `python3 scripts/export_catalog_memory.py` after catalog writes and
-  commit the resulting `memory/catalog-export.json`.
-- **Verify, don't trust prior notes** — this exact session caught itself
-  wrong multiple times (wrong IP for a hostname, assumed-working tokens
-  that had expired, an image silently regenerating keys despite mounted
-  files). Check live state before acting on anything this file or the
-  catalog claims, including this one.
+**02_Identity_Memory**: IM-01/02/03/06/08/09-status Done (note IM-09 itself is correctly Not Started — MEMORY.md populates through use). IM-04 (cross-interface continuity) just got unblocked by IA-05 landing — all three interfaces (CLI, Dashboard, Telegram) now exist, this is now actually testable. IM-05/IM-07 correctly Partial, blocked on SV-15 (vault/catalog migration decision) — don't force.
+
+**08_Interfaces_Access, IA-05**: Done. Telegram gateway live, real two-way exchange confirmed.
+
+**12_Security_Hardening**: SH-04/06/07 done this session (found and fixed a real plaintext-credential exposure in the infra MCP server's config; confirmed dashboard auth is properly hashed; ran `hermes security audit` for the first time — 68 CVE findings, mostly fixable dependency bumps, NOT yet remediated).
+
+**Everything else** (05_Secrets_Vault 17%, 07_Local_Inference 26%, 09_Observability 4%, 11_Cost_Subscriptions 22%, 13_Governance_Change_Mgmt 0%, 14_Claude_Code_Parity 13%, 15_Productivity_And_Acceptance 0%) — largely untouched. Governance and Productivity/Acceptance are at zero, nothing has touched either domain yet.
+
+## Good candidates for next session, in rough priority order
+
+1. **IM-04**: actually test cross-interface continuity now that Telegram exists.
+2. **LI-04/06/07**: pull a Qwen3.6-35B-A3B GGUF onto w_workstation, wire ik_llama.cpp's `llama-server.exe` into the complexity-router (replacing/supplementing Ollama), set `context_length` explicitly (≥65536), benchmark vs the current Ollama qwen3-vl baseline. Check ik_llama.cpp's own equivalent of llama.cpp's `--jinja` flag first — unverified whether tool-calling works without it.
+3. **SH-07 remediation**: bump PyJWT/httpx2/urllib3/oauthlib per the security audit findings (separate from the broader `hermes update`, which is 2547 commits behind and its own decision under CR-11's policy).
+4. **MR-05** (15pts, finish-line condition #2): the WireGuard-down fire drill — never attempted. Pull the tunnel mid-conversation, confirm Hermes still answers via Codex automatically.
+5. Pick up a new domain wholesale (05_Secrets_Vault or 09_Observability are both large and almost entirely untouched).
+
+## Deliberately out of scope until further notice
+
+- CR-15/CR-16 (sister's Hermes) — explicit user deferral.
+- IA-08 (voice interface) — explicit user deferral, noted earlier in the project.
+- Rotating the Dokploy password / vault passcode reuse — flagged, not acted on, user's call.
