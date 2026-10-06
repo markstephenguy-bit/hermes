@@ -4461,9 +4461,28 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-06T15:04:51.518063+00:00"
+    },
+    {
+      "attributes": {
+        "general_files": "SOUL.md, memories/USER.md, memories/MEMORY.md - about Hermes/Mark in general, never project-specific",
+        "project_files": "hermes project create <name> <folder>, project-specific facts live in that folder (e.g. NOTES.md), not in the general files"
+      },
+      "body": "User-established principle: root/SOUL/memory files are general across all of Hermes; project-specific info belongs in distinct per-project files via hermes project create. Applied by creating the Prograder Price Changes project and moving its one project-specific fact out of the general USER.md.",
+      "created_at": "2026-10-06T15:16:36.223119+00:00",
+      "id": "775fcf41-1c8f-42d1-a123-c58e8655687f",
+      "key": "hermes-general-vs-project-memory-principle-2026-10-06",
+      "name": "Principle: general identity files vs project-specific files",
+      "tags": [
+        "hermes",
+        "im-02",
+        "principle",
+        "memory"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-06T15:16:36.223119+00:00"
     }
   ],
-  "exported_at": "2026-10-06T15:11:47.351813+00:00",
+  "exported_at": "2026-10-06T15:16:36.387943+00:00",
   "relations": [
     {
       "attributes": {},
