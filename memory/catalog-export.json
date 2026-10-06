@@ -4522,9 +4522,30 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-06T15:27:23.159776+00:00"
+    },
+    {
+      "attributes": {
+        "config_fix": "terminal.docker_mount_cwd_to_workspace: false -> true",
+        "container_mount_point": "/workspace",
+        "real_host_mount_path": "/home/hermes/.hermes/sandboxes/docker/default/workspace",
+        "serving_mechanism": "hermes-web-demo.service (systemd, 127.0.0.1:8899)"
+      },
+      "body": "CR-08 (Hermes hosts a web page it built itself) surfaced a significant prior gap: terminal.docker_mount_cwd_to_workspace was false by default, meaning every file Hermes wrote via its sandboxed terminal/file tools was ephemeral and vanished when the sandbox container exited - confirmed via two earlier failed attempts before finding this setting. Fixed, verified real persistence, then set up a systemd service to serve the content Hermes wrote.",
+      "created_at": "2026-10-06T17:33:50.013573+00:00",
+      "id": "95022a4c-eb3a-49ce-b4dd-9f40bfbd62d0",
+      "key": "hermes-cr08-sandbox-persistence-fixed-2026-10-06",
+      "name": "CR-08 closed + real gap fixed: sandbox writes were not persisting to host",
+      "tags": [
+        "hermes",
+        "cr-08",
+        "verification",
+        "bug-fix"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-06T17:33:50.013573+00:00"
     }
   ],
-  "exported_at": "2026-10-06T15:27:23.331720+00:00",
+  "exported_at": "2026-10-06T17:33:50.174735+00:00",
   "relations": [
     {
       "attributes": {},
