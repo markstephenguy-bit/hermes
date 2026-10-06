@@ -4564,9 +4564,33 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-06T17:39:25.191056+00:00"
+    },
+    {
+      "attributes": {
+        "bot_username": "hermesagent_mark_bot",
+        "connected_at": "2026-10-06T18:02:59Z",
+        "gaps_found": [
+          "gateway needed restart to pick up new .env token",
+          "python-telegram-bot never installed, HERMES_DISABLE_LAZY_INSTALLS=1 blocks auto-install",
+          "hermes gateway install created a duplicate user-level service - reverted"
+        ]
+      },
+      "body": "Telegram gateway fully live: bot token vaulted, python-telegram-bot installed manually (lazy-install disabled), gateway restarted and connected, real two-way exchange confirmed via user screenshot. Closes G7 (legacy goal) and unblocks IM-04 (cross-interface continuity).",
+      "created_at": "2026-10-06T18:07:37.153712+00:00",
+      "id": "cdf65e5d-16ac-4569-aa09-815bd324a511",
+      "key": "hermes-ia05-telegram-closed-2026-10-06",
+      "name": "IA-05 closed: Telegram gateway live, real exchange confirmed",
+      "tags": [
+        "hermes",
+        "ia-05",
+        "verification",
+        "g7"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-06T18:07:37.153712+00:00"
     }
   ],
-  "exported_at": "2026-10-06T17:39:25.373355+00:00",
+  "exported_at": "2026-10-06T18:07:37.305912+00:00",
   "relations": [
     {
       "attributes": {},
