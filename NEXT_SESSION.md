@@ -50,26 +50,33 @@ Paste this whole file as your opening message.
 
 **12_Security_Hardening**: SH-04/06/07 done this session (found and fixed a real plaintext-credential exposure in the infra MCP server's config; confirmed dashboard auth is properly hashed; ran `hermes security audit` for the first time — 68 CVE findings, mostly fixable dependency bumps, NOT yet remediated).
 
-**07_Local_Inference**: 75% (was 26%). LI-01/02/03/04/06/07 all Done this session — ik_llama.cpp built+verified, Qwen3.6-35B-A3B pulled, context_length fixed, benchmark run. See "Local-inference benchmark results" below before touching LI-08. LI-05 (WSL2) is moot — vLLM was rejected, so this row has no remaining purpose. LI-09 (vision parity) still open.
+**07_Local_Inference**: ~95% (was 26%). Everything Done except LI-05, which is moot (WSL2/vLLM was rejected, row has no remaining purpose). Full cutover completed and verified live this session — see "Local-inference cutover" below for what's actually running now and the bugs it exposed.
 
 **Everything else** (05_Secrets_Vault 17%, 09_Observability 4%, 11_Cost_Subscriptions 22%, 13_Governance_Change_Mgmt 0%, 14_Claude_Code_Parity 13%, 15_Productivity_And_Acceptance 0%) — largely untouched. Governance and Productivity/Acceptance are at zero, nothing has touched either domain yet.
 
-## Local-inference benchmark results (this session, see catalog `hermes-li07-benchmark-results-2026-10-06`)
+## Local-inference cutover (this session — fully live, see catalog `hermes-li08-ollama-decommissioned-2026-10-06`)
 
-- ik_llama.cpp's `llama-server.exe` needs the CUDA Toolkit `bin` dir prepended to `PATH` or it fails silently (retcode 1, zero output, no error) — non-obvious, cost real time to diagnose.
-- `--jinja` IS supported by this fork (was flagged unverified) — tool-calling confirmed correct (`finish_reason: tool_calls`, clean args) on Qwen3.6-35B-A3B, matching the Ollama 4B/8B baseline.
-- Decode speed is comparable across all three: ~17-19 tok/s for the 35B-A3B MoE model (`--cpu-moe`, most weights offloaded to system RAM) vs ~16-19 tok/s for Ollama's 4B/8B dense models fully on GPU. Validates the MoE+CPU-offload bet behind choosing ik_llama.cpp over vLLM.
-- **Blocking gotcha for production cutover**: default thinking mode is dangerously verbose — a simple 150-word-explanation prompt burned a full 1500-token budget on hidden `reasoning_content` and produced **zero** actual output (`finish_reason: length`). Must pass `chat_template_kwargs: {enable_thinking: false}` on every request; verified this produces clean, complete, correctly-terminated output at matching speed. The Ollama baseline doesn't have this problem (no reasoning_content by default).
-- Test server (port 8090 on w_workstation) is a manual benchmark instance only — **not wired into complexity-router**, Ollama is still the live production provider. Wiring it in means baking the `enable_thinking: false` override into the router's request path first.
-- Confirmed via Salt: no vLLM anywhere on either host (never actually installed, only evaluated/rejected) — nothing to uninstall there. Ollama stays installed; LI-08 decommission is only valid after the new provider is actually wired in and verified live, not before.
+**What's actually running now:**
+- Text + tool-calling: `ik_llama.cpp`/Qwen3.6-35B-A3B on w_workstation, port 8090. Started by a SYSTEM-level Scheduled Task (`ik_llama_server`, at-startup trigger, no execution time limit, `C:\ik_llama.cpp\start_server.ps1`) — survives reboot, matching the durability Ollama's service used to have.
+- Vision (screenshot/OCR): **Vultr Serverless Inference, model `glm-5.3`** — not a second local model. Measured VRAM doesn't allow it: ik_llama.cpp holds ~4.9GB resident continuously, Ollama's qwen3-vl needed ~13.8GB, the card is 16.4GB total — the two don't fit together. This is a narrow, deliberate exception to the ChatGPT-only/no-Vultr-spend scope decision (`hermes-scope-chatgpt-only-free-local-tuning-2026-09-27`), made only because vision has no free local option that fits and no cloud fallback either (Codex's OAuth backend can't process images at all).
+- **Ollama is fully uninstalled** — app, service registration, and model blobs all gone from w_workstation. No vLLM was ever installed anywhere (confirmed via Salt — only evaluated/rejected at the design stage).
+- `complexity_router.py` on hermes-vps was rewritten accordingly: `OLLAMA_BASE_URL` → `LOCAL_LLM_BASE_URL` (port 8090), new `VISION_BASE_URL`/`VISION_MODEL`/`VULTR_API_KEY` branch that triggers off `has_image()`. Pre-cutover backup kept at `complexity_router.py.bak-pre-cutover`.
+
+**Gotchas found and fixed (all non-obvious, would cost real time to rediscover):**
+- ik_llama.cpp's `llama-server.exe` needs the CUDA Toolkit `bin` dir prepended to `PATH` or it fails silently (retcode 1, zero output, no error).
+- `--jinja` IS supported by this fork — tool-calling confirmed correct (`finish_reason: tool_calls`), matching the old Ollama baseline. Decode speed is comparable too (~17-19 tok/s across the new model and the old 4B/8B baseline), validating the MoE+`--cpu-moe` bet behind choosing ik_llama.cpp over vLLM.
+- **Qwen3.6-35B-A3B's default thinking mode can consume an entire response budget on hidden `reasoning_content` and return zero actual output.** Fixed by forcing `chat_template_kwargs: {enable_thinking: false}` on every request to this backend — including the router's own 8-token judge call, which was silently defaulting every request to LOCAL (fail-open) because the judge never got a real answer out before this fix.
+- **GLM-5.3 (Vultr) has the same class of bug** — `enable_thinking`/`reasoning`/`thinking` params are all silently ignored; the one that actually works is `"reasoning_effort": "minimal"` (confirmed via direct API testing — produces `reasoning_tokens: 0`).
+- **Pre-existing router bug, only now exposed**: `looks_inadequate()` treated ANY empty `message.content` as a broken response with no exception for tool calls (which legitimately have empty content — the payload is in `tool_calls` instead). Every tool-call turn from the new model was getting misclassified as inadequate and bounced to Codex. Fixed by passing `has_tool_calls` through and short-circuiting the check. This bug predates the cutover but Ollama/qwen3-vl apparently never tripped it; only surfaced under a real Hermes system prompt (~20K chars) exercising actual tool use, not the raw curl benchmarks.
+- `hermes config`/`check` commands auto-migrate detected plaintext secrets in config.yaml into `.env` as a side effect (observed the Vultr API key get swapped to `${VULTR_INF_API_KEY}` between two unrelated reads) — benign, consistent with this project's existing secret-hygiene habit, just surprising if you don't expect it.
 
 ## Good candidates for next session, in rough priority order
 
 1. **IM-04**: actually test cross-interface continuity now that Telegram exists.
-2. **Wire Qwen3.6-35B-A3B into complexity-router** (supplementing, not yet replacing, Ollama) — the benchmark passed, but this needs explicit go-ahead since it changes live production routing. Must enforce `enable_thinking: false` in the request path (see gotcha above) or responses will silently fail. Only after this is verified live does LI-08 (Ollama decommission) become valid.
-3. **SH-07 remediation**: bump PyJWT/httpx2/urllib3/oauthlib per the security audit findings (separate from the broader `hermes update`, which is 2547 commits behind and its own decision under CR-11's policy).
-4. **MR-05** (15pts, finish-line condition #2): the WireGuard-down fire drill — never attempted. Pull the tunnel mid-conversation, confirm Hermes still answers via Codex automatically.
-5. Pick up a new domain wholesale (05_Secrets_Vault or 09_Observability are both large and almost entirely untouched).
+2. **SH-07 remediation**: bump PyJWT/httpx2/urllib3/oauthlib per the security audit findings (separate from the broader `hermes update`, which is 2547 commits behind and its own decision under CR-11's policy).
+3. **MR-05** (15pts, finish-line condition #2): the WireGuard-down fire drill — never attempted. Pull the tunnel mid-conversation, confirm Hermes still answers via Codex automatically.
+4. Pick up a new domain wholesale (05_Secrets_Vault or 09_Observability are both large and almost entirely untouched).
+5. Worth a later look: ik_llama.cpp's `-ngl 999` currently keeps all non-MoE tensors on GPU (~4.9GB resident). If w_workstation's GPU ever needs more headroom for something else, this can shrink further by offloading a few more layers to CPU at some speed cost.
 
 ## Deliberately out of scope until further notice
 
