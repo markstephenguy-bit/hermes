@@ -5242,9 +5242,33 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-07T03:20:48.90829+00:00"
+    },
+    {
+      "attributes": {
+        "phase_1": "Speculative Decoding (-md) on ik_llama.cpp with Qwen2.5-0.5B draft model",
+        "phase_2": "KTransformers runtime evaluation for local DeepSeek-R1 671B execution",
+        "phase_3": "MoE-Infinity asynchronous expert prefetching pipeline on w_workstation",
+        "phase_4": "Hybrid SSM/Transformer (Mamba-2 / Jamba 1.5) testing for zero-KV-expansion long context"
+      },
+      "body": "Roadmap for evaluating local inference upgrades: Phase 1 Speculative Decoding, Phase 2 KTransformers DeepSeek 671B, Phase 3 MoE-Infinity prefetching, Phase 4 Mamba-2/Jamba SSM.",
+      "created_at": "2026-10-07T03:25:52.531199+00:00",
+      "id": "200cd242-729f-4878-8e3e-0127bec958f0",
+      "key": "hermes-local-inference-roadmap-2026-10-06",
+      "name": "Hermes Local Inference Performance & Frontier Architecture Roadmap",
+      "tags": [
+        "hermes",
+        "local-inference",
+        "roadmap",
+        "plan",
+        "ktransformers",
+        "moe-infinity",
+        "speculative-decoding"
+      ],
+      "type": "plan",
+      "updated_at": "2026-10-07T03:25:52.531199+00:00"
     }
   ],
-  "exported_at": "2026-10-07T03:20:52.206270+00:00",
+  "exported_at": "2026-10-07T03:25:58.493711+00:00",
   "relations": [
     {
       "attributes": {},
