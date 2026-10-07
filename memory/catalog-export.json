@@ -5047,9 +5047,32 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-07T00:47:58.334247+00:00"
+    },
+    {
+      "attributes": {
+        "cron_job_id": "2d603d420162",
+        "policy": "alert-only, per user decision",
+        "schedule": "every 15m",
+        "script_path": "/home/hermes/.hermes/scripts/codex_quota_alert.py",
+        "side_fix": "TELEGRAM_HOME_CHANNEL was never set in .env, hermes send --to telegram had no default target",
+        "threshold_percent": 75
+      },
+      "body": "Discovered hermes-agent already has a working Codex usage probe (auth_codex.py, used by _probe_codex_quota_restored) hitting OpenAIs real usage endpoint (chatgpt.com/backend-api/wham/usage), returning exact used_percent for a primary_window (confirmed: exactly 18000s = 5 hours, matching the users 5-hour Codex quota) and secondary_window (604800s = 7 days). Built a small stdlib-only watchdog script reusing that same endpoint, alerting via Telegram once per window when used_percent crosses 75%, deduped by each windows reset_at so repeat ticks dont spam. Scheduled via hermes cron create --no-agent (zero LLM cost per check) every 15 minutes. User policy: alert-only, no hard stop, 75% threshold. Verified end-to-end: forced-threshold test confirmed a real Telegram delivery (message_id 10); a real cron run at actual low usage (8%/6%) confirmed clean silent behavior. Along the way, found and fixed a real gap: hermes send had no TELEGRAM_HOME_CHANNEL configured at all, so any future hermes send --to telegram call (not just this one) would have silently failed -- fixed via hermes config set.",
+      "created_at": "2026-10-07T01:07:31.55013+00:00",
+      "id": "e63743ba-6fd7-4995-b0ed-f01de47566c1",
+      "key": "hermes-mr10-closed-2026-10-07",
+      "name": "MR-10 closed: Codex spend ceiling / circuit breaker (alert-only)",
+      "tags": [
+        "hermes",
+        "mr-10",
+        "verification",
+        "closed"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-07T01:07:31.55013+00:00"
     }
   ],
-  "exported_at": "2026-10-07T00:48:06.639268+00:00",
+  "exported_at": "2026-10-07T01:07:41.863658+00:00",
   "relations": [
     {
       "attributes": {},
