@@ -6372,9 +6372,115 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-07T19:20:04.859934+00:00"
+    },
+    {
+      "attributes": {
+        "implication": "BFCL and tau2-bench (which score whether the model calls caller-supplied ad hoc functions) cannot target Hermes as designed -- Hermes is a fixed-toolset product agent, not a generic function-calling endpoint",
+        "result": "no tool_calls in response at all; model answered in plain text using its own internal toolset instead",
+        "test": "sent a custom get_current_weather function via standard OpenAI tools param + tool_choice:auto"
+      },
+      "body": "Hermes's OpenAI-compatible endpoints do not honor a caller-supplied tools/function schema -- the agent always uses its own baked-in toolset regardless of what functions are passed in the request, which rules out stock tool-calling benchmarks (BFCL, tau2-bench) as a way to test it; a custom battery against Hermes's real toolset is required instead.",
+      "created_at": "2026-10-07T20:12:19.468161+00:00",
+      "id": "1c983768-19bb-43ae-a79a-65381285f30b",
+      "key": "hermes-bfcl-tools-param-ignored-2026-10-07",
+      "name": "Hermes's /v1/chat/completions ignores client-supplied `tools` schemas",
+      "tags": [
+        "hermes",
+        "architecture",
+        "api-server",
+        "testing-method"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-07T20:12:19.468161+00:00"
+    },
+    {
+      "attributes": {
+        "confirmed_across": "two independent battery runs (2026-10-07 battery 1 file_ops test, battery 2 E1 git-workflow test) and a 3rd standalone repro (filename-with-space case)",
+        "failure_mode": "write_file reported verified:true while writing to a path terminal/git could not see; subsequent git commit said 'nothing to commit, working tree clean' because the real repo was untouched",
+        "observed_homes_in_one_turn": [
+          "/root (terminal, git, read_file)",
+          "/home/hermes (write_file, first attempt)",
+          "/workspace (patch, guessed)",
+          "/home/hermes (write_file, second attempt)",
+          "/root (write_file, final successful attempt, absolute path)"
+        ],
+        "recovery": "model self-diagnosed via whoami/pwd/ls and switched to absolute paths; cost ~8 tool calls and 127s for what should have been 2",
+        "root_cause_isolation": "same task with an ABSOLUTE path (no ~) instead of tilde succeeded cleanly in 2 calls -- the bug is specifically in tilde/~ expansion, not path handling generally"
+      },
+      "body": "Confirmed across 3 separate test runs: a tilde-relative path can resolve to a DIFFERENT effective home directory depending on which tool (write_file vs patch vs terminal vs read_file) handles it, sometimes landing writes in a location invisible to the rest of the toolchain while still reporting verified:true -- the single highest-priority fix needed before Hermes can be trusted for real file-editing workflows; using absolute paths avoids it entirely.",
+      "created_at": "2026-10-07T20:12:19.468161+00:00",
+      "id": "6474ba5c-6b02-49cd-9d73-3d5b4139031c",
+      "key": "hermes-file-tool-home-dir-nondeterministic-2026-10-07",
+      "name": "write_file/patch resolve a different effective home directory than terminal/read_file, inconsistently across calls",
+      "tags": [
+        "hermes",
+        "bug",
+        "file-tools",
+        "api-server",
+        "high-priority"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-07T20:12:19.468161+00:00"
+    },
+    {
+      "attributes": {
+        "finding": "terminal tool runs inside its own container (PID 1 = docker-init); docker/podman binaries and sockets are absent inside it",
+        "integration_need": "managing real host containers (e.g. on server/fileserver) would need either a host-level terminal backend or a dedicated Docker/Portainer API tool, not the current sandboxed terminal",
+        "model_behavior": "correctly diagnosed this via cgroup/ps/socket checks and reported the limitation honestly rather than fabricating output"
+      },
+      "body": "Hermes's sandboxed terminal has no visibility into the host's actual Docker containers (it IS a container, not the host) -- a real integration gap if daily use requires managing containers on the home-lab hosts, requiring a different terminal backend or a dedicated container-management tool.",
+      "created_at": "2026-10-07T20:12:19.468161+00:00",
+      "id": "caec74b1-a2e3-433f-95a0-c1811318952a",
+      "key": "hermes-docker-in-docker-gap-2026-10-07",
+      "name": "Hermes's terminal sandbox cannot see or manage host-level Docker containers",
+      "tags": [
+        "hermes",
+        "gap",
+        "terminal",
+        "docker",
+        "integration-need"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-07T20:12:19.468161+00:00"
+    },
+    {
+      "attributes": {
+        "headline_finding": "the ONLY real correctness failure in this battery was the tilde home-directory bug; every honesty/judgment/instruction-following case passed",
+        "methodology": "borrowed BFCL/tau2-bench categories (tool selection, discrimination, parallel calls, irrelevance/instruction-following, multi-turn state, argument precision, honest-failure, capability-honesty) applied to Hermes's actual fixed toolset instead of synthetic functions",
+        "results": {
+          "argument_precision_space_in_filename": "PASS once isolated from the tilde bug (absolute path); original attempt timed out at 180s, root-caused to tilde+space compounding the home-dir bug",
+          "capability_honesty_image_gen": "PASS -- clearly disclosed no dedicated image-gen tool, named the real p5js workaround",
+          "capability_honesty_phone_call": "PASS",
+          "capability_honesty_slack": "PASS -- correctly checked real connector status, honestly reported not connected, offered real OAuth flow",
+          "honest_failure_command_not_found": "PASS",
+          "honest_failure_file_not_found": "PASS",
+          "instruction_following_no_tools": "PASS -- respected an explicit 'do not use tools' instruction on a git-sounding question",
+          "multi_turn_coding_workflow": "PASS with a major bug surfaced -- see hermes-file-tool-home-dir-nondeterministic-2026-10-07; once past that, correctly added a function, wrote a dependent unit test referencing it from a prior turn without being retold its name, installed a missing pytest dependency on the fly, ran it to a real pass, and produced accurate git log",
+          "parallel_independent_calls": "PARTIAL -- disk usage succeeded; docker-containers check correctly failed and was honestly reported (see hermes-docker-in-docker-gap-2026-10-07), not a model fault",
+          "tool_discrimination_check_real_file": "PASS -- verified against live filesystem rather than assuming from memory",
+          "tool_discrimination_real_date": "PASS -- used terminal date, did not guess",
+          "tool_selection_no_tool_needed": "PASS -- answered 'capital of France' directly, no spurious tool call",
+          "tool_selection_web_search": "PASS"
+        }
+      },
+      "body": "16 BFCL-style probes against Hermes's actual toolset (not synthetic functions) scoped to daily-use/dev workflows: strong results on tool selection, discrimination, instruction-following, and honesty about missing capabilities; the real coding workflow (add function -> write test -> run it -> git log) succeeded end to end but only after fighting through the tilde home-directory bug, which is the clear top-priority fix before relying on Hermes for file-editing work.",
+      "created_at": "2026-10-07T20:12:19.468161+00:00",
+      "id": "87a55105-4146-4b4d-81b9-05f21a504199",
+      "key": "hermes-custom-toolset-battery-2026-10-07",
+      "name": "Custom BFCL-style battery against Hermes's real toolset (daily-use/Claude-Code-replacement scoped)",
+      "tags": [
+        "hermes",
+        "benchmark",
+        "stress-test",
+        "qwen",
+        "capabilities",
+        "daily-use"
+      ],
+      "type": "test_result",
+      "updated_at": "2026-10-07T20:12:19.468161+00:00"
     }
   ],
-  "exported_at": "2026-10-07T19:20:17.373200+00:00",
+  "exported_at": "2026-10-07T20:12:30.841137+00:00",
   "relations": [
     {
       "attributes": {},
@@ -8795,6 +8901,66 @@
       "object_type": "entity",
       "predicate": "validates",
       "subject_key": "hermes-qwen-capability-battery-2-results-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T20:12:28.147072+00:00",
+      "id": "f3fd8941-911a-4f28-be32-44c9c4e42046",
+      "object_key": "hermes-qwen-capability-battery-2-results-2026-10-07",
+      "object_type": "entity",
+      "predicate": "extends",
+      "subject_key": "hermes-custom-toolset-battery-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T20:12:28.147072+00:00",
+      "id": "10020df5-6205-4f6e-a959-3e68bd8dab37",
+      "object_key": "hermes-bfcl-tools-param-ignored-2026-10-07",
+      "object_type": "entity",
+      "predicate": "replaced_approach_of",
+      "subject_key": "hermes-custom-toolset-battery-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T20:12:28.147072+00:00",
+      "id": "d824a65a-eddd-483a-94da-1b14faf29f07",
+      "object_key": "hermes-file-tool-home-dir-nondeterministic-2026-10-07",
+      "object_type": "entity",
+      "predicate": "includes_finding",
+      "subject_key": "hermes-custom-toolset-battery-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T20:12:28.147072+00:00",
+      "id": "9999fbe2-5546-42fb-b85f-9a95170508a8",
+      "object_key": "hermes-docker-in-docker-gap-2026-10-07",
+      "object_type": "entity",
+      "predicate": "includes_finding",
+      "subject_key": "hermes-custom-toolset-battery-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T20:12:28.147072+00:00",
+      "id": "42d7ad35-25be-4865-a272-0324308f4795",
+      "object_key": "hermes-file-tool-tilde-path-bug-2026-10-07",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-file-tool-home-dir-nondeterministic-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T20:12:28.147072+00:00",
+      "id": "ec91f868-dac5-40f9-9f6d-e650d0f7685d",
+      "object_key": "hermes-bfcl-tools-param-ignored-2026-10-07",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-custom-toolset-battery-2026-10-07",
       "subject_type": "entity"
     }
   ],
