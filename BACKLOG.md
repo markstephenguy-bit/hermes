@@ -1,26 +1,49 @@
 # Backlog / Open Questions
 
-## Current priority: complete model-use preparation (2026-10-07)
+## Current priority: integration punch-list from live capability testing (2026-10-07)
 
-The user requests a practical recipe covering all Hermes functions to replace
-Claude Code while leaning heavily on Qwen. Follow the function map, proposed
-starting settings, and ordered research gates in
-[ARCHITECTURE.md](ARCHITECTURE.md#qwen-heavy-model-preparation-recipe).
-The next implementation work is to reconcile the deployed router with this
-repository, pin the actual runtime/source versions, and prove the tool protocol;
-then tune local inference and evaluate each specialist and background route.
-Recommendations in that recipe are not deployed or benchmark-certified.
+29 live probes run against Hermes's real agent API (pure local Qwen3.6-35B-A3B,
+no Codex/cloud fallback) across three batteries — not raw-model benchmarks, the
+actual Hermes toolset through its own `/v1/responses` endpoint. Full detail is in
+the catalog (`hermes-integration-priority-list-2026-10-07` and the entities it
+links to). The prior "not deployed or benchmark-certified" framing below is
+superseded by this — it now is.
+
+**P0 — fix before trusting Hermes with real work:**
+- Tilde (`~`) path resolution bug: `write_file`/`patch` can silently target a
+  different effective home directory than `terminal`/`read_file` in the same
+  turn, while still reporting `verified: true`. Workaround today: always use
+  absolute paths. Needs a real fix in hermes-agent's path-resolution layer.
+- Destructive actions get zero human confirmation: a flagged recursive `rm -rf`
+  was auto-approved by smart-approval with no pause, under
+  `GATEWAY_ALLOW_ALL_USERS=true` on the unattended api_server surface. Needs an
+  actual policy decision, not silent auto-approval.
+
+**P1 — needed for daily-use parity with Claude Code:**
+- Vision routing: confirmed hard floor (no mmproj, text-only local model), but
+  screenshots are an established daily workflow need. Needs a routed
+  vision-capable fallback (cloud or local VL model).
+- `execute_code` is hard-blocked on the api_server (unattended) surface by
+  design — not a model gap, works fine via the CLI. Decide: enable
+  `approvals.unattended_mode: approve` for this surface, or standardize on
+  terminal-based code execution as the permanent workaround.
+
+**P2 — only if actually wanted:**
+- `image_generate` is advertised enabled but has no real backend wired; needs
+  a Nous Portal / Tool Gateway subscription or an alternative.
+- No docker-in-docker visibility — the terminal sandbox can't see the host's
+  real Docker containers; needs a host-level terminal backend or a dedicated
+  container tool if managing containers on `server`/`fileserver` matters.
+
+**Deferred on purpose** until functional completeness is proven (explicit user
+call): hermes-vps has no firewall at all and the API server (`0.0.0.0:8642`)
+is reachable from the raw internet, bearer-key-only auth.
 
 The user does substantial Visual Studio and other multi-language coding alongside
-research, browser, images and general assistance. Incorporate the user's ongoing
-Qwen stress tests in Antigravity, then validate representative tasks in Hermes.
-Excessive Codex quota consumption motivates this work.
-Follow the [capability-routing comparison](ARCHITECTURE.md#capability-routing-and-cost-optimization-2026-10-07):
+research, browser, images and general assistance. Follow the
+[capability-routing comparison](ARCHITECTURE.md#capability-routing-and-cost-optimization-2026-10-07):
 Qwen is always considered, direct specialist routes are allowed, and Codex is
-not the presumed fallback. Audit auxiliary calls and repair false escalations
-before measuring provider costs. Prioritize testing local vision on the current
-Qwen before a larger MoE swap. Compare economy, visual and stronger reasoning
-roles on complete user tasks; retain separate models only for measured gains.
+not the presumed fallback.
 
 ## Architecture guide review (2026-10-07)
 

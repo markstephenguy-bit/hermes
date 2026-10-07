@@ -6551,9 +6551,48 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-07T21:08:42.056172+00:00"
+    },
+    {
+      "attributes": {
+        "P0_fix_before_trusting_with_real_work": [
+          "Tilde (~) path resolution bug in file tools -- write_file/patch can silently target a different effective home dir than terminal/read_file while reporting verified:true. Workaround today: always use absolute paths. Real fix: patch hermes-agent's path-resolution layer so all tools agree on one home dir per session.",
+          "Destructive actions get zero human confirmation -- a flagged recursive rm -rf was auto-approved by smart-approval with no pause, under GATEWAY_ALLOW_ALL_USERS=true on the unattended api_server surface. Decide an actual policy (e.g. require explicit approval for flagged-destructive ops even in unattended mode) before relying on Hermes for real file/infra work."
+        ],
+        "P1_needed_for_daily_use_coverage": [
+          "Vision routing -- confirmed hard floor (no mmproj, text-only local model) but screenshots are a known explicit daily workflow need (per earlier project history). Needs a routed vision-capable model (cloud or a local VL model) wired in as a fallback for image-understanding tasks specifically.",
+          "execute_code approval policy decision -- currently hard-blocked on the api_server (unattended) surface by design, not a model gap; works fine via the interactive CLI. Decide: enable approvals.unattended_mode: approve for this surface, or standardize on terminal-based code execution as the permanent workaround."
+        ],
+        "P2_nice_to_have_only_if_actually_wanted": [
+          "image_generate has no real backend wired despite being advertised enabled -- needs a Nous Portal / Tool Gateway subscription or an alternative image-gen integration, only if image generation is actually part of daily use.",
+          "No docker-in-docker visibility -- Hermes's terminal sandbox can't see/manage the host's real Docker containers. Needs a host-level terminal backend or a dedicated container-management tool, only if managing containers on server/fileserver is a daily-use requirement."
+        ],
+        "P3_operational_notes_not_integration_items": [
+          "No async push notification for backgrounded processes on the /v1/responses surface -- poll via process_manage, or use /v1/runs + SSE events if live progress push matters.",
+          "Long multi-tool turns can exceed a short client-side timeout even when the server-side work completed correctly -- don't treat a client read-timeout as proof of failure; verify actual repo/file state first."
+        ],
+        "basis": "3 test batteries (29 probes total) run through Hermes's real agent API, not raw model",
+        "deferred_on_purpose_until_functional_completeness_proven": [
+          "hermes-vps has no firewall at all (ufw not installed); the API server (0.0.0.0:8642) is reachable from the raw internet, bearer-key-only auth.",
+          "This is the network-level counterpart to the destructive-action confirmation gap above -- both are 'access/safety' items explicitly deferred per Mark's instruction to prove functional completeness first."
+        ]
+      },
+      "body": "Consolidated, prioritized punch-list from 29 live capability probes: two correctness/safety items to fix before trusting Hermes with real work (tilde path bug, zero-confirmation destructive actions), two capability gaps needed for daily-use parity with Claude Code (vision routing, execute_code policy), two nice-to-haves gated on actual need (image-gen backend, container management), and the network/firewall exposure explicitly deferred until functional completeness is proven.",
+      "created_at": "2026-10-07T23:54:57.894622+00:00",
+      "id": "8a4e41d8-c6bc-4271-95b9-bfefd310777e",
+      "key": "hermes-integration-priority-list-2026-10-07",
+      "name": "Prioritized integration list: what pure-local-Qwen Hermes needs to become a full Claude Code replacement",
+      "tags": [
+        "hermes",
+        "plan",
+        "integration",
+        "priority",
+        "roadmap"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-07T23:54:57.894622+00:00"
     }
   ],
-  "exported_at": "2026-10-07T21:08:55.412483+00:00",
+  "exported_at": "2026-10-07T23:55:25.926935+00:00",
   "relations": [
     {
       "attributes": {},
@@ -9084,6 +9123,116 @@
       "object_type": "entity",
       "predicate": "confirms",
       "subject_key": "hermes-coding-workflow-battery-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T23:55:06.103539+00:00",
+      "id": "2d6bb5ca-5ce8-447b-af56-b68ea734e75b",
+      "object_key": "hermes-qwen-capability-battery-2-results-2026-10-07",
+      "object_type": "entity",
+      "predicate": "synthesizes",
+      "subject_key": "hermes-integration-priority-list-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T23:55:06.103539+00:00",
+      "id": "9733d80b-8048-47f7-8518-772f396ab819",
+      "object_key": "hermes-custom-toolset-battery-2026-10-07",
+      "object_type": "entity",
+      "predicate": "synthesizes",
+      "subject_key": "hermes-integration-priority-list-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T23:55:06.103539+00:00",
+      "id": "657941c7-4b8c-4029-9329-48cc7295e0a5",
+      "object_key": "hermes-coding-workflow-battery-2026-10-07",
+      "object_type": "entity",
+      "predicate": "synthesizes",
+      "subject_key": "hermes-integration-priority-list-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T23:55:06.103539+00:00",
+      "id": "d55e15d6-bc54-4f9e-9175-fbcacec261c1",
+      "object_key": "hermes-file-tool-home-dir-nondeterministic-2026-10-07",
+      "object_type": "entity",
+      "predicate": "prioritizes",
+      "subject_key": "hermes-integration-priority-list-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T23:55:06.103539+00:00",
+      "id": "ca55a7ae-efcb-4cb6-a762-e29d1d670e52",
+      "object_key": "hermes-destructive-delete-auto-approved-2026-10-07",
+      "object_type": "entity",
+      "predicate": "prioritizes",
+      "subject_key": "hermes-integration-priority-list-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T23:55:06.103539+00:00",
+      "id": "38790a3f-ed2d-47b1-9f19-a188fcd5bf59",
+      "object_key": "hermes-execute-code-blocked-on-api-server-2026-10-07",
+      "object_type": "entity",
+      "predicate": "prioritizes",
+      "subject_key": "hermes-integration-priority-list-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T23:55:06.103539+00:00",
+      "id": "15cd30ee-bd51-477b-86f7-b1f6c0093f22",
+      "object_key": "hermes-image-generate-tool-nonfunctional-2026-10-07",
+      "object_type": "entity",
+      "predicate": "prioritizes",
+      "subject_key": "hermes-integration-priority-list-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T23:55:06.103539+00:00",
+      "id": "f75476b8-b11a-4f9c-902f-dc428542175c",
+      "object_key": "hermes-docker-in-docker-gap-2026-10-07",
+      "object_type": "entity",
+      "predicate": "prioritizes",
+      "subject_key": "hermes-integration-priority-list-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T23:55:06.103539+00:00",
+      "id": "91bbd826-5336-4eb4-aa0f-46d34d70dcf2",
+      "object_key": "hermes-api-server-no-async-notify-2026-10-07",
+      "object_type": "entity",
+      "predicate": "prioritizes",
+      "subject_key": "hermes-integration-priority-list-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T23:55:06.103539+00:00",
+      "id": "33f333f8-0b3f-4935-9270-dd0a459de6ea",
+      "object_key": "hermes-api-server-public-exposure-2026-10-07",
+      "object_type": "entity",
+      "predicate": "defers",
+      "subject_key": "hermes-integration-priority-list-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T23:55:06.103539+00:00",
+      "id": "e6a22bc8-ed12-457d-8a74-f907b8c0c4b0",
+      "object_key": "hermes-economic-strategy-subscription-displacement-2026-10-07",
+      "object_type": "entity",
+      "predicate": "supersedes",
+      "subject_key": "hermes-integration-priority-list-2026-10-07",
       "subject_type": "entity"
     }
   ],
