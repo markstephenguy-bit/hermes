@@ -5536,9 +5536,39 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-07T16:59:02.317007+00:00"
+    },
+    {
+      "attributes": {
+        "decode_tok_s": 16.0,
+        "driver_mode": "WDDM",
+        "flags": [
+          "-fa on",
+          "-ctk q8_0",
+          "-ctv q8_0",
+          "--spec-type ngram-cache:n_max=4,ngram_size_n=4",
+          "--spec-autotune"
+        ],
+        "host": "w_workstation",
+        "port": 8090,
+        "vram_free_mb": 8535,
+        "vram_used_mb": 7635
+      },
+      "body": "Configured and verified FlashAttention, 8-bit quantized KV cache, and built-in N-gram speculative decoding with autotuning for Qwen3.6-35B on w_workstation, cutting cache VRAM to 2.1 GB while maintaining 16-17 tok/s on WDDM.",
+      "created_at": "2026-10-07T17:10:12.173806+00:00",
+      "id": "82442de4-9c8a-4c34-8816-03c637a4b54a",
+      "key": "hermes-w-workstation-qwen-kv-spec-optimization-2026-10-07",
+      "name": "Workstation Engine: FlashAttention, Q8_0 KV Cache, and N-Gram Speculative Decoding Deployed",
+      "tags": [
+        "hermes",
+        "w_workstation",
+        "llm",
+        "performance"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-07T17:10:12.173806+00:00"
     }
   ],
-  "exported_at": "2026-10-07T16:59:02.505608+00:00",
+  "exported_at": "2026-10-07T17:10:16.568120+00:00",
   "relations": [
     {
       "attributes": {},
