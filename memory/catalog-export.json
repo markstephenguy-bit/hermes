@@ -5199,9 +5199,30 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-07T02:52:13.25721+00:00"
+    },
+    {
+      "attributes": {
+        "cold_start_delay": "10-15s clean start, 20-30s OS memory reclamation delay on fast restart",
+        "policy": "Prefer runtime prompt/sampler parameter tuning over process restarts wherever possible; 24/7 background task preferred",
+        "vram_ram_locking": "21.3GB allocation (4.9GB VRAM, ~18GB page-locked system RAM)"
+      },
+      "body": "Restricting ik_llama_server restarts is preferred because process teardown and page-locked RAM/VRAM reallocation incur a 20-30s cold-start penalty.",
+      "created_at": "2026-10-07T03:01:01.218141+00:00",
+      "id": "0c23b7b0-90bc-4772-8cf9-ee0154d7b497",
+      "key": "hermes-ik-llama-restart-policy-2026-10-06",
+      "name": "Inference Operational Policy: Avoid unnecessary restarts of ik_llama_server",
+      "tags": [
+        "hermes",
+        "local-inference",
+        "w_workstation",
+        "operational-policy",
+        "decision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-07T03:01:01.218141+00:00"
     }
   ],
-  "exported_at": "2026-10-07T02:58:33.860845+00:00",
+  "exported_at": "2026-10-07T03:01:04.167706+00:00",
   "relations": [
     {
       "attributes": {},
