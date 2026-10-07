@@ -5025,9 +5025,31 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-07T00:41:29.582801+00:00"
+    },
+    {
+      "attributes": {
+        "domain": "theguylab.duckdns.org",
+        "public_ip": "66.170.221.155",
+        "vaulted_as": "server-duckdns-token",
+        "verification": "external DNS resolver (8.8.8.8) + container own update logs"
+      },
+      "body": "User logged into duckdns.org (Claude in Chrome, existing session); real token read directly off the dashboard. Replaced the placeholder token in server /Dockers/duckdns/.env, recreated the container, confirmed success in its own logs (Your IP was updated, no more KO responses). Independently verified via an external resolver (dig @8.8.8.8): theguylab.duckdns.org now correctly resolves to 66.170.221.155. Vaulted as server-duckdns-token. Note: local dig resolves the same name to 192.168.40.250 via AdGuards split-horizon override -- expected, not a bug.",
+      "created_at": "2026-10-07T00:47:58.334247+00:00",
+      "id": "7790adc6-02b7-4d09-b286-15451fb35041",
+      "key": "hermes-sv03-closed-2026-10-07",
+      "name": "SV-03 closed: DuckDNS fixed, token vaulted, verified externally",
+      "tags": [
+        "hermes",
+        "sv-03",
+        "verification",
+        "closed",
+        "duckdns"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-07T00:47:58.334247+00:00"
     }
   ],
-  "exported_at": "2026-10-07T00:41:38.042092+00:00",
+  "exported_at": "2026-10-07T00:48:06.639268+00:00",
   "relations": [
     {
       "attributes": {},
