@@ -6501,9 +6501,59 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-07T20:41:03.913925+00:00"
+    },
+    {
+      "attributes": {
+        "headline": "once given absolute paths, Hermes/Qwen performed a genuine multi-step coding workflow (debug -> fix -> multi-file refactor -> branch -> diff) at a quality bar comparable to what you'd want from a coding assistant; the only real friction was response latency on long multi-tool turns, not correctness",
+        "profile": "hermes-testing (isolated, see hermes-testing-profile-created-2026-10-07)",
+        "results": {
+          "background_process_monitoring": "PASS with an architecture finding -- see hermes-api-server-no-async-notify-2026-10-07",
+          "code_review_subtle_bug": "PASS -- correctly identified the classic mutable-default-argument bug unprompted, demonstrated it empirically, explained root cause accurately (execute_code blocked again as expected, fell back to terminal python3 -c)",
+          "conflicting_instructions": "PASS -- correctly read-only investigated and did not modify files when asked to both 'fix' and 'not modify any files', respecting the stronger constraint",
+          "debug_failing_test": "PASS -- ran pytest, saw a real failure, read source, used patch (absolute path) to fix the actual root cause (not the test), reran to a real green, committed with an accurate message",
+          "git_branch_create_commit_diff": "PASS on retry -- first attempt's HTTP response exceeded a 240s client timeout, but server-side work (branch, commit) had already completed correctly; this was response-latency variance, not a capability or git-branching failure",
+          "multi_file_rename_refactor": "PASS -- renamed a function consistently across definition, import, test name, and assertion call site (4 locations, 2 files) using patch, reran tests green, committed",
+          "patch_tool_with_absolute_path": "PASS, confirms patch tool itself is fine -- the earlier battery-2 patch failure was purely the tilde/home-dir bug, not a defect in patch"
+        }
+      },
+      "body": "A real multi-file Python coding workflow (introduce a bug, debug it, fix it, refactor a rename across files, branch, diff, plus an unrelated code-review catch and a background-process test) passed essentially end to end once absolute paths were used -- this is the strongest evidence yet that pure-local-Qwen-via-Hermes can cover real daily coding-assistant work, not just isolated tool calls.",
+      "created_at": "2026-10-07T21:08:42.056172+00:00",
+      "id": "65f1b5d0-d1f4-4bf0-94ad-f6ef041a726b",
+      "key": "hermes-coding-workflow-battery-2026-10-07",
+      "name": "Battery 3: real multi-file coding-workflow probes (debug loop, refactor, branching, review)",
+      "tags": [
+        "hermes",
+        "benchmark",
+        "stress-test",
+        "qwen",
+        "capabilities",
+        "coding-workflow"
+      ],
+      "type": "test_result",
+      "updated_at": "2026-10-07T21:08:42.056172+00:00"
+    },
+    {
+      "attributes": {
+        "implication": "long-running background work kicked off over /v1/responses needs explicit poll-based follow-up (process_manage) -- there is no push notification back into a later turn on this surface",
+        "model_behavior": "correctly fell back to manual polling via terminal `ps -p <pid>`, then discovered and used the proper process_manage tool (poll action) to get an authoritative exit status",
+        "observed": "terminal(background=true, notify=true) returned notify_unsupported: 'notify_on_complete / watch_patterns are not available in this session -- it cannot receive an async completion after the turn ends (a one-shot runner such as hermes -z, a cron job, a Kanban worker, or a stateless HTTP endpoint)'"
+      },
+      "body": "The stateless /v1/responses HTTP surface cannot push a completion notification for a backgrounded terminal process into a later turn -- Hermes disclosed this honestly and correctly fell back to manual polling via process_manage; daily-use workflows that kick off long background work over this API need to poll rather than expect a callback.",
+      "created_at": "2026-10-07T21:08:42.056172+00:00",
+      "id": "b77e71b7-29c4-400a-9baa-372ed51c6d73",
+      "key": "hermes-api-server-no-async-notify-2026-10-07",
+      "name": "api_server surface cannot receive async background-process completion notifications",
+      "tags": [
+        "hermes",
+        "architecture",
+        "api-server",
+        "background-tasks"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-07T21:08:42.056172+00:00"
     }
   ],
-  "exported_at": "2026-10-07T20:41:08.021999+00:00",
+  "exported_at": "2026-10-07T21:08:55.412483+00:00",
   "relations": [
     {
       "attributes": {},
@@ -8994,6 +9044,46 @@
       "object_type": "entity",
       "predicate": "supersedes_method_of",
       "subject_key": "hermes-testing-profile-created-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T21:08:42.099776+00:00",
+      "id": "d9c3b466-d463-4c16-8a89-01e6fc558e3e",
+      "object_key": "hermes-custom-toolset-battery-2026-10-07",
+      "object_type": "entity",
+      "predicate": "extends",
+      "subject_key": "hermes-coding-workflow-battery-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T21:08:42.099776+00:00",
+      "id": "4179c37d-789f-4564-90b6-ccb8ac8790c8",
+      "object_key": "hermes-testing-profile-created-2026-10-07",
+      "object_type": "entity",
+      "predicate": "ran_against",
+      "subject_key": "hermes-coding-workflow-battery-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T21:08:42.099776+00:00",
+      "id": "bc1384bf-8ff4-42c7-aa70-5379c5cfb594",
+      "object_key": "hermes-api-server-no-async-notify-2026-10-07",
+      "object_type": "entity",
+      "predicate": "includes_finding",
+      "subject_key": "hermes-coding-workflow-battery-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T21:08:42.099776+00:00",
+      "id": "16c3d148-9c02-4a0d-b923-e03446902843",
+      "object_key": "hermes-file-tool-home-dir-nondeterministic-2026-10-07",
+      "object_type": "entity",
+      "predicate": "confirms",
+      "subject_key": "hermes-coding-workflow-battery-2026-10-07",
       "subject_type": "entity"
     }
   ],
