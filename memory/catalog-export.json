@@ -5073,6 +5073,27 @@
     },
     {
       "attributes": {
+        "path": ".agents/tools/parallel_runner.py",
+        "skill": "parallel-executor",
+        "tool": "uv",
+        "version": "0.12.23"
+      },
+      "body": "Installed uv package runner and added parallel execution tooling (.agents/tools/parallel_runner.py and .agents/skills/parallel-executor) to enable multithreaded task execution in Antigravity.",
+      "created_at": "2026-10-07T02:58:32.297048+00:00",
+      "id": "1e2460dc-6cdd-4d30-91d7-0a2e5a789aff",
+      "key": "hermes.decision.antigravity_multithreading_setup_20261006",
+      "name": "Antigravity Multithreading Tooling Setup",
+      "tags": [
+        "hermes",
+        "antigravity",
+        "multithreading",
+        "tooling"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-07T02:58:32.297048+00:00"
+    },
+    {
+      "attributes": {
         "ollama_removal": "OllamaService stopped, app uninstalled via its own unins000.exe /VERYSILENT, orphaned service registration removed via sc.exe delete, model blobs gone (confirmed, would need re-pulling if ever reinstated)",
         "scope_exception": "narrow, deliberate exception to hermes-scope-chatgpt-only-free-local-tuning-2026-09-27 (no Vultr Inference spend) - vision has no free local option that fits the VRAM budget and no cloud fallback either (Codex OAuth cannot process images at all), so this one capability alone now carries a small per-request Vultr cost",
         "text_and_tool_calling": "ik_llama.cpp/Qwen3.6-35B-A3B on w_workstation, port 8090, SYSTEM-level scheduled task (ik_llama_server) for reboot persistence",
@@ -5180,7 +5201,7 @@
       "updated_at": "2026-10-07T02:52:13.25721+00:00"
     }
   ],
-  "exported_at": "2026-10-07T02:52:15.962467+00:00",
+  "exported_at": "2026-10-07T02:58:33.860845+00:00",
   "relations": [
     {
       "attributes": {},
@@ -7308,6 +7329,16 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-codex-usage-is-quota-not-dollars-2026-10-06",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T02:58:32.325802+00:00",
+      "id": "24bdc32f-88c8-4a4d-abea-4ea9048968af",
+      "object_key": "hermes",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes.decision.antigravity_multithreading_setup_20261006",
       "subject_type": "entity"
     }
   ],
