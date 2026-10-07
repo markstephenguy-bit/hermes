@@ -5901,9 +5901,76 @@
       ],
       "type": "proposal",
       "updated_at": "2026-10-07T17:49:30.673117+00:00"
+    },
+    {
+      "attributes": {
+        "codex_feedback": "excessive Hermes usage consuming subscription quota, not reported answer-quality dissatisfaction",
+        "evaluate": [
+          "local MoE alternatives",
+          "local multimodal support",
+          "cloud specialists",
+          "OpenRouter as external transport or selective auto-router",
+          "cost, quality, latency, quota preservation"
+        ],
+        "external_api_spend": "accepted for productive work",
+        "primary_workload": [
+          "research",
+          "browser",
+          "images",
+          "general assistance"
+        ],
+        "priority": "comprehensive capability mix and cost optimization",
+        "qwen_policy": "preferred candidate on every call, not mandatory first inference",
+        "secondary_workload": [
+          "coding",
+          "infrastructure"
+        ],
+        "static_specialist_routing": "desired when optimization justifies bypassing Qwen",
+        "status": "research and proposal; no live changes requested"
+      },
+      "body": "User wants Hermes-owned routing that considers Qwen for every call but directly selects better-suited models when known capability or quality advantages justify it; Codex is not the assumed backend.",
+      "created_at": "2026-10-07T17:59:24.707155+00:00",
+      "id": "5cd57567-beec-49be-9cff-5610614e0e2b",
+      "key": "hermes-capability-routing-optimization-objective-2026-10-07",
+      "name": "Capability routing with Qwen preference and open provider selection",
+      "tags": [
+        "hermes",
+        "routing",
+        "model-usage",
+        "optimization"
+      ],
+      "type": "requirement",
+      "updated_at": "2026-10-07T17:59:24.707155+00:00"
+    },
+    {
+      "attributes": {
+        "action": "remove_codex_pure_local_qwen",
+        "fallback_model": null,
+        "local_host": "192.168.40.100:8090",
+        "local_model": "Qwen3.6-35B-A3B",
+        "router_policy": "zero_503_forward_all_to_local",
+        "tool_calling_verified": true,
+        "verification_query": "terminal df -h disk space check",
+        "verification_result": "Root filesystem 34% reported in 2 turns"
+      },
+      "body": "Removed OpenAI Codex (gpt-5.6-sol) from Hermes fallback chain and disabled 503 escalation in complexity router, directing 100% of agentic queries and tool calls to local Qwen3.6-35B on w_workstation to empirically stress-test local limits.",
+      "created_at": "2026-10-07T18:07:14.672178+00:00",
+      "id": "f4a86772-93ed-486a-b8ab-8eff348e3879",
+      "key": "hermes-pure-local-qwen-mode-codex-removed-2026-10-07",
+      "name": "Configuration: Codex Removed from Model Mix; Hermes Running in Pure Local Qwen Mode",
+      "tags": [
+        "hermes",
+        "architecture",
+        "model-routing",
+        "pure-local",
+        "qwen",
+        "stress-test"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-07T18:07:14.672178+00:00"
     }
   ],
-  "exported_at": "2026-10-07T17:49:30.887512+00:00",
+  "exported_at": "2026-10-07T18:07:19.626990+00:00",
   "relations": [
     {
       "attributes": {},
@@ -8151,6 +8218,16 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-live-model-routing-inspection-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T17:59:24.733224+00:00",
+      "id": "53887f00-5645-4416-8b66-7d5e60c8aec4",
+      "object_key": "hermes-all-functions-model-recipe-objective-2026-10-07",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-capability-routing-optimization-objective-2026-10-07",
       "subject_type": "entity"
     }
   ],

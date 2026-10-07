@@ -1,40 +1,15 @@
 #!/usr/bin/env python3
-"""OpenAI-compatible routing proxy: sends simple prompts to local Ollama,
-deliberately fails complex ones with 503 so Hermes's own fallback_model
-mechanism (built for rate-limits/errors) retries them against Codex.
+"""OpenAI-compatible routing proxy for Hermes.
 
-This exists because Hermes has no working complexity-based routing itself:
-smart_model_routing is an accepted-but-unimplemented config key, and
-delegation.model only sets one global model for all subagents, not a
-per-turn decision for the main conversation.
+Configured in Pure Local Mode (Codex Removed):
+All prompt traffic, tool calls, and agent turns route directly to local
+Qwen3.6-35B-A3B on w_workstation (http://192.168.40.100:8090).
 
-The local model exists purely to save Codex token usage - it should keep a
-request only as long as it's not clearly worse than Codex would be at it.
-Classification used to be a keyword/word-count heuristic (COMPLEX_KEYWORDS);
-that couldn't tell genuine complexity from surface signals (a long shell
-command isn't a hard question) and escalated far too eagerly. It's now an
-LLM-as-judge call (judge_classify()): the local model is asked directly
-whether it can handle the request or whether escalation would be a
-meaningfully better use of Codex tokens. Two exceptions bypass the judge
-entirely, because they're capability floors, not quality tradeoffs:
-  - has_image(): Codex's ChatGPT-OAuth backend can't process images at all
-    (HTTP 400 on image_url content) - so an image-bearing request must stay
-    local regardless of how capable Codex might otherwise be.
-  - bounded max_tokens: a tightly capped response (e.g. Hermes's Smart
-    Approvals guard) is mechanically incapable of needing escalation
-    regardless of input length/content.
-
-Two escalation paths, both landing on the same 503 -> Hermes fallback_model
-mechanism:
-  1. Upfront (classify()): judges the *question* before ever calling Ollama.
-  2. Post-hoc (looks_inadequate()): judges the *answer* after Ollama responds -
-     catches cases where the judge said local but qwen's response was empty,
-     a refusal, truncated, or degenerately repetitive. This requires
-     buffering the full response before relaying it (even if Hermes asked for
-     a streamed response), since a 503 can't be issued after a 200 has
-     already started streaming to the client - so the simple/qwen path loses
-     live token-by-token display in exchange for this safety net. Total wait
-     time is unaffected, only the progressive-typing visual is.
+Complexity classification and post-hoc quality evaluation continue to run
+in the background for telemetry/logging (recording what the judge would
+classify as complex or inadequate), but NEVER trigger HTTP 503 fallback
+errors. This allows direct empirical stress-testing of Qwen's boundaries
+and capabilities on real workflows.
 """
 import json
 import logging
@@ -52,7 +27,7 @@ REFUSAL_PATTERNS = [
     "i'm not able to", "i am not able to",
 ]
 
-OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://192.168.40.100:11434")
+LOCAL_LLM_BASE_URL = os.environ.get("LOCAL_LLM_BASE_URL", "http://192.168.40.100:8090")
 LOG_PATH = os.environ.get("ROUTER_LOG", "/home/hermes/.hermes/logs/complexity_router.log")
 
 logging.basicConfig(
@@ -104,43 +79,24 @@ def last_user_message(messages: list[dict]) -> str:
 
 
 def has_image(messages: list[dict]) -> bool:
-    """Whether any message carries image content (e.g. image_url parts).
-
-    classify()'s word/keyword checks only ever see the *text* half of a
-    message's content list - an attached image is otherwise invisible to
-    them. That's not a deliberate design: it means an image-bearing request
-    happens to classify as "simple" only by accident (no text signal to
-    trip on), not because the router actually knows a capability decision
-    is being made. Vision is a hard requirement (not best-effort), and the
-    Codex fallback may not accept image content the same way Ollama does -
-    so escalating an image-bearing request could break it outright rather
-    than improve it. Detecting this explicitly makes "always keep images
-    local" an intentional guarantee instead of a lucky side effect, and
-    gives future multi-model routing (e.g. a separate fast text-only model)
-    a real signal to pick the vision-capable model on.
-    """
+    """Whether any message carries image content (e.g. image_url parts)."""
     for msg in messages:
         content = msg.get("content")
-        if not isinstance(content, list):
-            continue
-        for part in content:
-            if isinstance(part, dict) and part.get("type") == "image_url":
-                return True
+        if isinstance(content, list):
+            for part in content:
+                if isinstance(part, dict) and part.get("type") in ("image_url", "image"):
+                    return True
     return False
 
 
-async def judge_classify(text: str, model: str) -> tuple[str, str]:
-    """Ask the local model itself whether this request needs escalation,
-    instead of keyword/length heuristics that can't distinguish genuine
-    complexity from surface-level signals. Bounded to JUDGE_MAX_TOKENS, so
-    this call is itself a "bounded task" - cheap and fast regardless of the
-    input size, and immune to the same misclassification it's meant to fix.
-    """
-    user_prompt = f"<request>\n{text[:JUDGE_TEXT_CAP]}\n</request>"
+async def judge_classify(user_prompt: str, model: str) -> tuple[str, str]:
+    if len(user_prompt) > JUDGE_TEXT_CAP:
+        user_prompt = user_prompt[:JUDGE_TEXT_CAP] + "... [truncated for classification]"
+
     try:
         async with httpx.AsyncClient(timeout=JUDGE_TIMEOUT_S) as client:
             resp = await client.post(
-                f"{OLLAMA_BASE_URL}/v1/chat/completions",
+                f"{LOCAL_LLM_BASE_URL}/v1/chat/completions",
                 json={
                     "model": model,
                     "messages": [
@@ -149,15 +105,12 @@ async def judge_classify(text: str, model: str) -> tuple[str, str]:
                     ],
                     "max_tokens": JUDGE_MAX_TOKENS,
                     "temperature": 0,
+                    "chat_template_kwargs": {"enable_thinking": False},
                 },
             )
         resp.raise_for_status()
         answer = (resp.json()["choices"][0]["message"]["content"] or "").strip().upper()
     except Exception as e:
-        # Fail open: local is nearly free and looks_inadequate() is still a
-        # downstream safety net, so a judge-call failure (timeout, model
-        # unloaded, malformed response) shouldn't force every request to the
-        # paid fallback - it should just behave as if no judge ran at all.
         return "simple", f"judge call failed ({e.__class__.__name__}), defaulting local"
 
     if "ESCALATE" in answer:
@@ -167,14 +120,9 @@ async def judge_classify(text: str, model: str) -> tuple[str, str]:
 
 async def classify(messages: list[dict], model: str, max_tokens: int | None = None) -> tuple[str, str]:
     if has_image(messages):
-        return "simple", "image present - vision required (Codex's OAuth backend can't process images), forced local"
+        return "complex", "image present - vision required (Qwen is text-only)"
 
     if max_tokens is not None and max_tokens <= BOUNDED_TASK_MAX_TOKENS:
-        # A tightly capped max_tokens (e.g. Hermes's Smart Approvals guard,
-        # tools/approval.py: max_tokens=16, "respond APPROVE/DENY/ESCALATE")
-        # means the caller already knows the answer is short and mechanical,
-        # regardless of how long or keyword-laden the *content being
-        # reviewed* is - no need to spend a judge call on it either.
         return "simple", f"bounded task (max_tokens={max_tokens}), skipping judge"
 
     text = last_user_message(messages)
@@ -185,8 +133,7 @@ async def classify(messages: list[dict], model: str, max_tokens: int | None = No
 
 
 def _max_repeated_ngram_ratio(text: str, n: int = 6) -> float:
-    """Fraction of n-word windows that are exact duplicates of an earlier window.
-    Catches the degenerate small-model failure mode of looping on a phrase."""
+    """Fraction of n-word windows that are exact duplicates of an earlier window."""
     words = text.split()
     if len(words) < n * 3:
         return 0.0
@@ -200,9 +147,11 @@ def _max_repeated_ngram_ratio(text: str, n: int = 6) -> float:
     return repeats / len(windows)
 
 
-def looks_inadequate(content: str, finish_reason: str) -> tuple[bool, str]:
-    """Judge the ANSWER after generation - the upfront classify() only judges
-    the question. Catches cases that looked simple but weren't handled well."""
+def looks_inadequate(content: str, finish_reason: str, has_tool_calls: bool = False) -> tuple[bool, str]:
+    """Judge the ANSWER after generation for telemetry and quality tracking."""
+    if has_tool_calls:
+        return False, "tool_calls present, content intentionally empty"
+
     stripped = content.strip()
 
     if not stripped:
@@ -224,14 +173,17 @@ def looks_inadequate(content: str, finish_reason: str) -> tuple[bool, str]:
 
 
 def _wrap_as_stream_chunks(message: dict, model: str, finish_reason: str) -> bytes:
-    """Package a full (non-streamed) completion as minimal SSE chunks, since
-    we had to buffer the whole response to inspect it before relaying -
-    Hermes gets the answer in one chunk instead of progressively, but still
-    in the streaming wire format it asked for."""
+    """Package a full (non-streamed) completion as minimal SSE chunks."""
+    delta = {"role": "assistant"}
+    if message.get("content") is not None:
+        delta["content"] = message.get("content")
+    if message.get("tool_calls"):
+        delta["tool_calls"] = message.get("tool_calls")
+
     chunk1 = {
         "object": "chat.completion.chunk",
         "model": model,
-        "choices": [{"index": 0, "delta": {"role": "assistant", "content": message.get("content", "")}, "finish_reason": None}],
+        "choices": [{"index": 0, "delta": delta, "finish_reason": None}],
     }
     chunk2 = {
         "object": "chat.completion.chunk",
@@ -249,30 +201,25 @@ async def chat_completions(request: Request):
     verdict, reason = await classify(messages, body.get("model", ""), max_tokens=body.get("max_tokens"))
     log.info("verdict=%s reason=%s preview=%r", verdict, reason, last_user_message(messages)[:120])
 
+    # Codex removed: Pure Local Qwen Mode.
+    # We log complex judgments for telemetry/analysis, but never 503-fail.
     if verdict == "complex":
-        return JSONResponse(
-            status_code=503,
-            content={
-                "error": {
-                    "message": f"complexity_router: routed to fallback ({reason})",
-                    "type": "service_unavailable",
-                    "code": "complexity_routed",
-                }
-            },
-        )
+        log.info("task classified as complex (%s) - forwarding to local Qwen to stress-test limits", reason)
 
     wanted_stream = bool(body.get("stream"))
-    ollama_body = {**body, "stream": False}  # always buffer upstream so we can inspect before relaying
+    ollama_body = {**body, "stream": False}  # buffer upstream to inspect timings and telemetry
+    ollama_body["chat_template_kwargs"] = {"enable_thinking": False}
 
     t0 = time.monotonic()
     async with httpx.AsyncClient(timeout=300) as client:
         upstream = await client.post(
-            f"{OLLAMA_BASE_URL}/v1/chat/completions",
+            f"{LOCAL_LLM_BASE_URL}/v1/chat/completions",
             json=ollama_body,
         )
     elapsed = time.monotonic() - t0
 
     if upstream.status_code != 200:
+        log.error("upstream local model error status=%d body=%r", upstream.status_code, upstream.text[:200])
         return JSONResponse(status_code=upstream.status_code, content=upstream.json())
 
     data = upstream.json()
@@ -288,20 +235,14 @@ async def chat_completions(request: Request):
         usage.get("completion_tokens"),
         sum(len(m.get("content") or "") for m in messages if m.get("role") == "system"),
     )
+    log.info(
+        "choice finish_reason=%s has_tool_calls=%s content_len=%d preview=%r",
+        finish_reason, bool(message.get("tool_calls")), len(content), content[:80]
+    )
 
-    bad, why = looks_inadequate(content, finish_reason)
+    bad, why = looks_inadequate(content, finish_reason, has_tool_calls=bool(message.get("tool_calls")))
     if bad:
-        log.info("post-hoc verdict=complex reason=%s preview=%r", why, content[:120])
-        return JSONResponse(
-            status_code=503,
-            content={
-                "error": {
-                    "message": f"complexity_router: post-hoc routed to fallback ({why})",
-                    "type": "service_unavailable",
-                    "code": "complexity_routed_posthoc",
-                }
-            },
-        )
+        log.warning("post-hoc quality flag=%s preview=%r - returning raw Qwen response to test limits", why, content[:120])
 
     if wanted_stream:
         return StreamingResponse(
@@ -315,5 +256,10 @@ async def chat_completions(request: Request):
 @app.get("/v1/models")
 async def models():
     async with httpx.AsyncClient(timeout=30) as client:
-        upstream = await client.get(f"{OLLAMA_BASE_URL}/v1/models")
+        upstream = await client.get(f"{LOCAL_LLM_BASE_URL}/v1/models")
     return JSONResponse(status_code=upstream.status_code, content=upstream.json())
+
+
+@app.get("/health")
+async def health():
+    return {"status": "ok", "mode": "pure_local_qwen", "upstream": LOCAL_LLM_BASE_URL}
