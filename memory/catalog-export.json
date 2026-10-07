@@ -5310,9 +5310,31 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-07T03:50:47.416238+00:00"
+    },
+    {
+      "attributes": {
+        "baseline_speed": "17.67 tok/s",
+        "cause": "Vocabulary mismatch (Qwen3.6 248,320 vs Qwen2.5 151,646 tokens) caused 0% draft acceptance rate",
+        "mismatched_draft_speed": "4.80 tok/s",
+        "prefill_speed": "611.20 tok/s"
+      },
+      "body": "Testing Qwen2.5-0.5B as a draft model against Qwen3.6-35B-A3B dropped speed from 17.67 to 4.80 tok/s due to vocabulary mismatch (248k vs 151k); speculative decoding requires a native Qwen3.6 draft checkpoint.",
+      "created_at": "2026-10-07T04:03:00.957466+00:00",
+      "id": "cb0d2671-2c60-4070-bad0-4a56b3e275bb",
+      "key": "hermes-phase1-speculative-validation-2026-10-06",
+      "name": "Validation Result: Phase 1 Speculative Decoding requires matching Qwen3.6 vocabulary draft model",
+      "tags": [
+        "hermes",
+        "local-inference",
+        "speculative-decoding",
+        "validation",
+        "benchmark"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-07T04:03:00.957466+00:00"
     }
   ],
-  "exported_at": "2026-10-07T03:50:57.333799+00:00",
+  "exported_at": "2026-10-07T04:03:24.033521+00:00",
   "relations": [
     {
       "attributes": {},
