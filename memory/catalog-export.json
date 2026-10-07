@@ -5070,9 +5070,117 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-07T01:07:31.55013+00:00"
+    },
+    {
+      "attributes": {
+        "ollama_removal": "OllamaService stopped, app uninstalled via its own unins000.exe /VERYSILENT, orphaned service registration removed via sc.exe delete, model blobs gone (confirmed, would need re-pulling if ever reinstated)",
+        "scope_exception": "narrow, deliberate exception to hermes-scope-chatgpt-only-free-local-tuning-2026-09-27 (no Vultr Inference spend) - vision has no free local option that fits the VRAM budget and no cloud fallback either (Codex OAuth cannot process images at all), so this one capability alone now carries a small per-request Vultr cost",
+        "text_and_tool_calling": "ik_llama.cpp/Qwen3.6-35B-A3B on w_workstation, port 8090, SYSTEM-level scheduled task (ik_llama_server) for reboot persistence",
+        "vision": "Vultr Serverless Inference, model glm-5.3, reasoning_effort=minimal required or default thinking consumes the whole token budget with zero output (same failure class as the local model)",
+        "vram_math": "measured, not estimated: ik_llama.cpp resident ~4.9GB, Ollama qwen3-vl 4b-hermes-instruct loaded ~13.8GB, card is 16.4GB total - the two do not fit together, which is why vision moved to Vultr instead of staying on a second local model"
+      },
+      "body": "Ollama is fully removed from w_workstation. Text/tool-calling now runs on ik_llama.cpp/Qwen3.6-35B-A3B exclusively; vision (screenshot/OCR, previously qwen3-vl via Ollama) moved to Vultr Serverless Inference (glm-5.3) instead of a second local model, because the two local runtimes measured do not fit in the cards 16.4GB VRAM together. This also closes LI-09 (vision capability preserved) via a different mechanism than originally assumed.",
+      "created_at": "2026-10-07T01:28:30.475536+00:00",
+      "id": "4db5ff59-1fd4-43bb-bda6-cadc44678480",
+      "key": "hermes-li08-ollama-decommissioned-2026-10-06",
+      "name": "LI-08 closed: Ollama fully decommissioned, replaced by ik_llama.cpp (text/tools) + Vultr GLM-5.3 (vision)",
+      "tags": [
+        "hermes",
+        "li-08",
+        "li-09",
+        "local-inference",
+        "vision",
+        "decision",
+        "verification"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-07T01:28:30.475536+00:00"
+    },
+    {
+      "attributes": {
+        "bug_1": "looks_inadequate() treated ANY empty message.content as a broken response, with no exception for tool_calls - but a legitimate tool-call response has content=\"\" by design (the payload is in tool_calls instead). Every tool-call turn from the new model was being misclassified as inadequate and bounced to Codex. Fixed by passing has_tool_calls through and short-circuiting the check when true.",
+        "bug_2": "judge_classify() allotted only JUDGE_MAX_TOKENS=8 for the LOCAL/ESCALATE verdict, with no way to disable the new models default thinking mode - the judge call was silently consuming its entire 8-token budget on hidden reasoning and returning an empty answer every time, which defaulted to LOCAL regardless of actual complexity (fail-open behavior masked this as a silent bug, not a crash).",
+        "discovered_during": "first real hermes -z test through the live pipeline with the actual Hermes system prompt (~20K chars, 15K+ tokens) - none of the raw curl benchmark tests (no system prompt, no tools in play) surfaced either bug",
+        "renamed": "OLLAMA_BASE_URL -> LOCAL_LLM_BASE_URL (env var), since it no longer points at Ollama"
+      },
+      "body": "Both bugs predate this session (the router was written for Ollama/qwen3-vl and happened to never trip them), but were only EXPOSED by the cutover - Qwen3.6-35B-A3B defaults to visible chain-of-thought reasoning in a way qwen3-vl apparently did not, and real agentic Hermes turns exercise tool-calling in a way the benchmarks curl tests never did. Backup of the pre-patch router kept at complexity_router.py.bak-pre-cutover on hermes-vps.",
+      "created_at": "2026-10-07T01:28:30.512195+00:00",
+      "id": "4c81bce0-482e-47fa-b7fd-6285c89da1aa",
+      "key": "hermes-complexity-router-bugs-fixed-2026-10-06",
+      "name": "Two pre-existing complexity_router.py bugs found and fixed during the ik_llama.cpp cutover",
+      "tags": [
+        "hermes",
+        "li-07",
+        "li-08",
+        "local-inference",
+        "bug",
+        "verification"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-07T01:28:30.512195+00:00"
+    },
+    {
+      "attributes": {
+        "before_fix": "agent.reasoning_effort unset, agent.reasoning_overrides: {} - every Codex call used whatever OpenAIs own unstated default effort is for gpt-5.6-sol",
+        "combines_with": "hermes-complexity-router-bugs-fixed-2026-10-06 (the tool_calls misclassification bug) - that bug drove excess CALL FREQUENCY to Codex, this fix drives down PER-CALL quota cost; both needed to actually explain and fix burns-through-usage-fast behavior",
+        "current_quota_state_2026-10-06": "session 9% used (resets in ~3.5h), weekly 6% used (resets in 6d13h), 1 banked reset available",
+        "fix_applied": "agent.reasoning_overrides: {gpt-5.6-sol: medium} set in config.yaml on hermes-vps - caps effort below max/ultra/xhigh/high for the fallback model specifically, leaving other providers (local ik_llama.cpp, Vultr vision) untouched",
+        "mechanism": "hermes usage --provider openai-codex shows Session (5h window) and Weekly (7-day window) percent-remaining, not a dollar figure - the $20/mo is a flat subscription cap enforced by OpenAI, not something Hermes meters",
+        "verified": "tested one genuinely complex architecture-review prompt post-fix - judge correctly escalated, Codex answered thoroughly and well-reasoned at medium effort, no quality degradation observed, no errors from the override"
+      },
+      "body": "User hypothesized Codex model selection/reasoning effort was a major contributor to burning through usage fast. Confirmed usage is quota-based (session/weekly % windows via ChatGPT Plus OAuth), not dollar billing, and that Hermes was leaving reasoning_effort entirely unset for gpt-5.6-sol (deferring to OpenAIs own undocumented default). Capped it to medium via agent.reasoning_overrides as a direct, reversible lever on per-call quota consumption, verified not to degrade answer quality on a genuinely hard test prompt.",
+      "created_at": "2026-10-07T01:42:21.749824+00:00",
+      "id": "4ecd1d0e-5ae9-4b78-8ed8-5a6c5254a60b",
+      "key": "hermes-codex-usage-is-quota-not-dollars-2026-10-06",
+      "name": "ChatGPT Plus/Codex usage is a rolling quota (session+weekly %), not per-token billing - reasoning_effort was unset, now capped",
+      "tags": [
+        "hermes",
+        "cost",
+        "reasoning-effort",
+        "verification",
+        "codex"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-07T01:42:21.749824+00:00"
+    },
+    {
+      "attributes": {
+        "api_model_name": "qwen3.6-35b-a3b",
+        "architecture": "MoE (35B total, 3B active per token)",
+        "context_window": 65536,
+        "gotchas": [
+          "CUDA Toolkit bin dir must be prepended to PATH or process exits silently (retcode 1)",
+          "chat_template_kwargs: {enable_thinking: false} required or reasoning content swallows token budget",
+          "--jinja flag supported and verified for structured tool calling",
+          "Text-only runtime; vision offloaded to Vultr GLM-5.3"
+        ],
+        "hardware": "Xeon W-2225 (4c/8t), 64GB RAM @ 2933MT/s, RTX A4000 (16GB VRAM)",
+        "host": "w_workstation (192.168.40.100, Windows 11 Enterprise)",
+        "model": "Qwen3.6-35B-A3B-Q4_K_M.gguf (22,285,080,192 bytes)",
+        "model_repo": "bartowski/Qwen_Qwen3.6-35B-A3B-GGUF",
+        "performance": "17-19 tok/s decode, 17-78 tok/s prompt processing",
+        "persistence": "Windows Scheduled Task ik_llama_server (SYSTEM account, at-startup)",
+        "port": 8090,
+        "runtime": "ik_llama.cpp (C:\\ik_llama.cpp\\build\\bin\\llama-server.exe)",
+        "vram_footprint": "4.9GB resident (KV cache 1.3GB + compute 0.6GB + non-MoE 3GB)"
+      },
+      "body": "Technical brief for Hermes local inference: w_workstation hosts ik_llama.cpp serving Qwen3.6-35B-A3B-Q4_K_M on port 8090 with 65k context and MoE CPU offloading.",
+      "created_at": "2026-10-07T02:52:13.25721+00:00",
+      "id": "b49db110-9686-4108-971a-e5c7629a7c49",
+      "key": "hermes-local-model-technical-brief-2026-10-06",
+      "name": "Local Model Technical Brief: ik_llama.cpp + Qwen3.6-35B-A3B on w_workstation",
+      "tags": [
+        "hermes",
+        "local-inference",
+        "w_workstation",
+        "ik_llama.cpp",
+        "technical-brief"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-07T02:52:13.25721+00:00"
     }
   ],
-  "exported_at": "2026-10-07T01:07:41.863658+00:00",
+  "exported_at": "2026-10-07T02:52:15.962467+00:00",
   "relations": [
     {
       "attributes": {},
@@ -7148,6 +7256,58 @@
       "object_type": "entity",
       "predicate": "blocks",
       "subject_key": "hermes-li07-benchmark-results-2026-10-06",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T01:28:37.595381+00:00",
+      "id": "32856abe-d016-4a33-b7ed-625c02f669f4",
+      "object_key": "hermes-li07-benchmark-results-2026-10-06",
+      "object_type": "entity",
+      "predicate": "completes",
+      "subject_key": "hermes-li08-ollama-decommissioned-2026-10-06",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {
+        "note": "narrow vision-only exception, not a reversal"
+      },
+      "created_at": "2026-10-07T01:28:37.620618+00:00",
+      "id": "f1426c3d-00f8-408e-8c06-431f9a79610e",
+      "object_key": "hermes-scope-chatgpt-only-free-local-tuning-2026-09-27",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-li08-ollama-decommissioned-2026-10-06",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T01:28:37.637239+00:00",
+      "id": "56f2949f-e57b-4a2c-a130-1a29eebb634e",
+      "object_key": "hermes-li08-ollama-decommissioned-2026-10-06",
+      "object_type": "entity",
+      "predicate": "discovered_during",
+      "subject_key": "hermes-complexity-router-bugs-fixed-2026-10-06",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T01:42:21.784567+00:00",
+      "id": "71cc0d11-82d9-4873-b4fd-fd7a219b31b2",
+      "object_key": "hermes-complexity-router-bugs-fixed-2026-10-06",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-codex-usage-is-quota-not-dollars-2026-10-06",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T01:42:21.801578+00:00",
+      "id": "6ffc75fc-1a6f-4e53-a30f-4640803eb099",
+      "object_key": "hermes-insights-codex-token-skew-2026-09-28",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-codex-usage-is-quota-not-dollars-2026-10-06",
       "subject_type": "entity"
     }
   ],
