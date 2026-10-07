@@ -4680,6 +4680,31 @@
     },
     {
       "attributes": {
+        "adguard_admin_username": "admin",
+        "blocked_on": "user-supplied plaintext values for SV-03/04/06; Modal account creation for SV-07",
+        "duckdns_domain": "theguylab.duckdns.org",
+        "duckdns_status": "actively failing (KO response every update cycle)",
+        "npm_admin_username": "mark.stephen.guy@gmail.com"
+      },
+      "body": "SV-05 (WordPress/MariaDB) vaulted directly from server .env files. SV-03 (DuckDNS): found the configured token is a literal placeholder and the container has been failing every update cycle -- theguylab.duckdns.org dynamic DNS is actively broken right now, not just un-vaulted. SV-04 (NPM) and SV-06 (AdGuard): admin usernames recovered from their respective databases/config, but both passwords are bcrypt-hashed server-side -- genuinely unrecoverable, not hidden. SV-07 (Modal): confirmed no credential exists anywhere on hermes-vps despite Modal being architecturally decided as the burst-compute backend -- it was never actually created, not just unlocated.",
+      "created_at": "2026-10-07T00:26:57.456078+00:00",
+      "id": "44f2c7a9-9df0-4f68-bc27-75119aace2ba",
+      "key": "hermes-sv03-04-06-07-05-progress-2026-10-07",
+      "name": "SV-03/04/05/06/07 batch: SV-05 closed, real DuckDNS outage found, three secrets genuinely unrecoverable from disk",
+      "tags": [
+        "hermes",
+        "sv-03",
+        "sv-04",
+        "sv-05",
+        "sv-06",
+        "sv-07",
+        "verification"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-07T00:26:57.456078+00:00"
+    },
+    {
+      "attributes": {
         "config_key": "model.context_length (top-level model: block, not providers.X.models.Y.context_window)",
         "method": "hermes config set model.context_length 65536",
         "value": 65536,
@@ -4921,7 +4946,7 @@
       "updated_at": "2026-10-07T00:23:41.875485+00:00"
     }
   ],
-  "exported_at": "2026-10-07T00:23:51.633841+00:00",
+  "exported_at": "2026-10-07T00:26:57.588987+00:00",
   "relations": [
     {
       "attributes": {},
