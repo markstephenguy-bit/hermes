@@ -6478,9 +6478,32 @@
       ],
       "type": "test_result",
       "updated_at": "2026-10-07T20:12:19.468161+00:00"
+    },
+    {
+      "attributes": {
+        "access": "multiplexed on the same host gateway, reachable at /p/hermes-testing/v1/... with its own API_SERVER_KEY (not shared with default profile)",
+        "memory_md": "rewritten -- running ledger of confirmed capabilities and confirmed gaps from batteries 1-2",
+        "method": "hermes profile create hermes-testing --clone (inherits config/.env/skills from default)",
+        "reason": "earlier batteries ran against the default profile and commingled test artifacts with Mark's real memory (e.g. surfaced a real unrelated pre-existing memory entry mid-test) -- isolating testing into its own profile avoids that",
+        "soul_md": "rewritten -- QA/capability-auditor persona, distinct from Mark's real daily-use Hermes identity",
+        "user_md": "rewritten -- scope/goal context for the testing project only"
+      },
+      "body": "Created a cloned, isolated Hermes profile (hermes-testing) with fresh SOUL/USER/MEMORY files so capability-testing work no longer touches or gets confused with Mark's real daily-use Hermes profile's identity and memory.",
+      "created_at": "2026-10-07T20:41:03.913925+00:00",
+      "id": "1f6b4f01-df0c-4ac5-8d93-105923beb281",
+      "key": "hermes-testing-profile-created-2026-10-07",
+      "name": "Dedicated hermes-testing profile created for capability auditing",
+      "tags": [
+        "hermes",
+        "testing",
+        "method",
+        "profile"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-07T20:41:03.913925+00:00"
     }
   ],
-  "exported_at": "2026-10-07T20:12:30.841137+00:00",
+  "exported_at": "2026-10-07T20:41:08.021999+00:00",
   "relations": [
     {
       "attributes": {},
@@ -8961,6 +8984,16 @@
       "object_type": "entity",
       "predicate": "informed_by",
       "subject_key": "hermes-custom-toolset-battery-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T20:41:03.942337+00:00",
+      "id": "243cc774-532b-4592-adbb-13444fa8d648",
+      "object_key": "hermes-api-server-fast-test-channel-2026-10-07",
+      "object_type": "entity",
+      "predicate": "supersedes_method_of",
+      "subject_key": "hermes-testing-profile-created-2026-10-07",
       "subject_type": "entity"
     }
   ],
