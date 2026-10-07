@@ -6184,9 +6184,31 @@
       ],
       "type": "test_result",
       "updated_at": "2026-10-07T18:19:02.535478+00:00"
+    },
+    {
+      "attributes": {
+        "interface": "wg0",
+        "persisted_file": "/etc/iptables/rules.v4",
+        "port": 8642,
+        "verified_from": "fileserver (10.60.0.2)"
+      },
+      "body": "Allowed and persisted inbound traffic on wg0 in iptables on hermes-vps, enabling home LAN nodes (e.g. fileserver 10.60.0.2) to reach Hermes gateway port 8642 directly.",
+      "created_at": "2026-10-07T18:28:49.426504+00:00",
+      "id": "f07515f8-5c12-469e-837f-7cdf3aeff92e",
+      "key": "hermes-wg0-vps-firewall-ingress-fix-2026-10-07",
+      "name": "WireGuard wg0 ingress allowed in hermes-vps iptables",
+      "tags": [
+        "hermes",
+        "network",
+        "wireguard",
+        "firewall",
+        "gateway"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-07T18:28:49.426504+00:00"
     }
   ],
-  "exported_at": "2026-10-07T18:19:06.510346+00:00",
+  "exported_at": "2026-10-07T18:28:58.491660+00:00",
   "relations": [
     {
       "attributes": {},
@@ -8494,6 +8516,19 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-coding-workload-antigravity-tests-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {
+        "firewall": "iptables",
+        "persisted": true
+      },
+      "created_at": "2026-10-07T18:28:54.523329+00:00",
+      "id": "8d55a985-3c96-4536-9d6b-96e59f80da94",
+      "object_key": "hermes-vps",
+      "object_type": "host",
+      "predicate": "configures",
+      "subject_key": "hermes-wg0-vps-firewall-ingress-fix-2026-10-07",
       "subject_type": "entity"
     }
   ],
