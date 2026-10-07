@@ -4877,9 +4877,28 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-07T00:17:46.584222+00:00"
+    },
+    {
+      "attributes": {
+        "method": "vault set_secret upsert-by-name over the existing corrupted rows",
+        "verification": "independent get_secret re-decrypt after write, values matched source"
+      },
+      "body": "hermes-vps-caddy-basic-auth and hermes-vps-dashboard-basic-auth recovered from values the user supplied directly; hermes-vps-vultr-inference-api-key recovered live from config.yaml/.env on hermes-vps (still plaintext there -- see SV-09, not yet acted on). All three upserted by name (same secret_set upsert, no new entries) and independently re-decrypted to confirm.",
+      "created_at": "2026-10-07T00:21:05.943988+00:00",
+      "id": "ec24ae4d-7fb4-4298-839d-c74d944a3edf",
+      "key": "vault-secrets-corrupted-batch-fixed-2026-10-07",
+      "name": "3 corrupted 2026-09-25 vault secrets re-vaulted and verified",
+      "tags": [
+        "hermes",
+        "vault",
+        "fixed",
+        "verification"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-07T00:21:05.943988+00:00"
     }
   ],
-  "exported_at": "2026-10-07T00:17:57.704548+00:00",
+  "exported_at": "2026-10-07T00:21:06.097105+00:00",
   "relations": [
     {
       "attributes": {},
@@ -6923,6 +6942,16 @@
       "object_type": "entity",
       "predicate": "completes",
       "subject_key": "hermes-li04-model-pull-complete-2026-10-06",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T00:21:05.974315+00:00",
+      "id": "0161390c-0098-41ee-ae50-25c3c1e2a0e9",
+      "object_key": "vault-secrets-corrupted-20260925-batch",
+      "object_type": "entity",
+      "predicate": "closes",
+      "subject_key": "vault-secrets-corrupted-batch-fixed-2026-10-07",
       "subject_type": "entity"
     }
   ],
