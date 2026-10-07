@@ -70,6 +70,14 @@ Paste this whole file as your opening message.
 - **Pre-existing router bug, only now exposed**: `looks_inadequate()` treated ANY empty `message.content` as a broken response with no exception for tool calls (which legitimately have empty content — the payload is in `tool_calls` instead). Every tool-call turn from the new model was getting misclassified as inadequate and bounced to Codex. Fixed by passing `has_tool_calls` through and short-circuiting the check. This bug predates the cutover but Ollama/qwen3-vl apparently never tripped it; only surfaced under a real Hermes system prompt (~20K chars) exercising actual tool use, not the raw curl benchmarks.
 - `hermes config`/`check` commands auto-migrate detected plaintext secrets in config.yaml into `.env` as a side effect (observed the Vultr API key get swapped to `${VULTR_INF_API_KEY}` between two unrelated reads) — benign, consistent with this project's existing secret-hygiene habit, just surprising if you don't expect it.
 
+## Why Codex usage looked maxed out (see catalog `hermes-codex-usage-is-quota-not-dollars-2026-10-06`)
+
+Two separate, compounding causes, both now fixed:
+1. **Frequency**: the `looks_inadequate()` tool-call bug above — every agentic tool-call turn was bouncing to Codex instead of staying local.
+2. **Per-call cost**: `agent.reasoning_effort` was unset entirely (`reasoning_overrides: {}`), so every Codex call ran at whatever OpenAI's own undocumented default effort is for `gpt-5.6-sol`. Capped it to `agent.reasoning_overrides: {gpt-5.6-sol: medium}` — verified on a genuinely hard escalated prompt that this doesn't degrade answer quality.
+3. Important context: ChatGPT Plus/Codex usage (`hermes usage --provider openai-codex`) is a **rolling quota** (session 5h window + weekly 7-day window, shown as % remaining), not dollar billing — the $20/mo is already a hard subscription cap OpenAI enforces, not something Hermes needs to additionally track. The thing that actually burns is the quota window, which both fixes above directly reduce consumption of. Current state: session 9% used, weekly 6% used, 1 banked reset available.
+4. Worth re-running `hermes insights` in a few days to confirm the skew (2.87M tokens on Codex vs ~1K on local, almost entirely from this session's own test calls) actually drops now that both are fixed — can't prove it retroactively.
+
 ## Good candidates for next session, in rough priority order
 
 1. **IM-04**: actually test cross-interface continuity now that Telegram exists.
