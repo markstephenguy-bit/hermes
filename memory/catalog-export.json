@@ -5594,9 +5594,54 @@
       ],
       "type": "specification",
       "updated_at": "2026-10-07T17:24:16.648464+00:00"
+    },
+    {
+      "attributes": {
+        "anti_runaway_mechanisms": [
+          "in_flight_tool_loop_lock",
+          "spend_velocity_throttling_1usd_per_5min",
+          "cyclic_ngram_loop_guard"
+        ],
+        "benchmark_cost_monthly_usd": 20.0,
+        "objective": "Replace Claude Code with self-hosted Hermes",
+        "offloading_philosophy": {
+          "cannot": [
+            "vision",
+            "context > 65k",
+            "search grounding"
+          ],
+          "local_default": [
+            "terminal executions",
+            "file operations",
+            "in-flight tool loops",
+            "catalog checks"
+          ],
+          "should_not": [
+            "deep architectural refactor",
+            "nuanced debugging",
+            "high-stakes planning"
+          ]
+        },
+        "spending_model": "elastic_with_runaway_guardrails"
+      },
+      "body": "Established that 0/month represents a Claude Code benchmark rather than a hard circuit breaker. The user aims to replace Claude Code with Hermes, allowing elastic cloud and Codex spend for productive work while relying on velocity throttling and loop guards to prevent runaway costs.",
+      "created_at": "2026-10-07T17:31:54.750109+00:00",
+      "id": "02b96ba6-d3fa-4f55-8e66-10e53587b889",
+      "key": "hermes-economic-strategy-claude-code-replacement-2026-10-07",
+      "name": "Strategic Decision: Claude Code Parity via Elastic Hybrid Spend with Anti-Runaway Controls",
+      "tags": [
+        "hermes",
+        "architecture",
+        "strategy",
+        "claude-code",
+        "budget",
+        "runaway-guard"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-07T17:31:54.750109+00:00"
     }
   ],
-  "exported_at": "2026-10-07T17:24:20.572908+00:00",
+  "exported_at": "2026-10-07T17:31:58.259921+00:00",
   "relations": [
     {
       "attributes": {},
