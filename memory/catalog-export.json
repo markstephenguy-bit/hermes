@@ -5505,9 +5505,40 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-07T16:57:40.8854+00:00"
+    },
+    {
+      "attributes": {
+        "antivirus": "CrowdStrike Falcon registered and service running; Defender antivirus inactive; no full malware scan performed",
+        "created_workstation_local": {
+          "BuildTools2022": "2026-10-05 19:26:28",
+          "Program1": "2026-10-05 19:14:36",
+          "ninja": "2026-10-05 19:20:13"
+        },
+        "evidence": [
+          "C:\\build_ik.bat references Ninja and BuildTools2022",
+          "C:\\ik_llama.cpp\\build\\CMakeCache.txt records both tool paths",
+          "Four sampled MSBuild.exe files across Program1 and BuildTools2022 have valid Microsoft signatures"
+        ],
+        "observed_on": "2026-10-07",
+        "program1_origin": "Likely install-path quoting mistake; exact original command and rename actor unverified",
+        "user_report": "Unfamiliar C: root folders; Program renamed Program1; asked whether hacked"
+      },
+      "body": "Inspection ties Ninja and BuildTools2022 to the ik_llama.cpp build; Program1 contains Microsoft-signed build tools and likely reflects an earlier misdirected installation, with no compromise established by these folders.",
+      "created_at": "2026-10-07T16:59:02.317007+00:00",
+      "id": "c7d904ea-4ee0-43aa-837f-8cfbc3d82586",
+      "key": "hermes-workstation-root-build-folders-inspected-2026-10-07",
+      "name": "Workstation root folders traced to ik_llama build setup",
+      "tags": [
+        "hermes",
+        "w_workstation",
+        "security",
+        "build-tools"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-07T16:59:02.317007+00:00"
     }
   ],
-  "exported_at": "2026-10-07T16:57:58.193584+00:00",
+  "exported_at": "2026-10-07T16:59:02.505608+00:00",
   "relations": [
     {
       "attributes": {},
@@ -7645,6 +7676,26 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes.decision.antigravity_multithreading_setup_20261006",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T16:59:02.340378+00:00",
+      "id": "384fb4e8-41c7-40f1-b5ba-32d93a51ac61",
+      "object_key": "w_workstation",
+      "object_type": "host",
+      "predicate": "about",
+      "subject_key": "hermes-workstation-root-build-folders-inspected-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T16:59:02.340378+00:00",
+      "id": "0ad2109d-c484-4829-b975-ce6314e92d47",
+      "object_key": "hermes-li03-ikllama-cuda-path-2026-10-06",
+      "object_type": "entity",
+      "predicate": "related_to",
+      "subject_key": "hermes-workstation-root-build-folders-inspected-2026-10-07",
       "subject_type": "entity"
     }
   ],
