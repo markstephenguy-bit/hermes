@@ -5353,9 +5353,35 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-07T04:11:58.641794+00:00"
+    },
+    {
+      "attributes": {
+        "batch_size": 4096,
+        "cuda_mmq": "GGML_CUDA_FORCE_MMQ=1",
+        "generation_speed": "17.95 tokens/sec",
+        "mlock_enabled": true,
+        "prefill_speed": "386.8 tokens/sec",
+        "tcc_mode": "Pending reboot (nvidia-smi -g 0 -dm 1 executed via Salt)",
+        "ubatch_size": 4096
+      },
+      "body": "Configured TCC driver mode on w_workstation GPU 0 (pending reboot) and enabled --mlock, -b 4096, -ub 4096, and GGML_CUDA_FORCE_MMQ=1 in start_server.ps1 via Salt API, reaching 17.95 tok/s decode and 386 tok/s prefill.",
+      "created_at": "2026-10-07T04:24:15.891161+00:00",
+      "id": "4dc8f113-7f41-4ee2-83b3-e40599080c82",
+      "key": "hermes-software-tuning-tcc-mlock-2026-10-06",
+      "name": "Software Optimization: TCC Mode, Memory Locking (--mlock), and MMQ Kernels for ik_llama.cpp",
+      "tags": [
+        "hermes",
+        "local-inference",
+        "optimization",
+        "tcc",
+        "mlock",
+        "benchmark"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-07T04:24:15.891161+00:00"
     }
   ],
-  "exported_at": "2026-10-07T04:12:22.940491+00:00",
+  "exported_at": "2026-10-07T04:24:25.758335+00:00",
   "relations": [
     {
       "attributes": {},
