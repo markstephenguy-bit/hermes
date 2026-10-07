@@ -4831,9 +4831,55 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-06T19:20:20.292577+00:00"
+    },
+    {
+      "attributes": {
+        "duration": "~35 minutes via async BITS, one transient network blip auto-recovered (TransientErrorCount=4, never stalled)",
+        "path": "E:\\ik_llama_models\\Qwen3.6-35B-A3B-Q4_K_M.gguf",
+        "size_bytes": 22285080192,
+        "verified_via": "Get-Item Length matches expected content-length exactly; Complete-BitsTransfer required to move out of BITS temp staging into the real destination path"
+      },
+      "body": "Qwen3.6-35B-A3B Q4_K_M GGUF (bartowski quant) fully downloaded and finalized at E:\\ik_llama_models on w_workstation, file size verified byte-exact against the HF content-length. Next: launch ik_llama.cpp llama-server.exe against it with --jinja and MoE CPU-offload flags, then LI-07 benchmark vs the Ollama qwen3-vl baseline.",
+      "created_at": "2026-10-07T00:16:44.896856+00:00",
+      "id": "57b1abe4-7784-4f21-8ffc-731995f7c71e",
+      "key": "hermes-li04-model-pull-complete-2026-10-06",
+      "name": "LI-04 closed: Qwen3.6-35B-A3B-Q4_K_M.gguf fully pulled to w_workstation",
+      "tags": [
+        "hermes",
+        "li-04",
+        "local-inference",
+        "w_workstation",
+        "verification"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-07T00:16:44.896856+00:00"
+    },
+    {
+      "attributes": {
+        "fallback_model": "gpt-5.6-sol via openai-codex",
+        "mechanism": "hermes-agent client-side retry+fallback catches router 503s, not a router-level graceful detection",
+        "related_gap": "SV-14 (catalog/vault reachability) also breaks during this outage, as expected and explicitly out of MR-05 scope",
+        "router_service_restarts": 0,
+        "test_question": "What is two plus two?",
+        "total_latency_s": 32
+      },
+      "body": "Surgically removed only the Hermes-home WireGuard peer from hermes-vps (wg set ... remove), leaving the unrelated law-office client peer untouched. With the home LAN unreachable (confirmed: Ollama and catalog both timed out), ran a real conversation turn: Hermes answered correctly, automatically, with zero manual intervention, using openai-codex/gpt-5.6-sol. Mechanism: the complexity-router does NOT gracefully detect the outage -- it crashed with an unhandled httpx.ConnectError proxying to Ollama and returned 503 to hermes-agent (confirmed via journalctl, zero service restarts). It was hermes-agent own retry+fallback-provider logic (2 failed attempts, ~4.4s apart) that caught the 503s and switched to the fallback credential pool. Total latency ~32s wall-clock. Tunnel restored via wg syncconf from the on-disk config; both Ollama and catalog confirmed reachable again post-restore.",
+      "created_at": "2026-10-07T00:17:46.584222+00:00",
+      "id": "1975cfcf-4b64-4688-b73b-d609161623ad",
+      "key": "hermes-mr05-wireguard-fire-drill-2026-10-07",
+      "name": "MR-05 closed: WireGuard-down fire drill proves Hermes auto-falls-back to Codex",
+      "tags": [
+        "hermes",
+        "mr-05",
+        "verification",
+        "closed",
+        "wireguard"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-07T00:17:46.584222+00:00"
     }
   ],
-  "exported_at": "2026-10-06T19:20:20.482674+00:00",
+  "exported_at": "2026-10-07T00:17:57.704548+00:00",
   "relations": [
     {
       "attributes": {},
@@ -6867,6 +6913,16 @@
       "object_type": "entity",
       "predicate": "depends_on",
       "subject_key": "hermes-im04-closed-2026-10-06",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T00:16:44.923262+00:00",
+      "id": "b80ed7a7-0799-4c9d-beeb-79caa473b62e",
+      "object_key": "hermes-li04-model-pull-started-2026-10-06",
+      "object_type": "entity",
+      "predicate": "completes",
+      "subject_key": "hermes-li04-model-pull-complete-2026-10-06",
       "subject_type": "entity"
     }
   ],
