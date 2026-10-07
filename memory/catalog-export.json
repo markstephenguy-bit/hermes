@@ -5407,9 +5407,36 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-10-07T04:49:46.768241+00:00"
+    },
+    {
+      "attributes": {
+        "displaced_subscription": "Claude Pro ($20/mo)",
+        "primary_local_model": "Qwen3.6-35B-A3B",
+        "specialist_routing_destinations": [
+          "OpenRouter",
+          "Google AI Studio",
+          "DeepSeek",
+          "Vultr"
+        ],
+        "target_monthly_cloud_budget": 20.0
+      },
+      "body": "Hermes aims to become the primary daily agent interface, absorbing 90% of routine workloads on local Qwen 3.6 MoE ($0/token) and displacing standalone $20/month chat subscriptions (such as Claude Pro) to self-fund pay-as-you-go cloud specialist routing (vision, web search grounding, frontier escalation).",
+      "created_at": "2026-10-07T16:29:16.497695+00:00",
+      "id": "32d16dc2-9c95-40cd-ab9f-bde2c09e044f",
+      "key": "hermes-economic-strategy-subscription-displacement-2026-10-07",
+      "name": "Hermes Economic Strategy: Local-First Workload Absorption to Displace Subscriptions",
+      "tags": [
+        "hermes",
+        "economics",
+        "strategy",
+        "routing",
+        "decision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-07T16:29:16.497695+00:00"
     }
   ],
-  "exported_at": "2026-10-07T04:50:03.364076+00:00",
+  "exported_at": "2026-10-07T16:29:21.120848+00:00",
   "relations": [
     {
       "attributes": {},
