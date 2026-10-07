@@ -11,8 +11,10 @@ repository, pin the actual runtime/source versions, and prove the tool protocol;
 then tune local inference and evaluate each specialist and background route.
 Recommendations in that recipe are not deployed or benchmark-certified.
 
-The user clarified that research, browser, images and general assistance lead
-the workload, and excessive Codex quota consumption motivates this work.
+The user does substantial Visual Studio and other multi-language coding alongside
+research, browser, images and general assistance. Incorporate the user's ongoing
+Qwen stress tests in Antigravity, then validate representative tasks in Hermes.
+Excessive Codex quota consumption motivates this work.
 Follow the [capability-routing comparison](ARCHITECTURE.md#capability-routing-and-cost-optimization-2026-10-07):
 Qwen is always considered, direct specialist routes are allowed, and Codex is
 not the presumed fallback. Audit auxiliary calls and repair false escalations

@@ -111,8 +111,9 @@ ensuring zero bandwidth penalties on the VPS.
 
 Make Hermes the daily alternative to Claude Code across coding and personal-agent
 functions, giving local Qwen substantial responsibility for complete tasks.
-The user clarified that research, browser, images and general assistance are
-primary; excessive Codex quota consumption is the problem, not reported poor
+The user does substantial Visual Studio and other multi-language coding alongside
+research, browser, images and general assistance; coding is a first-class workload.
+Excessive Codex quota consumption is the problem, not reported poor
 Codex answer quality. Qwen is considered for every call but need not run first.
 The capability-routing proposal below supersedes the earlier fixed Codex tier.
 Optimize correct completed work, response time, human intervention, and cloud
@@ -251,9 +252,17 @@ facts and latency. Check STT/TTS and media independently. Use provider model
 lists, official docs, actual account quotas and end-to-end probes, not brand
 names as evidence of modality or entitlement.
 
-**E. Compare full agent workflows.** Build an initial 24-task suite weighted to the user: 8 research,
-8 browser/vision, 4 general assistant/memory, 2 coding/infra and 2 automation/media
-tasks. Expand each enabled function before considering it qualified.
+**E. Compare full agent workflows.** The user is already stress-testing Qwen in
+Antigravity; incorporate those results rather than duplicate that work. Record
+model/quantization, runtime, context, tools, language/project, task, outcome,
+retries, latency and external calls. Separate model limitations from harness
+or tool failures, then validate representative successes in Hermes itself.
+As a starting sample, use 12 coding tasks across the user's actual languages
+and Visual Studio projects plus 12 research/browser/vision/general tasks;
+add coverage for remaining enabled functions before qualifying them. This is
+an evaluation allocation, not a measured workload share. Coding should include
+repository navigation, multi-file changes, debugging, builds/tests, dependency
+changes and regression checks, with complexity and context varied separately.
 Use representative user work and explicit success criteria. Compare local-only
 Hermes, hybrid Hermes and the user's actual Claude Code setup on equivalent
 workspaces/inputs, with repeated runs for variable cases. Judge patches by
@@ -278,8 +287,9 @@ one that wins these workload tests.
 **User priority:** Hermes remains the originator and owns task state. Consider
 local Qwen for every inference, prefer it when it meets the task's quality and
 latency requirements, and bypass it when a known specialist advantage warrants
-that. External API spending is expected. Research, browser, images and general
-assistance carry more weight than coding. Excessive Codex quota use, rather
+that. External API spending is expected. Substantial Visual Studio and other
+multi-language coding joins research, browser, images and general assistance
+as a first-class workload. Excessive Codex quota use, rather
 than answer-quality dissatisfaction, motivates removing the universal fallback.
 
 **Proposed dispatcher:** First avoid inference for deterministic operations;
@@ -374,7 +384,7 @@ RAM plus VRAM is not a single freely interchangeable pool on this workstation.
 | Qwen3.6-27B dense | Quality comparison for general/visual work | Higher active computation can hurt latency under offload; benchmark |
 | Qwen3.5-9B helper | Small vision or background route | Test screenshot fidelity and contention; do not assume two resident models fit |
 | Qwen3.5-122B-A10B MoE | Larger multimodal local quality experiment | Tight memory headroom and more active work; not the first production swap |
-| Qwen3-Coder-Next 80B-A3B | Coding-specific local alternative | Text-only, less aligned with primary workload, model loading/storage overhead |
+| Qwen3-Coder-Next 80B-A3B | Coding-specific local alternative worth comparison for substantial multi-language work | Text-only; evaluate gains against current Qwen and model loading/storage overhead |
 | GLM-4.7-Flash / gpt-oss-20b | Alternative compact text/tool baselines | Must beat Qwen on actual work; not an automatic solution to visual offloads |
 
 Sources: [Qwen 27B](https://huggingface.co/Qwen/Qwen3.6-27B),

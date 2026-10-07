@@ -5913,7 +5913,10 @@
           "cost, quality, latency, quota preservation"
         ],
         "external_api_spend": "accepted for productive work",
+        "ongoing_evaluation": "user stress-testing Qwen through Antigravity; results pending",
         "primary_workload": [
+          "Visual Studio coding",
+          "other multi-language coding",
           "research",
           "browser",
           "images",
@@ -5922,11 +5925,11 @@
         "priority": "comprehensive capability mix and cost optimization",
         "qwen_policy": "preferred candidate on every call, not mandatory first inference",
         "secondary_workload": [
-          "coding",
           "infrastructure"
         ],
         "static_specialist_routing": "desired when optimization justifies bypassing Qwen",
-        "status": "research and proposal; no live changes requested"
+        "status": "research and proposal; no live changes requested",
+        "workload_weights": "not quantified; substantial coding must be included"
       },
       "body": "User wants Hermes-owned routing that considers Qwen for every call but directly selects better-suited models when known capability or quality advantages justify it; Codex is not the assumed backend.",
       "created_at": "2026-10-07T17:59:24.707155+00:00",
@@ -6129,9 +6132,30 @@
       ],
       "type": "research",
       "updated_at": "2026-10-07T18:07:49.479352+00:00"
+    },
+    {
+      "attributes": {
+        "evaluation_policy": "incorporate existing results, separate model and harness failures, validate transfer to Hermes",
+        "languages": "not yet specified",
+        "source": "user clarification",
+        "supersedes_assumption": "coding is a secondary workload",
+        "test_results": "pending"
+      },
+      "body": "The user does substantial Visual Studio and other multi-language coding and is currently stress-testing Qwen through Antigravity to assess capability.",
+      "created_at": "2026-10-07T18:16:13.997945+00:00",
+      "id": "2a0cb7b7-ef21-4a42-ba2b-0d138faa7626",
+      "key": "hermes-coding-workload-antigravity-tests-2026-10-07",
+      "name": "Coding workload and ongoing Antigravity tests",
+      "tags": [
+        "hermes",
+        "coding",
+        "evaluation"
+      ],
+      "type": "requirement",
+      "updated_at": "2026-10-07T18:16:13.997945+00:00"
     }
   ],
-  "exported_at": "2026-10-07T18:07:49.613950+00:00",
+  "exported_at": "2026-10-07T18:16:14.187335+00:00",
   "relations": [
     {
       "attributes": {},
@@ -8429,6 +8453,16 @@
       "object_type": "entity",
       "predicate": "informs",
       "subject_key": "hermes-routing-price-scenario-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T18:16:14.016461+00:00",
+      "id": "c309c511-f169-495b-b464-dec5d43da153",
+      "object_key": "hermes-capability-routing-optimization-objective-2026-10-07",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-coding-workload-antigravity-tests-2026-10-07",
       "subject_type": "entity"
     }
   ],
