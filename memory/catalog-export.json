@@ -4201,6 +4201,37 @@
     },
     {
       "attributes": {
+        "critical_gotcha": "Default thinking/reasoning mode is extremely verbose and can fail to terminate: a simple 150-word-explanation prompt consumed all 1500 max_tokens on hidden reasoning_content and produced ZERO actual answer (finish_reason=length). The 4B/8B Ollama baseline models do not exhibit this (no reasoning_content, immediate clean answers) - likely due to their -hermes-instruct tuning or Ollama template defaults.",
+        "decode_speed": {
+          "conclusion": "comparable raw decode throughput across all three despite the 35B model being ~4-9x larger - validates the MoE + --cpu-moe offload architectural bet (LI-02/LI-03)",
+          "ollama_qwen3vl_4b": "~19 tok/s",
+          "ollama_qwen3vl_8b": "~16 tok/s",
+          "qwen3.6_35b_a3b_cpu_moe_offload": "~17-19 tok/s"
+        },
+        "fix_required": "Must pass chat_template_kwargs:{enable_thinking:false} on every request to this model/provider - verified this produces a clean, complete, correctly-terminated 203-token answer at matching ~17.6 tok/s speed. Without this fix the model is NOT production-viable as a drop-in Ollama replacement.",
+        "test_server": "manual benchmark instance only, port 8090, not yet wired into complexity-router - production cutover is a separate decision pending this fix being wired into the request path",
+        "tool_calling": {
+          "detail": "35B model correctly emits finish_reason=tool_calls with clean structured arguments via --jinja; matches 4B/8B baseline correctness, no curl/exec-python fallback misbehavior observed",
+          "result": "PASS"
+        }
+      },
+      "body": "Ran matched prompts (trivial reply, tool-call, and a substantive 150-word-explanation) against the new ik_llama.cpp/Qwen3.6-35B-A3B server (port 8090, --cpu-moe, --jinja, ctx 65536) and the existing Ollama qwen3-vl 4B/8B baseline (port 11434). Decode speed is comparable across all three (~16-19 tok/s), and tool-calling works correctly via --jinja. But the critical finding is that default thinking mode is dangerously verbose - burned a full 1500-token budget on reasoning with zero output on a simple prompt - and must be disabled per-request via chat_template_kwargs.enable_thinking=false before this can replace Ollama in production. With that fix applied, output is clean, complete, and speed-competitive with the baseline.",
+      "created_at": "2026-10-07T00:31:39.106103+00:00",
+      "id": "9a43bc77-d28d-4e3c-a54d-2ceca25d8dfc",
+      "key": "hermes-li07-benchmark-results-2026-10-06",
+      "name": "LI-07 closed: Qwen3.6-35B-A3B/ik_llama.cpp benchmarked vs Ollama 4B/8B baseline",
+      "tags": [
+        "hermes",
+        "li-07",
+        "local-inference",
+        "verification",
+        "benchmark"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-07T00:31:39.106103+00:00"
+    },
+    {
+      "attributes": {
         "changes_made": false,
         "diagnosis": "Shared router/ONT/ISP problem remains possible; attack neither demonstrated nor excluded without WAN traffic/connection counters",
         "fileserver_load_1m": 0.03,
@@ -4944,9 +4975,33 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-07T00:23:41.875485+00:00"
+    },
+    {
+      "attributes": {
+        "gotcha": "bcrypt hash $ characters get mangled by bash double-quote interpolation -- use files, not inline shell args, for any secret containing $",
+        "vaulted_as": [
+          "server-npm-admin",
+          "server-adguard-admin"
+        ],
+        "verification": "live login against each services own auth API, not just a DB write"
+      },
+      "body": "Both old passwords were bcrypt-hashed server-side and genuinely unrecoverable. Reset both to new random passwords: NPM via a direct auth-table update (hash generated inside the NPM container own node+bcrypt for guaranteed compatibility), AdGuard via a direct AdGuardHome.yaml edit (bcrypt is a standard format, cross-compatible). Both verified by an actual successful login against each service own API (NPM /api/tokens, AdGuard /control/login) before being vaulted. Hit and fixed a shell-quoting bug along the way: bcrypt hashes contain literal $ characters that get silently mangled by bash variable expansion when interpolated into a double-quoted SSH command -- fixed by passing values through files instead of shell args.",
+      "created_at": "2026-10-07T00:38:15.355761+00:00",
+      "id": "e277dae7-10e3-4bf4-949d-2b595292a047",
+      "key": "hermes-sv04-sv06-closed-2026-10-07",
+      "name": "SV-04 and SV-06 closed: NPM and AdGuard admin passwords reset, verified, vaulted",
+      "tags": [
+        "hermes",
+        "sv-04",
+        "sv-06",
+        "verification",
+        "closed"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-07T00:38:15.355761+00:00"
     }
   ],
-  "exported_at": "2026-10-07T00:26:57.588987+00:00",
+  "exported_at": "2026-10-07T00:38:15.501807+00:00",
   "relations": [
     {
       "attributes": {},
@@ -7000,6 +7055,28 @@
       "object_type": "entity",
       "predicate": "closes",
       "subject_key": "vault-secrets-corrupted-batch-fixed-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T00:31:39.142393+00:00",
+      "id": "ed756b17-d6b6-482d-997b-1a55d4e55818",
+      "object_key": "hermes-li04-model-pull-complete-2026-10-06",
+      "object_type": "entity",
+      "predicate": "completes",
+      "subject_key": "hermes-li07-benchmark-results-2026-10-06",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {
+        "note": "production wiring into complexity-router blocked on enable_thinking=false fix being applied to the request path, plus explicit user go-ahead to cut production traffic over"
+      },
+      "created_at": "2026-10-07T00:31:39.158468+00:00",
+      "id": "1b82faa7-2777-4a84-b99d-0cb5738a6899",
+      "object_key": "hermes-no-local-llm-tier-wired-2026-09-26",
+      "object_type": "entity",
+      "predicate": "blocks",
+      "subject_key": "hermes-li07-benchmark-results-2026-10-06",
       "subject_type": "entity"
     }
   ],
