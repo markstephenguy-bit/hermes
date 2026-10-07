@@ -5379,9 +5379,37 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-07T04:24:15.891161+00:00"
+    },
+    {
+      "attributes": {
+        "current_decode_tok_s": 16.37,
+        "key_features": [
+          "hybrid_vram_expert_offload",
+          "kv_cache_q8_quantization",
+          "matched_vocab_speculative_decoding",
+          "iq4_xs_imatrix_quantization",
+          "cpu_thread_affinity",
+          "tcc_dma_mode"
+        ],
+        "vram_free_gb": 8.5
+      },
+      "body": "Identified six software-only MoE performance features: hybrid VRAM expert offloading using the 8.5 GB free VRAM, FlashAttention with KV cache quantization, matched 248k-vocabulary draft model speculative decoding, IQ4_XS Imatrix quantization for 100% VRAM fitting, thread affinity pinning, and TCC DMA mode.",
+      "created_at": "2026-10-07T04:49:46.768241+00:00",
+      "id": "19907679-f653-4472-8c09-6b8925436e93",
+      "key": "hermes-moe-advanced-software-tuning-2026-10-06",
+      "name": "Advanced MoE Software Optimizations & Sliced Offloading Features for ik_llama.cpp",
+      "tags": [
+        "hermes",
+        "local-inference",
+        "moe-tuning",
+        "optimization",
+        "features"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-07T04:49:46.768241+00:00"
     }
   ],
-  "exported_at": "2026-10-07T04:24:25.758335+00:00",
+  "exported_at": "2026-10-07T04:50:03.364076+00:00",
   "relations": [
     {
       "attributes": {},
