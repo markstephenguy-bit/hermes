@@ -5747,9 +5747,163 @@
       ],
       "type": "review",
       "updated_at": "2026-10-07T17:40:21.542081+00:00"
+    },
+    {
+      "attributes": {
+        "deliverable": "practical configuration recipe, not only criticism of the supplied guide",
+        "scope": [
+          "all Hermes functions",
+          "model and auxiliary routes",
+          "local runtime tuning",
+          "specialist services",
+          "end-to-end evaluations"
+        ]
+      },
+      "body": "User wants a complete preparation and research recipe for model usage across all Hermes functions, optimized to replace Claude Code while leaning heavily on local Qwen.",
+      "created_at": "2026-10-07T17:49:30.624434+00:00",
+      "id": "6f68a9e8-5187-4361-a491-b25d95adbe66",
+      "key": "hermes-all-functions-model-recipe-objective-2026-10-07",
+      "name": "All functions model recipe objective",
+      "tags": [
+        "hermes",
+        "architecture",
+        "model-usage"
+      ],
+      "type": "requirement",
+      "updated_at": "2026-10-07T17:49:30.624434+00:00"
+    },
+    {
+      "attributes": {
+        "changes_deployed": false,
+        "compression": {
+          "model": "nvidia/DeepSeek-V3.2-NVFP4",
+          "provider": "vultr",
+          "timeout": 120
+        },
+        "deployed_router": "/home/hermes/.hermes/complexity_router/complexity_router.py",
+        "fallback": {
+          "model": "gpt-5.6-sol",
+          "provider": "openai-codex"
+        },
+        "main": {
+          "base_url": "http://127.0.0.1:11500/v1",
+          "context_length": 65536,
+          "model": "qwen3.6-35b-a3b",
+          "provider": "local"
+        },
+        "mcp_servers": [
+          "catalog",
+          "search",
+          "infra",
+          "vault"
+        ],
+        "remaining_router_gap": "stream wrapper constructs text-only delta",
+        "router_differences": [
+          "cloud image route",
+          "tool-call exemption from empty-text rejection"
+        ],
+        "terminal_backend": "docker"
+      },
+      "body": "Read-only inspection confirmed Qwen as the VPS main route, Codex fallback, and separate Vultr compression; the deployed router differs from the repository.",
+      "created_at": "2026-10-07T17:49:30.648218+00:00",
+      "id": "2aec2365-4a77-4237-8c7a-017876c6d72c",
+      "key": "hermes-live-model-routing-inspection-2026-10-07",
+      "name": "Live model routing inspection",
+      "tags": [
+        "hermes",
+        "architecture",
+        "model-usage"
+      ],
+      "type": "observation",
+      "updated_at": "2026-10-07T17:49:30.648218+00:00"
+    },
+    {
+      "attributes": {
+        "advertised_input_modalities": [
+          "text"
+        ],
+        "live_endpoint": "http://192.168.40.100:8090/v1/models",
+        "local_vision_status": "runtime/projector compatibility and performance must be tested",
+        "model_id": "E:\\ik_llama_models\\Qwen3.6-35B-A3B-Q4_K_M.gguf",
+        "native_context": 262144,
+        "served_context": 65536,
+        "source": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+        "workstation_ssh": "timed out during read-only launch-setting inspection"
+      },
+      "body": "Qwen3.6-35B-A3B has a vision encoder, while the current workstation endpoint advertises text-only input and a 65536-token serving window.",
+      "created_at": "2026-10-07T17:49:30.664871+00:00",
+      "id": "9a4f0cc0-f2ef-4d61-8584-88d20d4a7a9a",
+      "key": "hermes-qwen-model-versus-endpoint-capabilities-2026-10-07",
+      "name": "Qwen model versus endpoint capabilities",
+      "tags": [
+        "hermes",
+        "architecture",
+        "model-usage"
+      ],
+      "type": "correction",
+      "updated_at": "2026-10-07T17:49:30.664871+00:00"
+    },
+    {
+      "attributes": {
+        "coverage": [
+          "coding",
+          "web",
+          "browser",
+          "vision",
+          "computer use",
+          "memory",
+          "compression",
+          "approvals",
+          "delegation",
+          "cron",
+          "messaging",
+          "voice",
+          "media",
+          "infra",
+          "connectors",
+          "background and MCP sampling"
+        ],
+        "document": "ARCHITECTURE.md#qwen-heavy-model-preparation-recipe",
+        "initial_profile": {
+          "compaction_input_target_tokens": [
+            45000,
+            48000
+          ],
+          "difficult_output_budget_experiment": 8192,
+          "local_generation_concurrency": 1,
+          "routine_output_budget_experiment": 4096,
+          "served_context": 65536
+        },
+        "keep_initially": [
+          "Q4_K_M runtime",
+          "WDDM",
+          "working Vultr compression"
+        ],
+        "research_sequence": [
+          "effective route inventory",
+          "tool protocol tests",
+          "local hardware tuning",
+          "specialist evaluation",
+          "24 representative end-to-end tasks",
+          "outage recovery and gradual adoption"
+        ],
+        "status": "proposed; not deployed or benchmark-certified"
+      },
+      "body": "Proposed recipe assigns Qwen complete ordinary tasks, Codex difficult work, one verified vision route, and explicit auxiliary policies, with hardware and workload tests determining final tuning.",
+      "created_at": "2026-10-07T17:49:30.673117+00:00",
+      "id": "2a66026a-486f-4ecb-a57a-3df7962d24a7",
+      "key": "hermes-qwen-heavy-recipe-proposal-2026-10-07",
+      "name": "Qwen heavy recipe proposal",
+      "tags": [
+        "hermes",
+        "architecture",
+        "model-usage"
+      ],
+      "type": "proposal",
+      "updated_at": "2026-10-07T17:49:30.673117+00:00"
     }
   ],
-  "exported_at": "2026-10-07T17:40:21.707030+00:00",
+  "exported_at": "2026-10-07T17:49:30.887512+00:00",
   "relations": [
     {
       "attributes": {},
@@ -7947,6 +8101,56 @@
       "object_type": "entity",
       "predicate": "reviews",
       "subject_key": "hermes-catalog-provenance-review-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T17:49:30.681522+00:00",
+      "id": "33ff47d5-5a96-493f-8ed1-411b02940772",
+      "object_key": "hermes-all-functions-model-recipe-objective-2026-10-07",
+      "object_type": "entity",
+      "predicate": "addresses",
+      "subject_key": "hermes-qwen-heavy-recipe-proposal-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T17:49:30.690151+00:00",
+      "id": "75e8c876-0eeb-40c1-b4b1-7f038711f3db",
+      "object_key": "hermes-live-model-routing-inspection-2026-10-07",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-qwen-heavy-recipe-proposal-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T17:49:30.698481+00:00",
+      "id": "d0df71c7-a1d2-4c58-9f79-1de1fbe15e23",
+      "object_key": "hermes-qwen-model-versus-endpoint-capabilities-2026-10-07",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-qwen-heavy-recipe-proposal-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T17:49:30.7067+00:00",
+      "id": "a9a04713-03b9-45e3-ba5f-36b1edee4bd0",
+      "object_key": "hermes-model-usage-and-tool-architecture-guide-2026-10-07",
+      "object_type": "entity",
+      "predicate": "corrects",
+      "subject_key": "hermes-qwen-model-versus-endpoint-capabilities-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T17:49:30.715653+00:00",
+      "id": "ddccbb87-245d-4d59-8de0-77a3a334f373",
+      "object_key": "hermes-router-contract-review-2026-10-07",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-live-model-routing-inspection-2026-10-07",
       "subject_type": "entity"
     }
   ],

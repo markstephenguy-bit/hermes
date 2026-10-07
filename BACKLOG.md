@@ -1,5 +1,16 @@
 # Backlog / Open Questions
 
+## Current priority: complete model-use preparation (2026-10-07)
+
+The user requests a practical recipe covering all Hermes functions to replace
+Claude Code while leaning heavily on Qwen. Follow the function map, proposed
+starting settings, and ordered research gates in
+[ARCHITECTURE.md](ARCHITECTURE.md#qwen-heavy-model-preparation-recipe).
+The next implementation work is to reconcile the deployed router with this
+repository, pin the actual runtime/source versions, and prove the tool protocol;
+then tune local inference and evaluate each specialist and background route.
+Recommendations in that recipe are not deployed or benchmark-certified.
+
 ## Architecture guide review (2026-10-07)
 
 Review findings are logged as linked `hermes` catalog entities; these are
@@ -88,7 +99,8 @@ vLLM and other runtimes that use GPU plus system RAM for larger models, includin
 ik_llama.cpp and KTransformers. Near-100-token/s reports are an evaluation target,
 not verified workstation performance. Salt verified 64GB RAM (2x32GB at 2933 MT/s),
 a Xeon W-2225 (4c/8t), and RTX A4000 16GB on PCIe 3.0 x16 on 2026-10-03. Earlier Ollama pull/configuration steps below
-are historical and superseded by this runtime evaluation. No replacement is deployed.
+are historical and superseded. On 2026-10-07 the live API confirmed ik_llama.cpp
+serving Qwen3.6-35B-A3B Q4_K_M on port 8090 with a 65,536-token context limit.
 
 ## Immediate Next Steps
 
@@ -97,10 +109,11 @@ Steps 1-3 below (connect, onboard Codex, Dokploy+WireGuard) are done as of
 as originally planned here, per explicit user request once the Desktop
 app's OAuth flow proved too fragile to debug live. Current next steps:
 
-1. **Pull the local Ollama model package** on `w_workstation`
-   (`gpt-oss-20b`, `qwen3-vl:8b`, `nomic-embed-text`) — see NEXT_SESSION.md.
-2. **Wire Ollama into Hermes's fallback_providers/MoA config** so local is
-   preferred and Codex is the ceiling-hit fallback (G1/G8).
+1. **Validate Qwen's complete Hermes tool loop** using the existing ik_llama.cpp
+   endpoint; the former Ollama model-pull step is superseded.
+2. **Implement and measure the model-use recipe** above. Live config already
+   selects local Qwen as main and Codex as fallback; quality routing, auxiliary
+   policy and end-to-end reliability still need validation.
 3. **Write `SOUL.md`/`USER.md`** on hermes-vps — drafted in conversation,
    never committed.
 4. **Signal/Telegram gateway** (G7) — `hermes-gateway` running, no channel
