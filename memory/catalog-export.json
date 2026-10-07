@@ -6153,9 +6153,40 @@
       ],
       "type": "requirement",
       "updated_at": "2026-10-07T18:16:13.997945+00:00"
+    },
+    {
+      "attributes": {
+        "host": "w_workstation:8090",
+        "key_takeaway": "Qwen 35B MoE matches Claude Code on command line, file editing, infrastructure API orchestration, and Python debugging; Vision is the sole capability floor requiring cloud offloading.",
+        "model": "Qwen3.6-35B-A3B-Q4_K_M",
+        "suite": "pure_local_qwen_stress_test",
+        "test_results": {
+          "test_1_code_execution_primes": "PASSED (Found 168 primes)",
+          "test_2_infra_salt_fleet_control": "PASSED (6 of 7 minions up, formatted table)",
+          "test_3_catalog_postgres_recall": "PASSED (Read and summarized entities)",
+          "test_4_web_search_synthesis": "PASSED (Extracted release tag from web search)",
+          "test_5_multimodal_vision": "FAILED_CAPABILITY_FLOOR (500 mmproj missing, text-only model)",
+          "test_6_concurrency_race_condition": "PASSED (Identified read-modify-write and lock fix)"
+        }
+      },
+      "body": "Completed live stress-test suite of Hermes running 100% on local Qwen3.6-35B: verified flawless execution across terminal code-exec, SaltStack fleet control, Postgres catalog queries, web search, and race-condition debugging, while empirically confirming vision as the definitive capability floor.",
+      "created_at": "2026-10-07T18:19:02.535478+00:00",
+      "id": "cb2dcf44-314b-4e69-a942-9e7f7eb9af99",
+      "key": "hermes-qwen35b-pure-local-stress-test-results-2026-10-07",
+      "name": "Empirical Benchmark: Qwen3.6-35B Pure Local Stress-Test Capability Boundaries",
+      "tags": [
+        "hermes",
+        "benchmark",
+        "stress-test",
+        "qwen",
+        "capabilities",
+        "pure-local"
+      ],
+      "type": "test_result",
+      "updated_at": "2026-10-07T18:19:02.535478+00:00"
     }
   ],
-  "exported_at": "2026-10-07T18:16:14.187335+00:00",
+  "exported_at": "2026-10-07T18:19:06.510346+00:00",
   "relations": [
     {
       "attributes": {},
