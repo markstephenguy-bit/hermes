@@ -5566,9 +5566,37 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-07T17:10:12.173806+00:00"
+    },
+    {
+      "attributes": {
+        "active_toolsets_count": 27,
+        "artifact_path": "hermes_model_and_tool_architecture_guide.md",
+        "cloud_tiers": [
+          "Gemini 2.0 Flash",
+          "Vultr GLM-5.3",
+          "DeepSeek-v4.1-Flash",
+          "Codex GPT-5.6-Sol"
+        ],
+        "local_model": "Qwen3.6-35B-A3B-Q4_K_M",
+        "monthly_budget_cap_usd": 20.0
+      },
+      "body": "Formulated comprehensive guide detailing all 27 toolsets, local Qwen 35B MoE verification, Vultr/Gemini cloud tiers, in-flight tool-loop lock, and hard 0 budget ceiling for evaluation by ChatGPT and Claude.",
+      "created_at": "2026-10-07T17:24:16.648464+00:00",
+      "id": "16f9e9b7-76bb-4d57-b8ae-4269e18d31c9",
+      "key": "hermes-model-usage-and-tool-architecture-guide-2026-10-07",
+      "name": "Hermes Model Usage & Tool Architecture Guide Formulated for External Peer Review",
+      "tags": [
+        "hermes",
+        "architecture",
+        "model-routing",
+        "tool-calling",
+        "budget"
+      ],
+      "type": "specification",
+      "updated_at": "2026-10-07T17:24:16.648464+00:00"
     }
   ],
-  "exported_at": "2026-10-07T17:10:16.568120+00:00",
+  "exported_at": "2026-10-07T17:24:20.572908+00:00",
   "relations": [
     {
       "attributes": {},
