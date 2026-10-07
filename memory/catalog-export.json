@@ -4896,9 +4896,32 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-07T00:21:05.943988+00:00"
+    },
+    {
+      "attributes": {
+        "files_changed": [
+          "/home/hermes/.hermes/config.yaml"
+        ],
+        "pattern_used": "${VAR} interpolation, precedented by SALT_USER/SALT_PASS",
+        "verification": "hermes doctor confirms compression provider resolves correctly post-restart"
+      },
+      "body": "config.yaml had the Vultr key hardcoded twice: providers.vultr (unused fallback) and auxiliary.compression (the LIVE context-compression provider -- removing it would have broken compression, so deletion was not an option). Replaced both with ${VULTR_INF_API_KEY} env-var interpolation, matching the existing working pattern already used for SALT_USER/SALT_PASS in the infra MCP server config. Value already present in .env (600 perms). Restarted hermes-gateway + hermes-dashboard cleanly, verified via hermes doctor: auxiliary task routing resolves: compression->custom@api.vultrinference.com. Pre-edit backup (which itself contained the plaintext key) deleted after verification to avoid defeating the fix.",
+      "created_at": "2026-10-07T00:23:41.875485+00:00",
+      "id": "7777c73e-b16a-488d-88e0-69ee8ab7e930",
+      "key": "hermes-sv09-closed-2026-10-07",
+      "name": "SV-09 closed: Vultr inference key removed from config.yaml plaintext",
+      "tags": [
+        "hermes",
+        "sv-09",
+        "secrets",
+        "verification",
+        "closed"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-07T00:23:41.875485+00:00"
     }
   ],
-  "exported_at": "2026-10-07T00:21:06.097105+00:00",
+  "exported_at": "2026-10-07T00:23:51.633841+00:00",
   "relations": [
     {
       "attributes": {},
