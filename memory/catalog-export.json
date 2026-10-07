@@ -4999,9 +4999,35 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-07T00:38:15.355761+00:00"
+    },
+    {
+      "attributes": {
+        "env_vars_added": [
+          "MODAL_TOKEN_ID",
+          "MODAL_TOKEN_SECRET"
+        ],
+        "modal_workspace": "mark-stephen-guy",
+        "scope_note": "credential staged only, not activated as the sandboxing backend",
+        "token_name": "hermes-vps",
+        "vaulted_as": "hermes-modal-api-token"
+      },
+      "body": "User created a Modal account (workspace mark-stephen-guy, Starter plan, $1 of $30/mo free credits). Generated a new API token named hermes-vps via the Modal dashboard (Claude in Chrome, existing logged-in session). Vaulted as hermes-modal-api-token (token-id:token-secret format) and appended MODAL_TOKEN_ID/MODAL_TOKEN_SECRET to hermes-vps .env, matching the pattern other provider keys use there. Not yet wired in as the active terminal.backend (still docker) -- that is a separate decision, not implied by this row.",
+      "created_at": "2026-10-07T00:41:29.582801+00:00",
+      "id": "cfd15d14-2863-49a5-995e-d601b9e0632c",
+      "key": "hermes-sv07-closed-2026-10-07",
+      "name": "SV-07 closed: Modal API token created, vaulted, and staged in .env",
+      "tags": [
+        "hermes",
+        "sv-07",
+        "verification",
+        "closed",
+        "modal"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-07T00:41:29.582801+00:00"
     }
   ],
-  "exported_at": "2026-10-07T00:38:15.501807+00:00",
+  "exported_at": "2026-10-07T00:41:38.042092+00:00",
   "relations": [
     {
       "attributes": {},
