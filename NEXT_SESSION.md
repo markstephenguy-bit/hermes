@@ -50,12 +50,23 @@ Paste this whole file as your opening message.
 
 **12_Security_Hardening**: SH-04/06/07 done this session (found and fixed a real plaintext-credential exposure in the infra MCP server's config; confirmed dashboard auth is properly hashed; ran `hermes security audit` for the first time — 68 CVE findings, mostly fixable dependency bumps, NOT yet remediated).
 
-**Everything else** (05_Secrets_Vault 17%, 07_Local_Inference 26%, 09_Observability 4%, 11_Cost_Subscriptions 22%, 13_Governance_Change_Mgmt 0%, 14_Claude_Code_Parity 13%, 15_Productivity_And_Acceptance 0%) — largely untouched. Governance and Productivity/Acceptance are at zero, nothing has touched either domain yet.
+**07_Local_Inference**: 75% (was 26%). LI-01/02/03/04/06/07 all Done this session — ik_llama.cpp built+verified, Qwen3.6-35B-A3B pulled, context_length fixed, benchmark run. See "Local-inference benchmark results" below before touching LI-08. LI-05 (WSL2) is moot — vLLM was rejected, so this row has no remaining purpose. LI-09 (vision parity) still open.
+
+**Everything else** (05_Secrets_Vault 17%, 09_Observability 4%, 11_Cost_Subscriptions 22%, 13_Governance_Change_Mgmt 0%, 14_Claude_Code_Parity 13%, 15_Productivity_And_Acceptance 0%) — largely untouched. Governance and Productivity/Acceptance are at zero, nothing has touched either domain yet.
+
+## Local-inference benchmark results (this session, see catalog `hermes-li07-benchmark-results-2026-10-06`)
+
+- ik_llama.cpp's `llama-server.exe` needs the CUDA Toolkit `bin` dir prepended to `PATH` or it fails silently (retcode 1, zero output, no error) — non-obvious, cost real time to diagnose.
+- `--jinja` IS supported by this fork (was flagged unverified) — tool-calling confirmed correct (`finish_reason: tool_calls`, clean args) on Qwen3.6-35B-A3B, matching the Ollama 4B/8B baseline.
+- Decode speed is comparable across all three: ~17-19 tok/s for the 35B-A3B MoE model (`--cpu-moe`, most weights offloaded to system RAM) vs ~16-19 tok/s for Ollama's 4B/8B dense models fully on GPU. Validates the MoE+CPU-offload bet behind choosing ik_llama.cpp over vLLM.
+- **Blocking gotcha for production cutover**: default thinking mode is dangerously verbose — a simple 150-word-explanation prompt burned a full 1500-token budget on hidden `reasoning_content` and produced **zero** actual output (`finish_reason: length`). Must pass `chat_template_kwargs: {enable_thinking: false}` on every request; verified this produces clean, complete, correctly-terminated output at matching speed. The Ollama baseline doesn't have this problem (no reasoning_content by default).
+- Test server (port 8090 on w_workstation) is a manual benchmark instance only — **not wired into complexity-router**, Ollama is still the live production provider. Wiring it in means baking the `enable_thinking: false` override into the router's request path first.
+- Confirmed via Salt: no vLLM anywhere on either host (never actually installed, only evaluated/rejected) — nothing to uninstall there. Ollama stays installed; LI-08 decommission is only valid after the new provider is actually wired in and verified live, not before.
 
 ## Good candidates for next session, in rough priority order
 
 1. **IM-04**: actually test cross-interface continuity now that Telegram exists.
-2. **LI-04/06/07**: pull a Qwen3.6-35B-A3B GGUF onto w_workstation, wire ik_llama.cpp's `llama-server.exe` into the complexity-router (replacing/supplementing Ollama), set `context_length` explicitly (≥65536), benchmark vs the current Ollama qwen3-vl baseline. Check ik_llama.cpp's own equivalent of llama.cpp's `--jinja` flag first — unverified whether tool-calling works without it.
+2. **Wire Qwen3.6-35B-A3B into complexity-router** (supplementing, not yet replacing, Ollama) — the benchmark passed, but this needs explicit go-ahead since it changes live production routing. Must enforce `enable_thinking: false` in the request path (see gotcha above) or responses will silently fail. Only after this is verified live does LI-08 (Ollama decommission) become valid.
 3. **SH-07 remediation**: bump PyJWT/httpx2/urllib3/oauthlib per the security audit findings (separate from the broader `hermes update`, which is 2547 commits behind and its own decision under CR-11's policy).
 4. **MR-05** (15pts, finish-line condition #2): the WireGuard-down fire drill — never attempted. Pull the tunnel mid-conversation, confirm Hermes still answers via Codex automatically.
 5. Pick up a new domain wholesale (05_Secrets_Vault or 09_Observability are both large and almost entirely untouched).
