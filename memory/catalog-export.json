@@ -5287,9 +5287,32 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-07T03:26:45.443464+00:00"
+    },
+    {
+      "attributes": {
+        "protocol": "Direct HTTP POST REST API (zero SSH)",
+        "runner": "~/.local/bin/uv run --with httpx",
+        "salt_master": "http://192.168.40.2:8000",
+        "script": "scripts/salt_client.py",
+        "vault_secret": "salt-hermes-infra"
+      },
+      "body": "All future host management tasks call scripts/salt_client.py via ~/.local/bin/uv run, executing pure REST calls against Salt Master at http://192.168.40.2:8000 with zero SSH overhead.",
+      "created_at": "2026-10-07T03:50:47.416238+00:00",
+      "id": "ea87a9e8-ecff-4635-a988-9c3bc9659bfd",
+      "key": "hermes-direct-salt-client-uv-runner-2026-10-06",
+      "name": "Infrastructure Tooling: Direct Salt API Client (scripts/salt_client.py) using uv runner",
+      "tags": [
+        "hermes",
+        "infrastructure",
+        "salt",
+        "uv-runner",
+        "tooling"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-07T03:50:47.416238+00:00"
     }
   ],
-  "exported_at": "2026-10-07T03:26:48.747460+00:00",
+  "exported_at": "2026-10-07T03:50:57.333799+00:00",
   "relations": [
     {
       "attributes": {},
