@@ -11,6 +11,15 @@ repository, pin the actual runtime/source versions, and prove the tool protocol;
 then tune local inference and evaluate each specialist and background route.
 Recommendations in that recipe are not deployed or benchmark-certified.
 
+The user clarified that research, browser, images and general assistance lead
+the workload, and excessive Codex quota consumption motivates this work.
+Follow the [capability-routing comparison](ARCHITECTURE.md#capability-routing-and-cost-optimization-2026-10-07):
+Qwen is always considered, direct specialist routes are allowed, and Codex is
+not the presumed fallback. Audit auxiliary calls and repair false escalations
+before measuring provider costs. Prioritize testing local vision on the current
+Qwen before a larger MoE swap. Compare economy, visual and stronger reasoning
+roles on complete user tasks; retain separate models only for measured gains.
+
 ## Architecture guide review (2026-10-07)
 
 Review findings are logged as linked `hermes` catalog entities; these are
@@ -120,7 +129,9 @@ app's OAuth flow proved too fragile to debug live. Current next steps:
    configured.
 
 ## Other open decisions
-- **Cloud fallback provider** — resolved in practice via existing $20 ChatGPT Plus subscription via native link+code flow.
+- **Cloud capability mix** — reopened 2026-10-07: linked Codex is the current
+  fallback, but the user wants Qwen-preferred routing that reduces quota use;
+  external API spending is accepted when justified by capability and results.
 - **UI implementation** — the *access path* is decided (above); the UI
   itself (Hermes Desktop / web interface on port 9119) is available out of the box with `hermes serve`.
 - **Auth mechanism at the NPM Custom Location** — plain HTTP Basic Auth

@@ -5968,9 +5968,170 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-07T18:07:14.672178+00:00"
+    },
+    {
+      "attributes": {
+        "codex": "optional reserve, not universal fallback",
+        "local_priority": "test current Qwen vision before larger MoE",
+        "quality_winners": "not benchmarked",
+        "roles": [
+          "local Qwen",
+          "economy external",
+          "visual/research specialist",
+          "stronger reasoning"
+        ],
+        "scope": [
+          "main",
+          "auxiliary",
+          "delegation",
+          "scheduled",
+          "MCP sampling"
+        ],
+        "status": "research proposal, not deployed"
+      },
+      "body": "Prefer Qwen among qualified models, using deterministic capability and measured quality rules before selecting external specialists.",
+      "created_at": "2026-10-07T18:07:49.411022+00:00",
+      "id": "62a96800-2705-4533-9630-f6068c94a2b9",
+      "key": "hermes-capability-routing-proposal-2026-10-07",
+      "name": "Hermes capability routing proposal",
+      "tags": [
+        "hermes",
+        "routing",
+        "research"
+      ],
+      "type": "proposal",
+      "updated_at": "2026-10-07T18:07:49.411022+00:00"
+    },
+    {
+      "attributes": {
+        "codex_calls": {
+          "approval": 168,
+          "main": 837,
+          "title": 4
+        },
+        "limitations": [
+          "historical configurations",
+          "current local accounting incomplete",
+          "zero cost fields do not establish free usage"
+        ],
+        "range_utc": [
+          "2026-09-25",
+          "2026-10-07T02:22:42"
+        ],
+        "source": "read-only VPS state.db session_model_usage"
+      },
+      "body": "Historical VPS records show substantial main and auxiliary Codex use and incomplete cost accounting.",
+      "created_at": "2026-10-07T18:07:49.446507+00:00",
+      "id": "9633053d-1422-4fae-ab56-73f6fc689a2a",
+      "key": "hermes-historical-model-accounting-audit-2026-10-07",
+      "name": "Historical model accounting audit",
+      "tags": [
+        "hermes",
+        "routing",
+        "research"
+      ],
+      "type": "observation",
+      "updated_at": "2026-10-07T18:07:49.446507+00:00"
+    },
+    {
+      "attributes": {
+        "limitations": [
+          "not current escalation rate",
+          "empty does not prove valid tool call",
+          "deployed tool-call exemption already exists"
+        ],
+        "post_response_complex": 70,
+        "post_response_reasons": {
+          "empty": 64,
+          "length": 1,
+          "refusal": 5
+        },
+        "range": [
+          "2026-09-27 22:53:52",
+          "2026-10-07 02:22:36"
+        ],
+        "timezone": "not specified in log",
+        "upfront_complex": 49,
+        "upfront_simple": 262
+      },
+      "body": "Historical router logs include 70 post-response escalations, 64 labelled empty response, warranting protocol validation before economic comparison.",
+      "created_at": "2026-10-07T18:07:49.462656+00:00",
+      "id": "2c9c2059-f9ab-4bd9-9fcf-f95c2abb24bd",
+      "key": "hermes-historical-router-escalations-2026-10-07",
+      "name": "Historical escalation audit",
+      "tags": [
+        "hermes",
+        "routing",
+        "research"
+      ],
+      "type": "observation",
+      "updated_at": "2026-10-07T18:07:49.462656+00:00"
+    },
+    {
+      "attributes": {
+        "billed_output_per_external_call": 2000,
+        "calls": 3000,
+        "excluded": [
+          "search",
+          "media",
+          "hosting",
+          "electricity",
+          "subscriptions",
+          "gateway fees",
+          "taxes"
+        ],
+        "gemini_promo_end": "2026-12-31",
+        "input_per_external_call": 20000,
+        "shares": {
+          "deepseek_peak": 0.2,
+          "gemini": 0.08,
+          "local": 0.7,
+          "sonnet": 0.02
+        },
+        "sources": [
+          "https://api-docs.deepseek.com/quick_start/pricing/",
+          "https://ai.google.dev/gemini-api/docs/pricing",
+          "https://developers.openai.com/api/docs/pricing",
+          "https://platform.claude.com/docs/en/about-claude/pricing"
+        ],
+        "usd_per_million_input_output": {
+          "claude-sonnet-5.5": [
+            2,
+            10
+          ],
+          "deepseek-flash-peak": [
+            0.3,
+            1.2
+          ],
+          "gemini-3.8-flash": [
+            0.75,
+            3.75
+          ],
+          "gpt-6-luna": [
+            0.1,
+            0.5
+          ],
+          "gpt-6.1-sol": [
+            2,
+            10
+          ]
+        }
+      },
+      "body": "An illustrative 3000-call monthly mix costs $14.04 in uncached API tokens under the stated October 7 price snapshot, not a measured bill forecast.",
+      "created_at": "2026-10-07T18:07:49.479352+00:00",
+      "id": "c0459834-18d8-43e8-8ff2-56685776b104",
+      "key": "hermes-routing-price-scenario-2026-10-07",
+      "name": "Routing price scenario",
+      "tags": [
+        "hermes",
+        "routing",
+        "research"
+      ],
+      "type": "research",
+      "updated_at": "2026-10-07T18:07:49.479352+00:00"
     }
   ],
-  "exported_at": "2026-10-07T18:07:19.626990+00:00",
+  "exported_at": "2026-10-07T18:07:49.613950+00:00",
   "relations": [
     {
       "attributes": {},
@@ -8228,6 +8389,46 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-capability-routing-optimization-objective-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T18:07:49.430467+00:00",
+      "id": "d55cc290-5d42-4f95-b6a0-21b04f653d82",
+      "object_key": "hermes-capability-routing-optimization-objective-2026-10-07",
+      "object_type": "entity",
+      "predicate": "informs",
+      "subject_key": "hermes-capability-routing-proposal-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T18:07:49.454373+00:00",
+      "id": "7683e46b-2d5b-48bf-8a90-5a5108569a0d",
+      "object_key": "hermes-capability-routing-optimization-objective-2026-10-07",
+      "object_type": "entity",
+      "predicate": "informs",
+      "subject_key": "hermes-historical-model-accounting-audit-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T18:07:49.471337+00:00",
+      "id": "f6d6bfa6-6f9f-45db-b4fe-c8d348f30b88",
+      "object_key": "hermes-capability-routing-optimization-objective-2026-10-07",
+      "object_type": "entity",
+      "predicate": "informs",
+      "subject_key": "hermes-historical-router-escalations-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T18:07:49.487921+00:00",
+      "id": "08bbc18b-c8d0-4505-a334-70da23d431c4",
+      "object_key": "hermes-capability-routing-optimization-objective-2026-10-07",
+      "object_type": "entity",
+      "predicate": "informs",
+      "subject_key": "hermes-routing-price-scenario-2026-10-07",
       "subject_type": "entity"
     }
   ],

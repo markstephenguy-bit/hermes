@@ -98,8 +98,9 @@ ensuring zero bandwidth penalties on the VPS.
    Dokploy (for managing web services and Docker containers via MCP), and CLI/chat interfaces.
 2. **Local Inference (Home LAN):** Qwen3.6-35B-A3B Q4_K_M via ik_llama.cpp;
    no per-token API charge, with electricity and shared-compute costs.
-3. **Frontier Model Fallback:** Existing linked Codex account; subscription
-   quota is tracked separately from pay-per-token API dollars.
+3. **External Models:** Live configuration still falls back to linked Codex,
+   but the user requests capability-based selection without Codex as the
+   automatic destination. Subscription quota and API dollars are separate.
 4. **Tool Execution:** Docker is the configured terminal backend. Modal
    credentials are staged according to the catalog, but it is not the active
    terminal backend. Execution location is independent of inference location.
@@ -110,6 +111,10 @@ ensuring zero bandwidth penalties on the VPS.
 
 Make Hermes the daily alternative to Claude Code across coding and personal-agent
 functions, giving local Qwen substantial responsibility for complete tasks.
+The user clarified that research, browser, images and general assistance are
+primary; excessive Codex quota consumption is the problem, not reported poor
+Codex answer quality. Qwen is considered for every call but need not run first.
+The capability-routing proposal below supersedes the earlier fixed Codex tier.
 Optimize correct completed work, response time, human intervention, and cloud
 cost together. A local-token percentage alone is not a success measure.
 
@@ -140,7 +145,7 @@ installed. Every enabled tool needs a real availability and round-trip check.
 | --- | --- | --- |
 | Chat, planning, todo, clarification | Qwen | Instructions, task state, relevant project context, instruction-following tests |
 | Codebase search, edits, tests, Git | Qwen owns ordinary tasks end to end | Real workspace mounts, runtimes, patch tools, test commands, Git identity/access, cancellation and diff checks |
-| Difficult debugging, architecture, review | Codex for a bounded task or diagnostic subtask | Explicit escalation route, complete evidence/handoff, preserve ownership through hard execution |
+| Difficult debugging, architecture, review | Best evaluated stronger model for that task; Codex is optional | Explicit escalation route, complete evidence/handoff, preserve ownership through hard execution |
 | Terminal, processes, programmatic tool calls | Qwen selects actions; tools execute them | Docker persistence, host selection, exit codes, background-process handles and bounded output |
 | Skills and artifact creation | Qwen plus skill-specific tools | Read skill requirements; document/rendering/media engines are separate dependencies |
 | Web research and extraction | Qwen plus existing search/fetch tools | Search availability, citations, full-page retrieval, pagination, handling untrusted content; no grounded model required by default |
@@ -168,13 +173,15 @@ registry entries does not prove that those tools are usable in a given session.
 1. Keep the current Qwen quantization/runtime as the baseline. Preserve WDDM
    because the workstation also drives a display. Reconcile deployed router
    source into version control and repair streaming before tuning model quality.
-2. Use three primary roles: local Qwen, existing Codex frontier, one verified
-   vision specialist. Keep the existing compression provider as a transitional
-   fourth route until local compression passes quality/latency tests. Do not add
-   several interchangeable cloud text models without measured benefit.
+2. Use capability roles rather than a fixed provider ladder: local Qwen,
+   economy overflow, vision/research specialist and stronger reasoning. Roles
+   may share one model if evaluations justify it. Codex is not the presumed
+   stronger model or universal fallback. Keep existing compression working until
+   its replacement passes quality/latency tests.
 3. Give Qwen complete ordinary coding tasks, including multi-file work when
-   tests can verify it. Use frontier assistance for demonstrated difficulty,
-   not merely because there is a tool response or multiple files.
+   tests can verify it. Route directly to a specialist when an established capability or quality
+   boundary justifies it; a failed local attempt is not required. Tool responses
+   or multiple files alone are not such boundaries.
 4. Keep 65,536 as the initial serving ceiling. Start testing compaction around
    45–48K total input tokens, reserving the rest for generation and tool growth.
    Count system instructions, tools, history and attachments. Test 32K/64K/128K
@@ -244,8 +251,9 @@ facts and latency. Check STT/TTS and media independently. Use provider model
 lists, official docs, actual account quotas and end-to-end probes, not brand
 names as evidence of modality or entitlement.
 
-**E. Compare full agent workflows.** Build an initial 24-task suite: 8 coding,
-4 research, 4 browser/vision, 4 memory/infra, and 4 automation/media tasks.
+**E. Compare full agent workflows.** Build an initial 24-task suite weighted to the user: 8 research,
+8 browser/vision, 4 general assistant/memory, 2 coding/infra and 2 automation/media
+tasks. Expand each enabled function before considering it qualified.
 Use representative user work and explicit success criteria. Compare local-only
 Hermes, hybrid Hermes and the user's actual Claude Code setup on equivalent
 workspaces/inputs, with repeated runs for variable cases. Judge patches by
@@ -264,6 +272,136 @@ Deliverables: an effective route inventory, measured benchmark results, a
 version-compatible config patch, and rollback instructions. The current recipe
 is the research-backed starting point; the optimized final configuration is the
 one that wins these workload tests.
+
+### Capability routing and cost optimization (2026-10-07)
+
+**User priority:** Hermes remains the originator and owns task state. Consider
+local Qwen for every inference, prefer it when it meets the task's quality and
+latency requirements, and bypass it when a known specialist advantage warrants
+that. External API spending is expected. Research, browser, images and general
+assistance carry more weight than coding. Excessive Codex quota use, rather
+than answer-quality dissatisfaction, motivates removing the universal fallback.
+
+**Proposed dispatcher:** First avoid inference for deterministic operations;
+then filter eligible models by actual endpoint modalities, context capacity,
+tool protocol, availability and data policy. Apply measured per-function quality
+rules before selecting by total expected cost and latency. Qwen receives a
+preference among qualifying options. Ambiguous new jobs may use a small local
+classification call, but routine calls use a policy lookup with no extra LLM.
+Established task ownership avoids model churn inside a coherent reasoning
+phase; reconsider Qwen at phase boundaries and when requirements change.
+
+Log the candidate set, why Qwen was selected or excluded, requested and actual
+model, task/parent IDs, tokens/cache/latency, retry reason and observed outcome.
+The dispatcher must cover auxiliary calls, delegates, schedules and MCP sampling,
+not only the main chat endpoint. Treat quality routing as an explicit decision;
+do not simulate an outage with HTTP 503 just to switch models. A provider outage
+can use an eligible peer without automatically consuming Codex quota.
+
+| Role | Initial candidates to compare | Routing policy |
+| --- | --- | --- |
+| Default reasoning and tool orchestration | Existing local Qwen3.6-35B-A3B | Routine research, DOM browsing, chat, memory, straightforward code and infra; compare fast/thinking profiles on same weights |
+| Economy external overflow | DeepSeek `deepseek-flash` versus GPT-6 Luna API | Known local quality gaps, latency-sensitive work or local outage; choose by measured outcome, not price alone |
+| Visual/research specialist | Gemini 3.8 Flash versus economy models above and local vision | Dense screenshots, diagrams, source synthesis and optional native grounding; Qwen can consume specialist observations when full remote ownership is unnecessary |
+| Stronger synthesis/reasoning | Claude Sonnet 5.5 versus GPT-6.1 Sol API | Difficult conflicting evidence and tasks with a demonstrated quality gap; occasional higher tier only if it improves outcomes |
+| Existing Codex subscription | Current linked route | Optional explicitly selected resource; not the automatic sink for all failures or background work |
+
+These are candidates, not benchmark winners or confirmed account entitlements.
+GPT-6 Luna requires Responses for reasoning plus function calling; its Chat
+Completions function-calling path requires reasoning effort `none`. Verify
+Hermes adapter support before selecting it. New Claude models also have tool
+and thinking compatibility changes; test the actual adapter. A hosted Qwen
+endpoint is another availability/latency option but still incurs cloud calls
+and does not inherently remove same-model quality weaknesses.
+
+**Mixtures worth comparing:** (A) Qwen + Gemini + one stronger model, for simple
+coverage; (B) add economy overflow only when it reduces cost without reducing
+success; (C) Qwen + one economy multimodal model + stronger model, dropping
+Gemini if it adds no measured value; (D) local vision/helper or larger local
+model, accepting additional resource contention/load time; (E) selective
+OpenRouter Auto for genuinely uncertain external jobs; (F) multiple-model
+review for expensive-to-get-wrong conclusions only. Do not run every mixture
+or every candidate on every ordinary request.
+
+OpenRouter can be just external transport with explicit model IDs, or an
+external model selector through Auto; ordinary provider routing chooses a host
+for a model rather than whether to use local Qwen. Keep local selection inside
+Hermes. Auto has no additional routing fee; Standard credit purchases carry
+a 5.5% platform fee. Its allowed-model lists and cost settings help constrain
+external selection, but do not establish quality for this user's workload.
+Sources: [Auto Router](https://openrouter.ai/docs/guides/routing/routers/auto-router),
+[fees](https://openrouter.ai/business),
+[provider routing](https://openrouter.ai/docs/guides/routing/provider-selection).
+
+**Price snapshot:** USD per million uncached input / billed output tokens,
+standard service, no tool fees. This is a comparison baseline, not a bill forecast.
+
+| Candidate | Input / output | 20K input + 2K output example |
+| --- | --- | --- |
+| DeepSeek Flash, off-peak / peak | $0.15 / $0.60; $0.30 / $1.20 | $0.0042 / $0.0084 |
+| GPT-6 Luna API | $0.10 / $0.50 | $0.0030 |
+| Gemini 3.8 Flash | $0.75 / $3.75 through 2026-12-31 | $0.0225 |
+| Claude Sonnet 5.5 | $2 / $10 | $0.0600 |
+| GPT-6.1 Sol API | $2 / $10 | $0.0600 |
+| Claude Opus 5.5 | $4 / $20 | $0.1200 |
+
+Primary prices: [DeepSeek](https://api-docs.deepseek.com/quick_start/pricing/),
+[Google](https://ai.google.dev/gemini-api/docs/pricing),
+[OpenAI](https://developers.openai.com/api/docs/pricing),
+[Anthropic](https://platform.claude.com/docs/en/about-claude/pricing).
+Google lists doubled Flash prices starting 2027-01-01. Account/model availability,
+image tokenization, cache writes/reads/storage, reasoning tokens, provider markup,
+search queries, retries, voice/media, electricity and hosting must be accounted
+for separately. Identical text need not tokenize equally across models.
+
+Illustration only: 3,000 total model calls/month, 70% local, 20% DeepSeek peak,
+8% Gemini, 2% Sonnet, each external call averaging 20K input and 2K output,
+costs $14.04 in uncached API tokens. Ten calls per user task and background calls
+can make monthly inference volume much larger than the number of user messages.
+Do not interpret the example shares as an achievable quality-preserving target.
+Compute spend from all billed attempts, then divide by successful tasks. Add
+human rework and latency as separate objectives instead of claiming a cheap
+token rate proves a better system.
+
+**Local-model alternatives:** MoE active parameters describe computation, not
+total weight storage. Approximate raw 4-bit weight floors are 40GB for 80B and
+61GB for 122B, before quantization metadata, caches and runtime buffers. System
+RAM plus VRAM is not a single freely interchangeable pool on this workstation.
+
+| Candidate | Why evaluate | Limitation / priority |
+| --- | --- | --- |
+| Current Qwen3.6-35B-A3B | Tune and enable compatible local vision first | Highest-priority baseline; current runtime advertises text only |
+| Qwen3.6-27B dense | Quality comparison for general/visual work | Higher active computation can hurt latency under offload; benchmark |
+| Qwen3.5-9B helper | Small vision or background route | Test screenshot fidelity and contention; do not assume two resident models fit |
+| Qwen3.5-122B-A10B MoE | Larger multimodal local quality experiment | Tight memory headroom and more active work; not the first production swap |
+| Qwen3-Coder-Next 80B-A3B | Coding-specific local alternative | Text-only, less aligned with primary workload, model loading/storage overhead |
+| GLM-4.7-Flash / gpt-oss-20b | Alternative compact text/tool baselines | Must beat Qwen on actual work; not an automatic solution to visual offloads |
+
+Sources: [Qwen 27B](https://huggingface.co/Qwen/Qwen3.6-27B),
+[Qwen 9B](https://huggingface.co/Qwen/Qwen3.5-9B),
+[Qwen 122B](https://huggingface.co/Qwen/Qwen3.5-122B-A10B),
+[Coder Next](https://huggingface.co/Qwen/Qwen3-Coder-Next),
+[GLM](https://huggingface.co/zai-org/GLM-4.7-Flash),
+[gpt-oss deployment](https://developers.openai.com/cookbook/articles/gpt-oss/run-transformers).
+Internal expert selection within a MoE is distinct from Hermes choosing models.
+
+**Evidence and remaining work:** Historical VPS accounting from 2026-09-25 to
+2026-10-07 02:22 UTC records 837 main Codex calls, 168 approval calls and four
+title calls with the same model. Router logs show 49 upfront escalations and
+70 post-response escalations, including 64 labelled empty response. These span
+older configurations and are not proof of current rates or that all empty
+responses were valid tool calls. Incomplete/new-model accounting and zero cost
+fields prevent a reliable current monthly forecast. Repair and instrument the
+path before treating any local/cloud split as measured.
+
+Next experiment: sample representative research/browser/image/general tasks;
+replay across the shortlisted local profiles and 2–3 external candidates with
+identical tools and bounded context. Score sourced accuracy, visual correctness,
+completion, human corrections, retries and p50/p95 end-to-end latency. Keep a
+held-out set when turning results into static routing rules, repeat variable
+cases, and retain routes that provide a meaningful quality/cost/latency benefit.
+This is the path to an optimized mix; no paid inference benchmarks or runtime
+changes were performed during this research pass.
 
 Additional primary references:
 - [Provider resolution](https://hermes-agent.nousresearch.com/docs/developer-guide/provider-runtime)
