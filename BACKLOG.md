@@ -1,5 +1,26 @@
 # Backlog / Open Questions
 
+## Architecture guide review (2026-10-07)
+
+Review findings are logged as linked `hermes` catalog entities; these are
+open issues and proposals, not deployed changes:
+
+- Repair the checked-in router's tool-call contract: null content crashes,
+  empty content triggers fallback even for tool calls, and streaming drops
+  tool-call payloads. Verify the deployed copy separately.
+- Reconcile the guide with implementation: the repository router forces images
+  local and has no spend ledger, monthly alerts, or tool-loop lock; repetitive
+  text triggers fallback rather than stopping a task.
+- Replace the proposed unconditional local tool-loop lock with task-level model
+  ownership and bounded escalation. Track progress, retries, elapsed time,
+  shared API spend reservations, and subscription quota separately.
+- Verify current provider IDs and capabilities through the actual adapters;
+  Google lists Gemini 2.0 Flash as shut down. Establish parity using complete
+  coding tasks, image/tool round trips, and outage recovery, not weather-call
+  smoke tests or an assumed 90% local workload share.
+- Reconcile older budget-cap records with the later elastic-spend strategy;
+  preserve $20 as a benchmark, and distinguish proposals from verified behavior.
+
 ## The fork that needs deciding first
 
 Hermes is independent of LocalForge (decided 2026-09-22 — see catalog entity

@@ -5639,9 +5639,117 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-07T17:31:54.750109+00:00"
+    },
+    {
+      "attributes": {
+        "absent_in_checked_in_router": [
+          "spend velocity ledger",
+          "monthly milestones",
+          "tool-loop lock"
+        ],
+        "file": "scripts/complexity_router.py",
+        "other_conflicts": [
+          "images forced local",
+          "repetition triggers paid fallback rather than halt"
+        ],
+        "reproduced": [
+          "empty content rejected despite tool_calls finish reason",
+          "null content raises AttributeError",
+          "stream wrapper discards tool_calls"
+        ],
+        "scope": "repository only; deployed router not inspected"
+      },
+      "body": "Checked-in router mishandles valid tool-call responses and does not substantiate the guide\u2019s claimed spending guards.",
+      "created_at": "2026-10-07T17:40:21.454249+00:00",
+      "id": "9d5de695-94d7-416d-a616-f8df82febf34",
+      "key": "hermes-router-contract-review-2026-10-07",
+      "name": "Router contract review",
+      "tags": [
+        "hermes",
+        "architecture",
+        "review"
+      ],
+      "type": "review",
+      "updated_at": "2026-10-07T17:40:21.454249+00:00"
+    },
+    {
+      "attributes": {
+        "extensions": [
+          "durable shared cost reservations including auxiliary calls and subagents",
+          "per-task retry, time and no-progress bounds",
+          "capability registry verified per endpoint",
+          "checkpointed tool execution with idempotency",
+          "end-to-end coding and outage evaluations"
+        ],
+        "reason": "short outputs and tool continuations can require difficult or security-sensitive reasoning",
+        "status": "proposal, not adopted or deployed"
+      },
+      "body": "Review recommends task-level model ownership with bounded escalation and progress checks instead of forcing every tool continuation onto local inference.",
+      "created_at": "2026-10-07T17:40:21.509682+00:00",
+      "id": "b4f9e394-a333-4a10-8804-f0e9165f18de",
+      "key": "hermes-routing-extension-review-2026-10-07",
+      "name": "Routing extension review",
+      "tags": [
+        "hermes",
+        "architecture",
+        "review"
+      ],
+      "type": "review",
+      "updated_at": "2026-10-07T17:40:21.509682+00:00"
+    },
+    {
+      "attributes": {
+        "billing": "track subscription quota separately from API dollars",
+        "gemini_2_shutdown": "2026-06-01",
+        "sources": [
+          "https://ai.google.dev/gemini-api/docs/deprecations",
+          "https://ai.google.dev/gemini-api/docs/pricing",
+          "https://learn.chatgpt.com/docs/auth"
+        ],
+        "unverified": [
+          "GLM endpoint image input",
+          "90 percent local task success",
+          "27 active toolsets inventory"
+        ]
+      },
+      "body": "Guide provider assumptions require correction: Google lists Gemini 2.0 Flash as shut down, and tool-call smoke tests do not establish vision support or coding-agent parity.",
+      "created_at": "2026-10-07T17:40:21.52605+00:00",
+      "id": "87b9e595-fdf5-49cc-81f6-7f1d614eef92",
+      "key": "hermes-provider-evidence-review-2026-10-07",
+      "name": "Provider evidence review",
+      "tags": [
+        "hermes",
+        "architecture",
+        "review"
+      ],
+      "type": "review",
+      "updated_at": "2026-10-07T17:40:21.52605+00:00"
+    },
+    {
+      "attributes": {
+        "affected_keys": [
+          "hermes-model-usage-and-tool-architecture-guide-2026-10-07",
+          "hermes-economic-strategy-claude-code-replacement-2026-10-07",
+          "hermes-model-usage-contingency-plan-2026-10-07"
+        ],
+        "observation": "body says 0/month while attributes say benchmark_cost_monthly_usd=20",
+        "status": "review finding; prior user preferences not reinterpreted"
+      },
+      "body": "Guide-related catalog entries conflict on budget policy and contain dollar-text corruption; the structured benchmark remains 20 USD and the later strategy records elastic spending.",
+      "created_at": "2026-10-07T17:40:21.542081+00:00",
+      "id": "2474318e-eed3-4fac-8392-53813b74beaf",
+      "key": "hermes-catalog-provenance-review-2026-10-07",
+      "name": "Catalog provenance review",
+      "tags": [
+        "hermes",
+        "architecture",
+        "review"
+      ],
+      "type": "review",
+      "updated_at": "2026-10-07T17:40:21.542081+00:00"
     }
   ],
-  "exported_at": "2026-10-07T17:31:58.259921+00:00",
+  "exported_at": "2026-10-07T17:40:21.707030+00:00",
   "relations": [
     {
       "attributes": {},
@@ -7799,6 +7907,46 @@
       "object_type": "entity",
       "predicate": "related_to",
       "subject_key": "hermes-workstation-root-build-folders-inspected-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T17:40:21.494329+00:00",
+      "id": "b90a3e55-4dc1-4c01-854d-72d2c3110412",
+      "object_key": "hermes-model-usage-and-tool-architecture-guide-2026-10-07",
+      "object_type": "entity",
+      "predicate": "reviews",
+      "subject_key": "hermes-router-contract-review-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T17:40:21.517904+00:00",
+      "id": "2d5d53e2-70ee-430a-b99e-81a7aa4f498f",
+      "object_key": "hermes-model-usage-and-tool-architecture-guide-2026-10-07",
+      "object_type": "entity",
+      "predicate": "reviews",
+      "subject_key": "hermes-routing-extension-review-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T17:40:21.534157+00:00",
+      "id": "7ab247d1-f037-4841-b884-17cbb99e66a9",
+      "object_key": "hermes-model-usage-and-tool-architecture-guide-2026-10-07",
+      "object_type": "entity",
+      "predicate": "reviews",
+      "subject_key": "hermes-provider-evidence-review-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-07T17:40:21.550462+00:00",
+      "id": "da7771b0-01e2-45be-b3ac-2348152a09d5",
+      "object_key": "hermes-model-usage-and-tool-architecture-guide-2026-10-07",
+      "object_type": "entity",
+      "predicate": "reviews",
+      "subject_key": "hermes-catalog-provenance-review-2026-10-07",
       "subject_type": "entity"
     }
   ],
