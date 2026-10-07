@@ -5220,9 +5220,31 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-07T03:01:01.218141+00:00"
+    },
+    {
+      "attributes": {
+        "minion": "w_workstation",
+        "policy": "Use Salt API/runner for w_workstation management instead of inline SSH commands",
+        "salt_eauth": "hermes-infra (scoped user)",
+        "salt_master": "fileserver (192.168.40.2:8000)"
+      },
+      "body": "All remote host actions on w_workstation and LAN nodes must use Salt API at fileserver:8000 rather than direct per-line SSH commands.",
+      "created_at": "2026-10-07T03:20:48.90829+00:00",
+      "id": "41548f6f-394b-4eb2-9753-91f919a25d4d",
+      "key": "hermes-salt-over-ssh-rule-2026-10-06",
+      "name": "Infrastructure Ground Rule: Use Salt API instead of per-line SSH calls",
+      "tags": [
+        "hermes",
+        "infrastructure",
+        "salt",
+        "ground-rule",
+        "decision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-07T03:20:48.90829+00:00"
     }
   ],
-  "exported_at": "2026-10-07T03:01:04.167706+00:00",
+  "exported_at": "2026-10-07T03:20:52.206270+00:00",
   "relations": [
     {
       "attributes": {},
