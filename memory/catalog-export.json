@@ -5266,9 +5266,30 @@
       ],
       "type": "plan",
       "updated_at": "2026-10-07T03:25:52.531199+00:00"
+    },
+    {
+      "attributes": {
+        "benefits": "Real-time tok/s metrics, side-by-side arena comparison, zero risk to live Hermes agent loops",
+        "policy": "Evaluate all local inference roadmap phases (Speculative Decoding, KTransformers, MoE-Infinity) inside OpenWebUI first before updating Hermes complexity_router production targets",
+        "testing_interface": "OpenWebUI (http://localhost:3000)"
+      },
+      "body": "Use OpenWebUI at http://localhost:3000 as the dedicated benchmarking sandbox to evaluate roadmap inference models before promoting them to Hermes production routing.",
+      "created_at": "2026-10-07T03:26:45.443464+00:00",
+      "id": "68f98a64-5f1d-461e-a410-5e9ee97137d1",
+      "key": "hermes-openwebui-testing-sandbox-decision-2026-10-06",
+      "name": "Testing Sandbox Decision: Use OpenWebUI for local model roadmap evaluation",
+      "tags": [
+        "hermes",
+        "local-inference",
+        "openwebui",
+        "testing-sandbox",
+        "decision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-07T03:26:45.443464+00:00"
     }
   ],
-  "exported_at": "2026-10-07T03:25:58.493711+00:00",
+  "exported_at": "2026-10-07T03:26:48.747460+00:00",
   "relations": [
     {
       "attributes": {},
