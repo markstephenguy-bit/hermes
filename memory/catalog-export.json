@@ -6395,6 +6395,29 @@
     },
     {
       "attributes": {
+        "is_this_deployment_specific": "No -- this reproduces on any standard hermes-agent deployment that (a) runs the agent natively/non-containerized and (b) uses the docker (or other container_path_backends: singularity/modal/daytona/vercel_sandbox) terminal backend for sandboxing untrusted code -- which is the vendor's own documented, security-recommended pattern (TERMINAL_ENV=docker 'for untrusted code' per this project's own security notes)",
+        "mechanism": "get_subprocess_home() branches on is_container() (hermes_constants.py:714), which delegates to hermes_platform.host.runtime.is_container() -- this detects whether the hermes-agent PROCESS ITSELF is containerized (e.g. /proc/1/cgroup checks), NOT whether the configured terminal.backend is a container",
+        "verdict": "genuine upstream hermes-agent bug in container-detection scope, not a Mark-specific misconfiguration",
+        "why_it_fires_here": "hermes-agent runs natively on hermes-vps (official Nous Research marketplace image, not itself dockerized) while terminal.backend=docker sandboxes command execution in a separate container -- is_container() returns False for the agent process, so get_subprocess_home() falls through its branches to return None, and _expand_tilde() falls back to Python's bare os.path.expanduser() resolved against the HOST process's own $HOME (/home/hermes), while the actual terminal commands run inside a container whose real $HOME is /root"
+      },
+      "body": "Confirmed by reading is_container()'s implementation: it checks the AGENT PROCESS's own containment, not the TERMINAL BACKEND's -- a scope mismatch that triggers on any standard hermes-agent VPS install (agent native, terminal.backend=docker for sandboxing), not something caused by an unusual choice in this deployment.",
+      "created_at": "2026-10-08T00:24:10.853289+00:00",
+      "id": "9e09b294-85c0-426f-9195-da4ec21235b3",
+      "key": "hermes-tilde-bug-is-container-mismatch-2026-10-07",
+      "name": "Tilde bug confirmed as upstream logic gap, not a deployment misconfiguration",
+      "tags": [
+        "hermes",
+        "bug",
+        "file-tools",
+        "root-cause",
+        "high-priority",
+        "upstream"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-08T00:24:10.853289+00:00"
+    },
+    {
+      "attributes": {
         "confirmed_across": "two independent battery runs (2026-10-07 battery 1 file_ops test, battery 2 E1 git-workflow test) and a 3rd standalone repro (filename-with-space case)",
         "failure_mode": "write_file reported verified:true while writing to a path terminal/git could not see; subsequent git commit said 'nothing to commit, working tree clean' because the real repo was untouched",
         "observed_homes_in_one_turn": [
@@ -6590,9 +6613,95 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-07T23:54:57.894622+00:00"
+    },
+    {
+      "attributes": {
+        "deterministic_repro": "same literal '~/x.txt' string passed to both tools in one turn: write_file resolved_path=/home/hermes/x.txt (host hermes user's home), read_file reported 'File not found: /root/x.txt' (the container's real $HOME) -- 100% reproducible, not model-dependent (verified by forcing the model to pass byte-identical path strings)",
+        "fix_direction": "either make _expand_tilde() query the same live container $HOME that ShellFileOperations._expand_path() uses, or make _expand_path() use the same get_subprocess_home() source of truth -- the two must agree",
+        "read_file_terminal_path": "tools/file_operations.py ShellFileOperations._expand_path() -> self._exec('echo $HOME') -- a LIVE lookup executed INSIDE the actual container/terminal backend",
+        "related_upstream_issue_refs_in_source": [
+          "#48552",
+          "#65604",
+          "#68559"
+        ],
+        "why_it_diverges": "write_file/patch's resolution happens BEFORE the shell-level tool even runs (at the tool-wrapper layer using the host process's own home concept); read_file/terminal resolve at call time against the real container. The two concepts of home are never reconciled.",
+        "write_file_patch_path": "tools/file_tools.py write_file_tool() -> _resolve_or_none() -> file_tools_paths.py _resolve_path_for_task() -> _host_text() -> _expand_tilde() -> hermes_constants.get_subprocess_home() -- a STATIC host-process-level home concept, documented as deliberately matching 'gateway/cron runs, whose process HOME may differ' from the container"
+      },
+      "body": "Precisely root-caused via direct source reading on hermes-vps and a forced-literal-path reproduction: write_file/patch resolve ~ through a static host-process home concept (get_subprocess_home) while read_file/terminal resolve it through a live in-container $HOME lookup -- two genuinely different, never-reconciled mechanisms, not model inconsistency. The hermes-agent source references prior related GitHub issues (#48552, #65604, #68559), suggesting this is a recurring upstream trouble spot.",
+      "created_at": "2026-10-08T00:17:04.206136+00:00",
+      "id": "4b479cb5-8d94-4677-9d7d-072b292d9236",
+      "key": "hermes-tilde-bug-exact-root-cause-2026-10-07",
+      "name": "Exact root cause: write_file/patch and read_file/terminal use two different ~ expansion mechanisms",
+      "tags": [
+        "hermes",
+        "bug",
+        "file-tools",
+        "root-cause",
+        "high-priority"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-08T00:17:04.206136+00:00"
+    },
+    {
+      "attributes": {
+        "network_ruled_out": "WireGuard tunnel healthy (recent handshake, active transfer), catalog (192.168.40.2:3003) reachable, ICMP ping to w_workstation succeeds at 7ms -- this is specifically the llama-server process hanging, not a network/tunnel issue",
+        "no_fallback_available": "Codex fallback was intentionally removed for pure-local-qwen mode (commit f575d91) -- when the local model hangs, there is currently NO fallback path; Hermes is fully stuck for any model-requiring request until the hung process is restarted",
+        "remediation_available": "Salt-api access to w_workstation (native minion, cmd.run for cmd.exe/PowerShell) could restart the ik_llama_server scheduled task -- not yet executed, awaiting user decision since it touches production infrastructure",
+        "secondary_confound_found": "hermes-testing profile's MEMORY.md had separately exceeded its 2200-char hard limit (grew to 5732 chars across batteries 2-3), silently blocking further memory-tool writes -- this muddies the concurrency-race test's interpretability and needs fixing (trim MEMORY.md) before re-testing same-session concurrency cleanly",
+        "symptom": "port 8090 (w_workstation, ik_llama.cpp) times out on TCP connect (not refused) -- the process is hung, not crashed-and-exited; gateway logs show a cascade of HTTP 500 Internal Server Error from complexity-router starting immediately after the burst, with Hermes's own retry logic (2-5s backoff, 3 attempts) unable to recover",
+        "trigger": "battery 4 test C (8-way parallel subagent fan-out via delegate_task) combined with test B (2 concurrent /v1/responses calls to the same conversation) -- roughly 10+ simultaneous inference requests hit the single local Qwen instance at once"
+      },
+      "body": "A burst of ~10 concurrent inference requests (8-way subagent fan-out plus 2 concurrent same-session calls) hung the single local ik_llama.cpp instance entirely -- not a graceful queue/503, a hard hang requiring manual restart -- and because the Codex fallback was deliberately removed for pure-local-Qwen mode, this took down ALL of Hermes (default profile included) with no automatic recovery path. This is the most severe finding of all testing to date: the current setup has a concurrency ceiling far below what casual multi-tasking (e.g. several subagents at once) would produce, and no safety net when it's exceeded.",
+      "created_at": "2026-10-08T00:33:09.235498+00:00",
+      "id": "778e0f60-139f-4a99-8efa-c54c34ce9ecc",
+      "key": "hermes-concurrency-induced-llama-server-hang-2026-10-07",
+      "name": "CRITICAL: concurrent requests hung the ik_llama.cpp local model server, taking down all of Hermes",
+      "tags": [
+        "hermes",
+        "bug",
+        "critical",
+        "concurrency",
+        "infrastructure",
+        "outage"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-08T00:33:09.235498+00:00"
+    },
+    {
+      "attributes": {
+        "crash_confirmed": "schtasks /Query showed Last Result -1073740791 = 0xC0000409 STATUS_STACK_BUFFER_OVERRUN -- a genuine process crash under concurrent load, not a graceful overload/hang",
+        "fix_recommendation": "never send more than 1-2 concurrent model-requiring requests to this setup until either (a) the llama-server is reconfigured/rebuilt with real multi-slot concurrency support, or (b) a fallback provider is restored so a crashed local model doesn't take down all of Hermes",
+        "remediation_steps": [
+          "authenticated to salt-api (192.168.40.2:8000) as hermes-infra",
+          "cmd.run schtasks /Run /TN ik_llama_server on w_workstation to restart the crashed model server",
+          "confirmed model server healthy (slots_idle:1)",
+          "zombie retries from gateway still blocking fresh requests",
+          "systemctl restart hermes-gateway on hermes-vps to clear stuck asyncio tasks",
+          "confirmed full end-to-end recovery via trivial chat completion (37.7s, correct answer)"
+        ],
+        "secondary_outage": "after the model server was restarted via Salt (schtasks /Run), the Hermes GATEWAY process still had zombie asyncio tasks from the original ALPHA/BRAVO concurrency test and likely the 8-way subagent fan-out, auto-retrying every ~10-16s and winning the single inference slot ahead of fresh requests -- this blocked recovery even after the crash was fixed, because the zombies live in gateway process memory, not the model server",
+        "single_slot_confirmed": "llama-server /health reports exactly one slot (slots_idle/slots_processing sum to 1) -- this build has NO concurrent-request capacity at all",
+        "user_impact": "the DEFAULT (daily-use) Hermes profile was also down for the duration, not just the test profile, since there is one shared local model backend and the Codex fallback was removed"
+      },
+      "body": "Confirmed via Windows Task Scheduler's Last Result code that the concurrency test genuinely crashed ik_llama.cpp (STATUS_STACK_BUFFER_OVERRUN) rather than just overloading it, and that the server has exactly one inference slot. Restarting the model server alone was insufficient -- zombie retry loops inside the Hermes gateway process itself kept re-occupying the single slot, requiring a full gateway restart to clear. Full service restored and verified end-to-end. This confirms the single-local-model-no-fallback architecture has a real, low concurrency ceiling and no safety net when exceeded.",
+      "created_at": "2026-10-08T00:43:11.212267+00:00",
+      "id": "21b55aa8-7190-409d-b103-326a2d6361b2",
+      "key": "hermes-llama-server-crash-resolved-2026-10-07",
+      "name": "RESOLVED: ik_llama.cpp crash + gateway zombie-retry outage from concurrency test",
+      "tags": [
+        "hermes",
+        "bug",
+        "critical",
+        "concurrency",
+        "infrastructure",
+        "outage",
+        "resolved"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-08T00:43:11.212267+00:00"
     }
   ],
-  "exported_at": "2026-10-07T23:55:25.926935+00:00",
+  "exported_at": "2026-10-08T00:43:13.308039+00:00",
   "relations": [
     {
       "attributes": {},
@@ -9232,6 +9341,66 @@
       "object_key": "hermes-economic-strategy-subscription-displacement-2026-10-07",
       "object_type": "entity",
       "predicate": "supersedes",
+      "subject_key": "hermes-integration-priority-list-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-08T00:17:04.259146+00:00",
+      "id": "f03439cc-71fd-4988-9672-9f3c8952f8eb",
+      "object_key": "hermes-file-tool-home-dir-nondeterministic-2026-10-07",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-tilde-bug-exact-root-cause-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-08T00:17:04.259146+00:00",
+      "id": "15d1f53d-b235-4497-b4bb-976e0b47fc50",
+      "object_key": "hermes-tilde-bug-exact-root-cause-2026-10-07",
+      "object_type": "entity",
+      "predicate": "prioritizes",
+      "subject_key": "hermes-integration-priority-list-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-08T00:24:10.888464+00:00",
+      "id": "76cd5454-d1ef-4a29-8ac5-0f92a5754795",
+      "object_key": "hermes-tilde-bug-exact-root-cause-2026-10-07",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-tilde-bug-is-container-mismatch-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-08T00:33:09.286989+00:00",
+      "id": "9e2d3e9e-d0e4-46fe-9872-0cc31a4fded4",
+      "object_key": "hermes-concurrency-induced-llama-server-hang-2026-10-07",
+      "object_type": "entity",
+      "predicate": "prioritizes",
+      "subject_key": "hermes-integration-priority-list-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-08T00:43:11.268273+00:00",
+      "id": "51aced28-9ec3-4011-8e62-3d6a19a7966f",
+      "object_key": "hermes-concurrency-induced-llama-server-hang-2026-10-07",
+      "object_type": "entity",
+      "predicate": "resolves",
+      "subject_key": "hermes-llama-server-crash-resolved-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-08T00:43:11.268273+00:00",
+      "id": "25478499-1f3a-457b-a0dd-6d75da47d20a",
+      "object_key": "hermes-llama-server-crash-resolved-2026-10-07",
+      "object_type": "entity",
+      "predicate": "prioritizes",
       "subject_key": "hermes-integration-priority-list-2026-10-07",
       "subject_type": "entity"
     }
