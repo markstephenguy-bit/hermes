@@ -7388,9 +7388,30 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-08T16:29:40.215852+00:00"
+    },
+    {
+      "attributes": {
+        "config_path": "gateway.api_server.max_concurrent_runs",
+        "new_value": 2,
+        "note": "this caps the PRIMARY-path concurrency into the API server; it is a different (complementary) protection from the still-outstanding circuit breaker needed on the fallback path (hermes-fallback-needs-circuit-breaker-2026-10-07)",
+        "old_value": 10,
+        "verification": "3 concurrent curl requests to /v1/responses -- 2x HTTP 200 completed, 1x HTTP 429"
+      },
+      "body": "gateway.api_server.max_concurrent_runs is a built-in cap (HTTP 429 + Retry-After beyond the limit, not a crash) that was sitting at its hardcoded default of 10 -- the exact same number of concurrent requests that crashed ik_llama.cpp's single inference slot in testing (hermes-concurrency-induced-llama-server-hang-2026-10-07). Lowered to 2 given the server genuinely has one inference slot and this is single-user (Mark only, via Hermes, not shared with anything else). Verified live: fired 3 truly concurrent requests, 2 completed normally, the 3rd was cleanly rejected with HTTP 429 instead of reaching the model server.",
+      "created_at": "2026-10-08T16:32:16.013975+00:00",
+      "id": "1d1c7089-592f-4ef3-b2d9-4cb6da211368",
+      "key": "hermes-vps-concurrency-cap-fixed-2026-10-08",
+      "name": "Fixed the exact root cause of the ik_llama.cpp crash: api_server.max_concurrent_runs defaulted to 10, matching the crash threshold",
+      "tags": [
+        "hermes",
+        "vps-reimage",
+        "fact"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-08T16:32:16.013975+00:00"
     }
   ],
-  "exported_at": "2026-10-08T16:29:55.059427+00:00",
+  "exported_at": "2026-10-08T16:32:16.191532+00:00",
   "relations": [
     {
       "attributes": {},
