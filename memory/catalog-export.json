@@ -6892,9 +6892,51 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-08T04:06:08.303114+00:00"
+    },
+    {
+      "attributes": {
+        "backup_disposition": "pre-reimage-backup-20261007.zip kept locally in .local-only-backups/ as a just-in-case reference, not deleted, but NOT being used for this rebuild",
+        "consequence": "OAuth (Nous Research / ChatGPT Plus auth.json) must now be redone live on the new box -- the exact 'painful to redo' flow the original plan was trying to avoid",
+        "next_action": "Mark doing a second Vultr console Reinstall on 207.148.2.224; once done, Claude Code re-establishes SSH key access (same pattern as first reinstall) and starts Hermes first-run setup from scratch -- no hermes import this time",
+        "superseded_plan": "/home/mark/.claude/plans/splendid-stargazing-flurry.md Phase 3 restore step",
+        "what_happened": "hermes import --force was already run once on the first reinstalled box (960 files restored, overwriting fresh config/auth/memories) before Mark interrupted and clarified he wants no restore at all"
+      },
+      "body": "Mid-Phase-3, Mark interrupted to say he wants hermes-vps genuinely fresh -- not restored from the pre-reimage backup via hermes import. This supersedes the original plan's restore-based approach (splendid-stargazing-flurry.md), which treated hermes import/auth.json restore as the OAuth de-risking mechanism. Mark explicitly chose a second full Vultr console reinstall over a lighter ~/.hermes-only wipe, to leave zero doubt anything lingers outside Hermes's own state dir.",
+      "created_at": "2026-10-08T04:19:04.69916+00:00",
+      "id": "14ffcb18-c7a4-401e-95f8-16e385be7dc5",
+      "key": "hermes-vps-reimage-pivot-to-fresh-no-restore-2026-10-08",
+      "name": "Rebuild pivoted mid-execution: no restore from backup -- genuinely fresh Hermes identity/state",
+      "tags": [
+        "hermes",
+        "vps-reimage",
+        "decision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-08T04:19:04.69916+00:00"
+    },
+    {
+      "attributes": {
+        "applies_to": "all future hermes-vps setup/rebuild/maintenance work, not just this rebuild",
+        "mark_quote": "we will fully vet any update by the changes. it is important to understand stable states. we will only use stable version in the future",
+        "supersedes": "Phase 3 step 2 of splendid-stargazing-flurry.md ('hermes update to pull past whatever version the marketplace image is pinned to') -- that step is now void for all future rebuilds",
+        "trigger": "Claude Code had just run uv tool upgrade + uv tool install hermes-agent@latest on the first reinstalled box, bumping 0.16.0 -> 0.19.0, without asking first"
+      },
+      "body": "Mark set a standing policy: do not auto-update hermes-agent on hermes-vps. Keep whatever version the Vultr marketplace image ships as the stable baseline, and only adopt a newer version after explicitly reviewing its changes -- never reflexively because an 'update available' banner shows.",
+      "created_at": "2026-10-08T04:21:28.899713+00:00",
+      "id": "d3d11390-d7c5-45a6-9d46-8188cc9be498",
+      "key": "hermes-vps-stable-version-policy-2026-10-08",
+      "name": "Policy: maintain Vultr marketplace-pinned hermes-agent version, vet updates before adopting",
+      "tags": [
+        "hermes",
+        "vps-reimage",
+        "decision",
+        "policy"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-08T04:21:28.899713+00:00"
     }
   ],
-  "exported_at": "2026-10-08T04:06:11.864024+00:00",
+  "exported_at": "2026-10-08T04:21:29.051584+00:00",
   "relations": [
     {
       "attributes": {},
