@@ -7409,9 +7409,37 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-08T16:32:16.013975+00:00"
+    },
+    {
+      "attributes": {
+        "status": "scope clarification, not verification of installed features",
+        "user_examples": [
+          "long-term memory",
+          "ability to get better",
+          "USER",
+          "SOUL",
+          "MEMORY",
+          "base memory",
+          "project memory"
+        ],
+        "verification_scope": "inventory installed mechanisms and verify their actual use and persistence"
+      },
+      "body": "Mark clarifies that Hermes setup must cover internal memory, identity, user and project context, and improvement capabilities as well as tools and integrations.",
+      "created_at": "2026-10-08T16:51:20.197671+00:00",
+      "id": "4eecd23f-1473-4e1c-8f1d-b5ffca32a16c",
+      "key": "hermes-self-setup-includes-internal-agent-capabilities-2026-10-08",
+      "name": "Self-setup includes internal agent capabilities",
+      "tags": [
+        "hermes",
+        "bootstrap",
+        "memory",
+        "kanban"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-08T16:51:20.197671+00:00"
     }
   ],
-  "exported_at": "2026-10-08T16:32:16.191532+00:00",
+  "exported_at": "2026-10-08T16:51:20.429482+00:00",
   "relations": [
     {
       "attributes": {},
@@ -10212,6 +10240,16 @@
       "object_type": "entity",
       "predicate": "informed_by",
       "subject_key": "hermes-kanban-self-setup-interest-2026-10-08",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-08T16:51:20.249707+00:00",
+      "id": "d968a181-ee5b-4c4e-8281-1de6b3aa4859",
+      "object_key": "hermes-kanban-self-setup-interest-2026-10-08",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-self-setup-includes-internal-agent-capabilities-2026-10-08",
       "subject_type": "entity"
     }
   ],
