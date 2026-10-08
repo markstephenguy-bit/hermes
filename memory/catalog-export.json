@@ -6810,9 +6810,47 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-08T01:11:37.961763+00:00"
+    },
+    {
+      "attributes": {
+        "relevance": "direct daily-use parity with Claude Code's task-interruption (Ctrl+C) capability",
+        "sequence": "POST /v1/runs -> status:started/running -> POST /v1/runs/{id}/stop -> status:stopping -> polled again -> status:cancelled with interrupted:true, turn_exit_reason:interrupted_during_api_call"
+      },
+      "body": "Created a long-running task via /v1/runs, polled it mid-flight, called /stop, and confirmed a clean running->stopping->cancelled transition with accurate interrupted metadata -- task interruption works correctly.",
+      "created_at": "2026-10-08T01:21:27.566382+00:00",
+      "id": "c8214607-0857-4666-bdb3-77ca8a10e59a",
+      "key": "hermes-runs-api-stop-cancel-works-2026-10-07",
+      "name": "/v1/runs stop/cancel lifecycle works cleanly",
+      "tags": [
+        "hermes",
+        "positive-finding",
+        "runs-api"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-08T01:21:27.566382+00:00"
+    },
+    {
+      "attributes": {
+        "conclusion": "matches the documented behavior precisely once tested against the right format; my first test (Python) targeted a lint-only path, not the hard-block path",
+        "json_test": "invalid JSON was correctly REFUSED outright -- 'candidate content fails .json syntax validation... The file was NOT created or modified'",
+        "python_test": "invalid Python syntax was written successfully with a non-blocking lint warning (status:error, message noting pre-existing/introduced errors) -- by design, not a bug"
+      },
+      "body": "write_file's documented fail-closed syntax gate works exactly as designed: structured-data formats (JSON/YAML/TOML) get a real hard block with zero bytes written, while code files get soft lint-only warnings -- a clean, confirmed positive result once tested against the correct format.",
+      "created_at": "2026-10-08T01:21:27.566382+00:00",
+      "id": "15073694-aba3-4710-a3db-eaa5fb3968ed",
+      "key": "hermes-write-file-syntax-gate-confirmed-2026-10-07",
+      "name": "write_file's fail-closed syntax gate correctly discriminates JSON/YAML/TOML (hard block) from code files (soft lint only)",
+      "tags": [
+        "hermes",
+        "positive-finding",
+        "file-tools",
+        "safety"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-08T01:21:27.566382+00:00"
     }
   ],
-  "exported_at": "2026-10-08T01:11:44.867567+00:00",
+  "exported_at": "2026-10-08T01:21:33.784416+00:00",
   "relations": [
     {
       "attributes": {},
@@ -9573,6 +9611,26 @@
       "object_type": "entity",
       "predicate": "extended_by",
       "subject_key": "hermes-qwen-capability-battery-2-results-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-08T01:21:27.619635+00:00",
+      "id": "2e5710a0-88d7-46e8-816e-78d8fa25d9ac",
+      "object_key": "hermes-runs-api-stop-cancel-works-2026-10-07",
+      "object_type": "entity",
+      "predicate": "extended_by",
+      "subject_key": "hermes-qwen-capability-battery-2-results-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-08T01:21:27.619635+00:00",
+      "id": "04723598-bddc-4646-8bcb-e7bc17b915cf",
+      "object_key": "hermes-stale-overwrite-guard-not-enforced-2026-10-07",
+      "object_type": "entity",
+      "predicate": "clarifies",
+      "subject_key": "hermes-write-file-syntax-gate-confirmed-2026-10-07",
       "subject_type": "entity"
     }
   ],
