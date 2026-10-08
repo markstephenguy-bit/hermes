@@ -7510,9 +7510,31 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-08T17:28:50.495747+00:00"
+    },
+    {
+      "attributes": {
+        "disappearance_window": "last confirmed good ~18:56 UTC, first failure logged 20:05:03 UTC",
+        "likely_trigger": "Mark was actively troubleshooting a docker-session media-path conflict live over Telegram in the same window (messages about images not arriving, then a message about a docker session and other sessions conflicting on path at 20:04:59, seconds before the first provider-auth-failed log line) -- not confirmed as cause, but the timing is suspicious",
+        "regressed_by_restore": "model.provider reverted from ik_llama to vultr/deepseek-v4-flash-0731 (fully working, just not the preferred local-first default); gateway.api_server.max_concurrent_runs reverted to 10 (fixed back to 2 immediately); approvals.mode reverted to manual with no deny list (not yet reapplied)",
+        "restore_source": "/home/hermes/.hermes/backups/backup-20261008-161034.zip, config.yaml entry dated 13:50 UTC",
+        "still_needed": "re-add providers.ik_llama (base_url http://192.168.40.100:8090/v1, chat_template_kwargs enable_thinking:false), switch model.provider/default back to ik_llama with vultr/deepseek-v4-flash-0731 as fallback, and reapply approvals.mode=smart plus the 6-pattern self-update deny list -- to be done through Hermes itself now that its agent loop is unblocked",
+        "why_claude_code_fixed_the_file_directly": "the Hermes agent loop had no inference provider at all, so it could not process a self-repair instruction -- this was a bootstrapping gap, not a normal self-repair scenario, per the hermes-claude-code-helper-role-shift-2026-10-08 ground rule carve-out for infrastructure Hermes genuinely cannot touch itself"
+      },
+      "body": "~/.hermes/config.yaml was simply gone (not corrupted) as of 22:15 UTC check; last confirmed present and correct around 18:56 UTC. The gateway process already running kept Telegram connectivity alive on cached state, but any fresh inference call hit hermes_cli.config.load_config() finding no file at all, producing the canned fallback message instead of a real reply from ~20:05 onward. Restored by copying config.yaml out of the most recent on-disk backup zip (13:50 UTC snapshot, pre-dating the later same-day fixes), which brought back the pre-ik_llama, pre-approvals-smart state -- gateway.api_server.max_concurrent_runs reverted to its dangerous default of 10 and was immediately reset to 2. Verified end-to-end with a live one-shot CLI call returning the expected literal reply.",
+      "created_at": "2026-10-08T22:21:54.335961+00:00",
+      "id": "b0c40f3d-b40a-4c0a-83e4-1b0a0cccb741",
+      "key": "hermes-vps-config-yaml-vanished-2026-10-08",
+      "name": "config.yaml disappeared entirely from disk around 20:05 UTC, killing all inference (Telegram silently fell back to a canned error)",
+      "tags": [
+        "hermes",
+        "incident",
+        "security"
+      ],
+      "type": "incident",
+      "updated_at": "2026-10-08T22:21:54.335961+00:00"
     }
   ],
-  "exported_at": "2026-10-08T17:29:27.493611+00:00",
+  "exported_at": "2026-10-08T22:22:01.416188+00:00",
   "relations": [
     {
       "attributes": {},
@@ -10343,6 +10365,36 @@
       "object_type": "entity",
       "predicate": "resolves_followup_from",
       "subject_key": "hermes-vps-approvals-smart-mode-plus-self-update-deny-2026-10-08",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-08T22:22:01.179584+00:00",
+      "id": "c2c2a78a-55dc-4d7a-b5cb-da974a53ab43",
+      "object_key": "hermes-vps-concurrency-cap-fixed-2026-10-08",
+      "object_type": "entity",
+      "predicate": "regresses",
+      "subject_key": "hermes-vps-config-yaml-vanished-2026-10-08",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-08T22:22:01.218331+00:00",
+      "id": "b82cae90-2597-46fb-a70e-d2c6b125121b",
+      "object_key": "hermes-vps-default-model-ik-llama-2026-10-08",
+      "object_type": "entity",
+      "predicate": "regresses",
+      "subject_key": "hermes-vps-config-yaml-vanished-2026-10-08",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-08T22:22:01.265182+00:00",
+      "id": "63fd078b-bd7f-4fec-bdb8-ee515ab7db22",
+      "object_key": "hermes-vps-approvals-smart-mode-plus-self-update-deny-2026-10-08",
+      "object_type": "entity",
+      "predicate": "regresses",
+      "subject_key": "hermes-vps-config-yaml-vanished-2026-10-08",
       "subject_type": "entity"
     }
   ],
