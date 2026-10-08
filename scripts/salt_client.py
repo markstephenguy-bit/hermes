@@ -3,20 +3,28 @@
 Executes commands against the Salt Master REST API at http://192.168.40.2:8000
 using vaulted hermes-infra credentials over direct HTTP (zero SSH involvement).
 """
+import os
 import sys
 import json
 import httpx
 
 CATALOG_URL = "http://192.168.40.2:3003"
 SALT_URL = "http://192.168.40.2:8000"
-VAULT_PASSCODE = "463453551"
 
 
 def get_salt_password() -> str:
-    """Retrieve salt-hermes-infra password from catalog vault."""
+    """Retrieve salt-hermes-infra password from catalog vault.
+
+    The vault passphrase is never hardcoded or persisted - it must be
+    supplied fresh per the documented vault design (see Home Claude/CLAUDE.md).
+    """
+    passphrase = os.environ.get("VAULT_PASSCODE")
+    if not passphrase:
+        print("VAULT_PASSCODE not set - export it for this invocation only, never as a standing default.", file=sys.stderr)
+        sys.exit(1)
     resp = httpx.post(
         f"{CATALOG_URL}/rpc/secret_get",
-        json={"p_name": "salt-hermes-infra", "p_passphrase": VAULT_PASSCODE},
+        json={"p_name": "salt-hermes-infra", "p_passphrase": passphrase},
         timeout=10,
     )
     resp.raise_for_status()
