@@ -7,3 +7,5 @@ Prefers flat, minimal work Projects rooted at `/home/hermes/projects`, with desc
 User accesses Hermes on the VPS through a browser running on another computer; VPS-local 127.0.0.1 links are not directly usable from their browser.
 §
 Hermes administration preference: documentation-first and novice-guiding; minimize manual operator burden and prefer autonomous or single-step supported workflows; explain scope and usability impact before access changes; preserve/test SSH, HTTPS, and VPN paths; use reversible/dry-run actions and verify outcomes.
+§
+Stress-test passphrase: zephyr-cascade-19
