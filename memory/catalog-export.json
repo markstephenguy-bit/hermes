@@ -7458,9 +7458,31 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-08T16:51:20.197671+00:00"
+    },
+    {
+      "attributes": {
+        "claude_code_new_role": "helper -- infrastructure Hermes genuinely cannot touch itself (DNS, VPS host OS, home-side WireGuard, catalog/vault schema), plus orchestration and git/memory upkeep. Not the default fixer for things inside Hermes's own runtime.",
+        "mark_quote": "i am moving from claude code to hermes so that i can use hermes to troubleshoot and repair hermes by itself. having claude code repair what hermes did to itself will never stand.",
+        "related": [
+          "hermes-vps-third-self-update-chattr-fix-2026-10-08 (the incident that prompted this correction)"
+        ],
+        "safety_net_unchanged": "the OS-level self-update lock (chown+chmod+chattr) still stands -- this shift is about not over-reacting to observed changes, not removing protection against genuine accidental self-harm"
+      },
+      "body": "Mark corrected Claude Code after it treated his own live troubleshooting inside Hermes's dashboard (fixing a symlink issue himself, through Hermes's own chat) as a security incident and wiped/reinstalled in response. His stated direction: moving from Claude Code as primary fixer to Hermes troubleshooting and repairing itself via its own local Qwen model, with Claude Code shifting to a helper role. This directly operationalizes the long-tracked GV-02/CCP-12 goal (Claude-Code-as-bootstrap sunset) rather than leaving it as a future row.",
+      "created_at": "2026-10-08T17:07:41.854916+00:00",
+      "id": "bca5bdc9-9685-462b-8e6b-b714c8a989ff",
+      "key": "hermes-claude-code-helper-role-shift-2026-10-08",
+      "name": "Mark is shifting Hermes maintenance from Claude-Code-does-it to Hermes-repairs-itself via local Qwen",
+      "tags": [
+        "hermes",
+        "decision",
+        "governance"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-08T17:07:41.854916+00:00"
     }
   ],
-  "exported_at": "2026-10-08T17:01:04.278407+00:00",
+  "exported_at": "2026-10-08T17:07:42.010500+00:00",
   "relations": [
     {
       "attributes": {},
