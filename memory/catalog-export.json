@@ -7480,9 +7480,39 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-08T17:07:41.854916+00:00"
+    },
+    {
+      "attributes": {
+        "bug_caught_and_fixed": "hermes config set approvals.deny <json-string> wrote the value as a YAML scalar string, not a list; one of its characters was a lone * which fnmatch treats as match-everything, so every command was being denied for a few minutes until fixed via direct YAML edit",
+        "deny_patterns": [
+          "*uv tool install*hermes-agent*",
+          "*uv tool upgrade*hermes-agent*",
+          "*uv tool uninstall*hermes-agent*",
+          "*pip*install*hermes-agent*",
+          "*pipx*hermes-agent*",
+          "*hermes update*"
+        ],
+        "file": "/home/hermes/.hermes/config.yaml on hermes-vps",
+        "known_preexisting_risk": "command_allowlist already permanently allows the hermes-update and gateway-restart dangerous-pattern keys (an old Always-Approve click) -- left untouched since deny-list checks run before permanent-allowlist checks and now override it, but flagged to Mark as worth revisiting",
+        "unchanged": "cron_mode stays deny; OS-level chattr+i lock on the install dir is untouched and remains the actual filesystem-level backstop",
+        "verified": "ran _match_user_deny_rule() directly against self-update commands (blocked) and benign commands (ls, git status, unrelated uv tool install) (allowed)"
+      },
+      "body": "Set approvals.mode: smart (was manual) for low-friction approval per Mark request; added approvals.deny globs blocking uv tool install/upgrade/uninstall, pip install, and pipx against hermes-agent plus the literal hermes update subcommand, since neither manual nor smart mode would have caught these (no DANGEROUS_PATTERNS regex covers generic package installs -- smart mode LLM judge explicitly treats package installs as presumptively safe).",
+      "created_at": "2026-10-08T17:28:50.495747+00:00",
+      "id": "fcd8eeb8-b83e-4e9a-9f0e-034819268919",
+      "key": "hermes-vps-approvals-smart-mode-plus-self-update-deny-2026-10-08",
+      "name": "approvals.mode set to smart on hermes-vps, with explicit deny globs for self-update commands",
+      "tags": [
+        "hermes",
+        "decision",
+        "security",
+        "approvals"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-08T17:28:50.495747+00:00"
     }
   ],
-  "exported_at": "2026-10-08T17:07:42.010500+00:00",
+  "exported_at": "2026-10-08T17:29:27.493611+00:00",
   "relations": [
     {
       "attributes": {},
@@ -10293,6 +10323,26 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-self-setup-includes-internal-agent-capabilities-2026-10-08",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-08T17:29:02.699287+00:00",
+      "id": "b68530cf-b748-4e46-a46a-a1650f51856a",
+      "object_key": "hermes-vps-third-self-update-chattr-fix-2026-10-08",
+      "object_type": "entity",
+      "predicate": "complements",
+      "subject_key": "hermes-vps-approvals-smart-mode-plus-self-update-deny-2026-10-08",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-08T17:29:02.720132+00:00",
+      "id": "91a73f7e-14a6-4574-a6da-3bf48aa594c7",
+      "object_key": "hermes-claude-code-helper-role-shift-2026-10-08",
+      "object_type": "entity",
+      "predicate": "resolves_followup_from",
+      "subject_key": "hermes-vps-approvals-smart-mode-plus-self-update-deny-2026-10-08",
       "subject_type": "entity"
     }
   ],
