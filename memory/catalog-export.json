@@ -7309,9 +7309,33 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-08T13:46:03.598306+00:00"
+    },
+    {
+      "attributes": {
+        "backup_destination_corrected": "the new daily backup cron's off-server rsync copy was initially pointed at server by mistake; corrected to fileserver (~/hermes-vps-backups/) with a dedicated SSH key for the hermes user",
+        "fileserver_side_correct_config": "AllowedIPs = 10.60.0.1/32 only (no subnet -- that only belongs on the hermes-vps side)",
+        "hermes_vps_side_unchanged": "10.60.0.1/24, port 51820, AllowedIPs 10.60.0.2/32 + 192.168.40.0/24 -- this side was always correct",
+        "real_endpoint": "fileserver (192.168.40.2), linuxserver/wireguard Docker container, host network mode",
+        "root_cause_default_route_missing": "unknown why netplan's route was never applied to the live table -- worth checking after any future fileserver reboot",
+        "superseded_entity": "server-wireguard-configured-2026-09-25 (host field was wrong -- should have said fileserver)"
+      },
+      "body": "server-wireguard-configured-2026-09-25 incorrectly attributed the home-side WireGuard endpoint to 'server' (192.168.40.250). The real, historically-used tunnel (48MB+ of real prior traffic, handshake alive until the moment the old hermes-vps got wiped) runs as a linuxserver/wireguard Docker container on fileserver (192.168.40.2), confirmed by Mark directly and by matching public keys. Mark also confirmed 'server' is not to be trusted going forward and should not be relied on. Three separate real bugs found and fixed to get this working: (1) fileserver's container AllowedIPs had 192.168.40.0/24 which conflicts with fileserver's own native route to that same subnet, causing wg-quick to tear the whole tunnel down with 'RTNETLINK answers: File exists' -- fixed by removing that subnet from fileserver's side (it's only needed on hermes-vps's side for outbound routing); (2) fileserver itself had NO DEFAULT ROUTE at all (ip route get 207.148.2.224 -> Network unreachable) despite a correct netplan config -- netplan had simply never been applied/reloaded since some earlier point; fixed with netplan apply; (3) a duplicate/stale WireGuard identity (same private key) existed on server from before, now irrelevant since server is deprecated. Verified end-to-end: fresh handshake, 0% packet loss pinging both 192.168.40.2 and 192.168.40.100, and the catalog/vault MCP servers working live again through the restored tunnel.",
+      "created_at": "2026-10-08T16:11:19.108879+00:00",
+      "id": "f9f7f48b-8c51-4ba8-9470-3912d7758931",
+      "key": "hermes-vps-wireguard-corrected-to-fileserver-2026-10-08",
+      "name": "WireGuard endpoint corrected: it was always meant to be fileserver (Docker container), not server -- the 2026-09-25 catalog entry was wrong",
+      "tags": [
+        "hermes",
+        "vps-reimage",
+        "wireguard",
+        "decision",
+        "correction"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-08T16:11:19.108879+00:00"
     }
   ],
-  "exported_at": "2026-10-08T13:46:03.741190+00:00",
+  "exported_at": "2026-10-08T16:11:19.270946+00:00",
   "relations": [
     {
       "attributes": {},
