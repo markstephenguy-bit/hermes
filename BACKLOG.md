@@ -18,7 +18,14 @@ superseded by this — it now is.
   fires on any standard hermes-agent deployment using the docker terminal
   backend (the vendor's own recommended sandboxing pattern), not something
   specific to this install. Needs a real fix in hermes-agent's path-resolution
-  layer.
+  layer. **Re-verified live on 2026-10-08 after a deliberate, vetted upgrade to
+  v0.19.0 (which did fix the separate `/v1/skills` TypeError bug for free) —
+  still broken.** The underlying code was substantially rewritten (new
+  `terminal.home_mode` config: auto/real/profile) but the host-vs-container
+  disagreement persists; now manifests as `write_file` resolving to
+  `/home/hermes/...` while `terminal` resolves to `/root/...` under the
+  now-correctly-configured docker terminal backend. Still vendored source, same
+  overwrite-on-update caveat applies to any future patch.
 - Destructive actions get zero human confirmation: a flagged recursive `rm -rf`
   was auto-approved by smart-approval with no pause, under
   `GATEWAY_ALLOW_ALL_USERS=true` on the unattended api_server surface. Needs an
