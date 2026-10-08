@@ -6975,6 +6975,24 @@
     },
     {
       "attributes": {
+        "next_action_if_revisited": "re-run 'hermes model' -> OpenAI -> OpenAI Codex when Mark wants it; nothing else needs to change",
+        "superseded_plan_item": "the original rebuild plan treated OAuth login as the final step to complete the rebuild -- it is now explicitly deferred, not forgotten"
+      },
+      "body": "Started the Codex OAuth device-code flow (hermes model -> OpenAI -> OpenAI Codex) but Mark cancelled before completing it: he doesn't want Codex active right now since it consumes his ChatGPT Plus token allowance, and prefers to run on the Vultr-hosted deepseek-v4-flash-0731 for now. Cancelled cleanly (Ctrl+C mid device-code wait) -- confirmed auth.json has no codex entry and active_provider/model unchanged. This also effectively answers the earlier-dismissed pure-local-Qwen-vs-local+Codex-router question for the near term: staying Vultr-only, no Codex, until Mark decides otherwise.",
+      "created_at": "2026-10-08T05:56:17.011406+00:00",
+      "id": "8974ef39-db4b-45f6-951c-9ea926121b8b",
+      "key": "hermes-vps-codex-oauth-deferred-2026-10-08",
+      "name": "OpenAI Codex OAuth login deliberately deferred -- staying on Vultr only to avoid burning ChatGPT Plus usage",
+      "tags": [
+        "hermes",
+        "vps-reimage",
+        "decision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-08T05:56:17.011406+00:00"
+    },
+    {
+      "attributes": {
         "install_method_previous_box": "git clone tracking main, 0.21.5+4477 commits",
         "install_method_this_rebuild": "pip (v0.19.0 attempted) / uv tool (v0.16.0 marketplace-pinned, kept per stable-version policy)"
       },
@@ -7148,7 +7166,7 @@
       "updated_at": "2026-10-08T05:52:31.486785+00:00"
     }
   ],
-  "exported_at": "2026-10-08T05:52:31.653802+00:00",
+  "exported_at": "2026-10-08T05:56:17.152159+00:00",
   "relations": [
     {
       "attributes": {},
