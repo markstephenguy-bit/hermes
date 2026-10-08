@@ -7067,6 +7067,27 @@
     },
     {
       "attributes": {
+        "hermes_vps_tunnel_ip": "10.60.0.1",
+        "new_finding": "the fresh Vultr marketplace image ships with ufw enabled by default (only 22/80/443/tcp open) -- unlike the pre-wipe box which BACKLOG.md noted had no firewall at all. Had to explicitly ufw allow 51820/udp for the handshake to succeed. This is a meaningful improvement over the old box's posture, worth keeping in mind for the API server port (8642) exposure question noted as deferred in BACKLOG.md.",
+        "server_tunnel_ip": "10.60.0.2",
+        "sudo_credential_used": "server-mark-sudo from the vault (same value as the vault passcode itself -- see hermes-vault-passcode-reused-as-sudo-password-2026-10-08)"
+      },
+      "body": "Fresh install had no WireGuard keypair/interface at all. Generated a new keypair on hermes-vps (public key dC+c7QRt3Qh4o/yTqKQJhxWhntAj9U/ql0TTQtqNSEE=), configured wg0 as the listening side (10.60.0.1/24, port 51820, AllowedIPs 10.60.0.2/32 + 192.168.40.0/24), and added it as a peer on server's existing wg0.conf (10.60.0.2/24, dials out to 207.148.2.224:51820). Found and removed a stale orphaned peer entry on server's side left over from the pre-wipe hermes-vps keypair (different pubkey, same endpoint -- would have caused ambiguous routing). Verified with wg show (handshake confirmed) and ping to both 192.168.40.2 (catalog) and 192.168.40.100 (w_workstation), 0% packet loss both.",
+      "created_at": "2026-10-08T06:04:07.472963+00:00",
+      "id": "fa131ef1-6ce4-47a5-a241-14ce7b16f45f",
+      "key": "hermes-vps-wireguard-repaired-2026-10-08",
+      "name": "WireGuard tunnel hermes-vps <-> server re-established after the full rebuild",
+      "tags": [
+        "hermes",
+        "vps-reimage",
+        "wireguard",
+        "decision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-08T06:04:07.472963+00:00"
+    },
+    {
+      "attributes": {
         "related": [
           "feedback_pin_stable_hermes_version (Claude's own memory)",
           "hermes-chat-session-security-incidents-2026-10-08"
@@ -7164,9 +7185,89 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-08T05:52:31.486785+00:00"
+    },
+    {
+      "attributes": {
+        "action_taken": "none yet on the sudo password specifically -- vault passcode rotation + Dokploy password update are in progress per Finding 0's original scope; sudo password rotation is a separate, bigger decision left to Mark",
+        "scope_of_reuse": [
+          "vault passcode (pgp_sym_encrypt)",
+          "Dokploy admin password",
+          "mark's sudo password on server/laptop/fileserver"
+        ]
+      },
+      "body": "Discovered while fetching server-mark-sudo from the vault to configure WireGuard: its value is identical to the vault passcode hardcoded in scripts/salt_client.py (463453551), which was already flagged (Finding 0, splendid-stargazing-flurry.md) as reused for the Dokploy admin password. The reuse is wider than previously known -- it's also the actual OS-level sudo password across three machines. Flagged to Mark rather than rotated unilaterally, since changing his real login/sudo password is more disruptive than rotating an internal vault passcode and needs his explicit buy-in.",
+      "created_at": "2026-10-08T06:04:07.496985+00:00",
+      "id": "59701e11-0466-4c4d-904a-098d2b7a1c3f",
+      "key": "hermes-vault-passcode-reused-as-sudo-password-2026-10-08",
+      "name": "The hardcoded vault passcode (Finding 0) is also mark's actual Linux sudo password on server/laptop/fileserver",
+      "tags": [
+        "hermes",
+        "security",
+        "vps-reimage"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-08T06:04:07.496985+00:00"
+    },
+    {
+      "attributes": {
+        "depends_on": "hermes-vps-wireguard-repaired-2026-10-08 -- catalog/infra/vault backends all live on 192.168.40.2, unreachable without the tunnel",
+        "env_var_values_used": "SALT_USER=hermes-infra, BRAVE_API_KEY and SALT_PASS pulled live from the vault via mcp__vault__get_secret, not hardcoded anywhere in this conversation's persisted output beyond the VPS's own .env/config.yaml"
+      },
+      "body": "Per-server venvs created under /home/hermes/.hermes/mcp_servers/<name>/venv (fastmcp+httpx), scripts copied from this repo's scripts/, registered via hermes mcp add. Live-verified all 3 home-network-dependent servers with real functional calls (not just tool listing): catalog/get_hosts returned all 7 known hosts, infra/salt_minion_status got real responses from 5 minions via actual Salt API auth, vault/list_secrets returned the real 20-secret list. search's web_search has the pre-existing known tool-name-collision issue (hermes's built-in web_search tool gets called instead of the MCP one) documented in the script's own docstring -- not a new regression.",
+      "created_at": "2026-10-08T06:14:34.785765+00:00",
+      "id": "c24e8569-1d5c-45ea-8726-8944f3b2f598",
+      "key": "hermes-vps-mcp-servers-redeployed-2026-10-08",
+      "name": "All 4 custom MCP servers (catalog, search, infra, vault) redeployed and verified working on the fresh hermes-vps",
+      "tags": [
+        "hermes",
+        "vps-reimage",
+        "decision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-08T06:14:34.785765+00:00"
+    },
+    {
+      "attributes": {
+        "repro": "hermes mcp add infra --env SALT_URL=... SALT_USER=... SALT_PASS=... -> config.yaml shows args: [script.py, --env, SALT_URL=..., SALT_USER=, SALT_PASS=] -- note the env values were ALSO empty because of a separate, unrelated shell-expansion mistake (${VAR} expanded by the calling shell before reaching hermes, not passed as a literal placeholder)",
+        "workaround": "edit config.yaml directly: mcp_servers.<name>.env: {KEY: value, ...} as a sibling key to command/args/enabled"
+      },
+      "body": "`hermes mcp add <name> --env KEY=VALUE` does not populate a proper env: mapping in config.yaml's mcp_servers.<name> block -- it appends '--env' and 'KEY=VALUE' as literal strings to the args list instead, meaning the subprocess never actually receives the environment variable. Silent/non-obvious: infra connected fine despite this (its env vars are only read lazily inside salt_run, not at import time) while search crashed immediately (BRAVE_API_KEY read at module import time) with a generic 'Connection closed' after ~13s of hermes's own reconnect-backoff logic masking the real cause. Fixed by hand-editing config.yaml to add a proper top-level env: dict per server instead of relying on hermes mcp add --env.",
+      "created_at": "2026-10-08T06:14:34.811363+00:00",
+      "id": "ac4ad1d2-c42d-4aae-99e3-23ae276b0237",
+      "key": "hermes-mcp-add-env-flag-broken-2026-10-08",
+      "name": "hermes mcp add's --env flag silently writes values into args instead of a real env dict -- custom stdio MCP servers needing env vars must be hand-edited into config.yaml",
+      "tags": [
+        "hermes",
+        "bug",
+        "vps-reimage",
+        "mcp"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-08T06:14:34.811363+00:00"
+    },
+    {
+      "attributes": {
+        "related": [
+          "hermes-0.19.0-missing-pip-extras-2026-10-08 (same packaging-gap pattern: aiohttp, edge-tts, now mcp)"
+        ],
+        "verification": "checked hermes_agent-0.19.0.dist-info/METADATA directly for the declared version constraint rather than guessing; confirmed CallToolResult(content=[]).isError works correctly on 1.26.0"
+      },
+      "body": "The 'mcp' Python SDK is not bundled with hermes-agent's base pip install (same gap pattern as aiohttp/edge-tts) -- installing it via 'uv tool install hermes-agent==0.19.0 --with mcp' grabs PyPI's latest (2.3.0 at the time), which renamed CallToolResult.isError to is_error, breaking every custom MCP tool call with 'AttributeError: CallToolResult object has no attribute isError' (generic failure, no obvious link to the real cause). hermes_agent-0.19.0.dist-info/METADATA explicitly declares Requires-Dist: mcp==1.26.0 for the [mcp] extra -- that exact pin must be used: --with mcp==1.26.0, not a bare --with mcp.",
+      "created_at": "2026-10-08T06:14:34.819821+00:00",
+      "id": "18b2fe55-f5c8-4515-8ef4-0c56666e6c31",
+      "key": "hermes-mcp-sdk-version-pin-mismatch-2026-10-08",
+      "name": "hermes-agent 0.19.0 requires mcp==1.26.0 exactly -- a loose 'uv tool install --with mcp' grabs an incompatible 2.3.0 that renames isError to is_error",
+      "tags": [
+        "hermes",
+        "bug",
+        "vps-reimage",
+        "mcp"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-08T06:14:34.819821+00:00"
     }
   ],
-  "exported_at": "2026-10-08T05:56:17.152159+00:00",
+  "exported_at": "2026-10-08T06:14:34.980365+00:00",
   "relations": [
     {
       "attributes": {},
