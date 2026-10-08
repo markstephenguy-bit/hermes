@@ -7333,9 +7333,28 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-08T16:11:19.108879+00:00"
+    },
+    {
+      "attributes": {
+        "decision_needed": "switch model.default to ik_llama now (free, local, but single-slot risk) vs keep Vultr as default and treat ik_llama as an available option",
+        "known_risk": "single inference slot -- concurrent requests crashed it before (hermes-concurrency-induced-llama-server-hang-2026-10-07); no circuit breaker exists yet",
+        "verification": "hermes -z ... --provider ik_llama -m 'E:\\ik_llama_models\\Qwen3.6-35B-A3B-Q4_K_M.gguf' --cli -- both a plain reply and a terminal tool-call test passed"
+      },
+      "body": "ik_llama.cpp was never actually down -- it was running the whole time on w_workstation:8090 (Qwen3.6-35B-A3B-Q4_K_M, 65536 ctx), just unreachable from hermes-vps because the WireGuard tunnel was broken (see hermes-vps-wireguard-corrected-to-fileserver-2026-10-08). Added as providers.ik_llama in config.yaml (base_url http://192.168.40.100:8090/v1, chat_template_kwargs enable_thinking:false). Verified live: plain chat and tool-calling (terminal tool) both work correctly via --provider ik_llama. NOT set as the active default yet -- Vultr deepseek-v4-flash-0731 remains default pending Mark's decision on whether to switch.",
+      "created_at": "2026-10-08T16:25:15.410724+00:00",
+      "id": "8bb749c6-4352-417e-a513-80948ffb9979",
+      "key": "hermes-vps-ik-llama-wired-2026-10-08",
+      "name": "Local Qwen (ik_llama.cpp on w_workstation) wired into hermes-vps as an available provider, verified working",
+      "tags": [
+        "hermes",
+        "vps-reimage",
+        "decision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-08T16:25:15.410724+00:00"
     }
   ],
-  "exported_at": "2026-10-08T16:11:19.270946+00:00",
+  "exported_at": "2026-10-08T16:25:15.563211+00:00",
   "relations": [
     {
       "attributes": {},
