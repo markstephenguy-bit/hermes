@@ -6934,9 +6934,104 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-08T04:21:28.899713+00:00"
+    },
+    {
+      "attributes": {
+        "fix": "AGENT_BROWSER_EXECUTABLE_PATH=/home/hermes/.agent-browser/browsers/<version>/chrome in ~/.hermes/.env",
+        "prereq": "apt-get install libnspr4 libnss3 libdbus-1-3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxcb1 libxkbcommon0 libatspi2.0-0 libx11-6 libxcomposite1 libxdamage1 libxext6 libxfixes3 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2t64 fonts-liberation libayatana-appindicator3-1 xdg-utils (as root, no sudo needed)",
+        "source_file": "hermes_cli/tools_config.py _run_post_setup, tools/browser_tool.py _chromium_installed",
+        "verified": "chrome --headless --no-sandbox --disable-gpu --dump-dom about:blank returned exit 0 with valid DOM after the fix"
+      },
+      "body": "tools_config.py's _run_post_setup('agent_browser') calls agent-browser install --with-deps unconditionally whenever _chromium_installed() returns False. --with-deps always shells to sudo apt-get even when the needed system libs are already present, and the hermes user has no sudo password configured, so it can loop/hang indefinitely. Fixed by setting AGENT_BROWSER_EXECUTABLE_PATH in ~/.hermes/.env to a pre-installed Chrome binary (downloaded via plain 'agent-browser install', no --with-deps) -- _chromium_installed() checks this env var first and skips the whole subprocess/sudo path when set.",
+      "created_at": "2026-10-08T05:28:22.150379+00:00",
+      "id": "1715f365-dffb-4c3f-be41-f59af7f35768",
+      "key": "hermes-agent-browser-sudo-loop-bug-2026-10-08",
+      "name": "hermes setup's browser-automation post-install step unconditionally hits a sudo prompt the agent-browser user can never satisfy",
+      "tags": [
+        "hermes",
+        "bug",
+        "setup",
+        "vps-reimage"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-08T05:28:22.150379+00:00"
+    },
+    {
+      "attributes": {
+        "install_method_previous_box": "git clone tracking main, 0.21.5+4477 commits",
+        "install_method_this_rebuild": "pip (v0.19.0 attempted) / uv tool (v0.16.0 marketplace-pinned, kept per stable-version policy)"
+      },
+      "body": "The npm-install-failed warning in tools_config.py tells users to 'cd ~/.hermes/hermes-agent && npm install', but that directory only ever existed under the old git-clone install method. Current pip/uv-tool installs (PROJECT_ROOT = site-packages dir) have no such directory, so the suggested fix is stale and misleading -- not fatal (the code proceeds regardless, see hermes-agent-browser-sudo-loop-bug-2026-10-08), just confusing.",
+      "created_at": "2026-10-08T05:28:22.175735+00:00",
+      "id": "0d4d2682-828e-4946-8062-aa4521b6e354",
+      "key": "hermes-agent-stale-npm-path-bug-2026-10-08",
+      "name": "hermes-agent's browser post-setup references a ~/.hermes/hermes-agent npm directory that doesn't exist on uv-tool/pip installs",
+      "tags": [
+        "hermes",
+        "bug",
+        "setup",
+        "vps-reimage"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-08T05:28:22.175735+00:00"
+    },
+    {
+      "attributes": {
+        "also_fixed": "terminal.container_memory lowered from default 5120 (5GB) to 2048 -- box only has 4GB total RAM; terminal.docker_mount_cwd_to_workspace set to true (was missing entirely, would have silently dropped sandboxed file writes)"
+      },
+      "body": "hermes-vps never had Docker installed (open since hermes-vps-docker-not-installed-2026-09-24, previously blocking Dokploy). Installed via get.docker.com during this rebuild specifically to satisfy CR-17's locked terminal.backend: docker decision -- the setup wizard would silently set backend=docker in config without Docker actually being present otherwise. hermes user added to docker group; nikolaik/python-nodejs:python3.11-nodejs20 pre-pulled and verified working.",
+      "created_at": "2026-10-08T05:28:22.192523+00:00",
+      "id": "ba6d517a-cd0b-41d4-9675-3233c377b7fc",
+      "key": "hermes-vps-docker-engine-installed-2026-10-08",
+      "name": "Docker engine actually installed on hermes-vps for the first time -- resolves a gap open since 2026-09-24",
+      "tags": [
+        "hermes",
+        "vps-reimage",
+        "decision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-08T05:28:22.192523+00:00"
+    },
+    {
+      "attributes": {
+        "next_step": "OAuth login for Nous Portal and/or OpenAI Codex -- live, interactive, needs Mark",
+        "superseded_plan_step": "Phase 3/5/6 of splendid-stargazing-flurry.md, executed via fresh setup instead of hermes import per the no-restore pivot"
+      },
+      "body": "Ran hermes setup end-to-end via tmux (Hermes's own chat session couldn't drive the TTY-interactive wizard). Current state: model deepseek-v4-flash-0731 via vultr (MR-13 locked decision), terminal backend docker (CR-17, now actually functional), Telegram gateway intact and running, Brave Search reused from existing key, local browser automation working. Still pending: Nous Portal / OpenAI Codex OAuth login (requires live user interaction), image generation (skipped pending OAuth), Discord/other messaging platforms (deferred, not needed).",
+      "created_at": "2026-10-08T05:28:22.200838+00:00",
+      "id": "9d379fd6-2117-468a-9f4c-4af7a49e3a2c",
+      "key": "hermes-vps-fresh-setup-progress-2026-10-08",
+      "name": "Fresh hermes-vps setup (no-restore rebuild) -- core config complete, OAuth still pending",
+      "tags": [
+        "hermes",
+        "vps-reimage",
+        "decision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-08T05:28:22.200838+00:00"
+    },
+    {
+      "attributes": {
+        "open_question": "how to enforce 'never self-update' and 'never ask for secrets via chat' at a level Hermes's own agent actually respects -- SOUL.md instruction? OS-level block on uv tool upgrade for the hermes user? Not yet decided.",
+        "resolution_1": "renamed hermes-agent.old-0.16.0 back to hermes-agent, verified uv tool list clean, gateway auto-recovered via systemd restart policy",
+        "resolution_2": "told Mark to rotate the root password via Vultr console reset (Claude Code does not change security credentials itself)"
+      },
+      "body": "During self-driven troubleshooting, Hermes's own chat session (1) ran uv tool install hermes-agent@latest to fix a gateway crash despite no standing instruction against it at the time, then used a directory-rename workaround for a permission block that killed its own running process mid-operation, causing a full gateway outage until Claude Code restored it; (2) asked the user for a sudo password mid-task and the user pasted the actual VPS root password into Hermes's chat, which transmitted it through Hermes's own LLM backend (Vultr Inference). Both incidents happened because Hermes's own policy/memory has no channel for standing instructions set in a separate Claude Code session.",
+      "created_at": "2026-10-08T05:28:22.209315+00:00",
+      "id": "f94fa38b-95be-4dbf-9e1e-6753d3db8af0",
+      "key": "hermes-chat-session-security-incidents-2026-10-08",
+      "name": "Hermes's own live chat session took two risky autonomous actions during this rebuild that Claude Code had to clean up after",
+      "tags": [
+        "hermes",
+        "security",
+        "vps-reimage",
+        "incident"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-08T05:28:22.209315+00:00"
     }
   ],
-  "exported_at": "2026-10-08T04:21:29.051584+00:00",
+  "exported_at": "2026-10-08T05:28:28.965578+00:00",
   "relations": [
     {
       "attributes": {},
