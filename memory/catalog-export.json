@@ -6527,6 +6527,30 @@
     },
     {
       "attributes": {
+        "documented_behavior": "tools/file_tools_write_guards.py _stale_overwrite_blocker() should refuse write_file on an existing file the current task never read in full, with error '...this task has not seen its full current content (never read, only patched, or only a redacted/partial view)...'",
+        "likely_cause_area": "task_id-to-file-state association for api_server-driven /v1/responses turns -- not fully pinned to an exact line, but confirmed not the documented disable switch",
+        "result": "write_file succeeded twice in a row with verified:true and no error/warning, silently overwriting VERSION_ONE -> VERSION_TWO -> VERSION_THREE with no read_file ever called in that conversation -- the model itself flagged this as FAIL in its own analysis",
+        "ruled_out": "HERMES_DISABLE_FILE_STATE_GUARD env var (the documented global off-switch) is not set anywhere in .env files on hermes-vps -- the guard should be active by default but isn't engaging",
+        "severity": "real safety-mechanism gap: nothing currently prevents a fresh conversation from silently clobbering a file another conversation (or a human) edited without ever reading its current content first",
+        "test": "wrote /root/stale_test.txt=VERSION_ONE in conversation A; in a FRESH conversation B, instructed the model to call write_file directly without read_file first"
+      },
+      "body": "The documented read-before-write protection against stale overwrites does not actually engage when driven through the api_server /v1/responses surface -- confirmed with a clean two-conversation repro, and the model's own self-analysis independently concluded the same thing. Not caused by the known global disable env var.",
+      "created_at": "2026-10-08T01:10:56.095211+00:00",
+      "id": "ed775353-2bf6-4742-8292-3a2926983752",
+      "key": "hermes-stale-overwrite-guard-not-enforced-2026-10-07",
+      "name": "Documented read-before-write safety guard does not actually fire on the api_server surface",
+      "tags": [
+        "hermes",
+        "bug",
+        "file-tools",
+        "safety",
+        "api-server"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-08T01:10:56.095211+00:00"
+    },
+    {
+      "attributes": {
         "headline": "once given absolute paths, Hermes/Qwen performed a genuine multi-step coding workflow (debug -> fix -> multi-file refactor -> branch -> diff) at a quality bar comparable to what you'd want from a coding assistant; the only real friction was response latency on long multi-tool turns, not correctness",
         "profile": "hermes-testing (isolated, see hermes-testing-profile-created-2026-10-07)",
         "results": {
@@ -6743,9 +6767,52 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-08T01:04:38.004442+00:00"
+    },
+    {
+      "attributes": {
+        "actual_signature": "tools/skills_tool.py def _find_all_skills(*, skip_disabled: bool = False) -- no include_editorial parameter exists at all",
+        "caller": "gateway/platforms/api_server.py _handle_skills() calls _find_all_skills(skip_disabled=False, include_editorial=True)",
+        "error": "TypeError: _find_all_skills() got an unexpected keyword argument 'include_editorial'",
+        "fix": "trivial one-line fix -- remove the include_editorial kwarg from the call site, or add the parameter to _find_all_skills if it was meant to do something real. Not patched -- vendored Nous Research code, reporting only per this session's established pattern of finding-before-fixing.",
+        "likely_cause": "api_server.py written against a newer/different skills_tool.py API than what's actually installed in this version, or skills_tool.py was refactored and this one caller wasn't updated",
+        "reproducibility": "100% -- every single call to GET /v1/skills fails this way, zero load/concurrency needed, found via error log inspection alone (no model inference required)"
+      },
+      "body": "GET /v1/skills always 500s with a TypeError from a simple keyword-argument mismatch between api_server.py's caller and the actual _find_all_skills() signature -- a clean, always-reproducible regression-type bug, found via error log inspection with zero model inference cost.",
+      "created_at": "2026-10-08T01:07:39.804955+00:00",
+      "id": "23fc44c2-b354-41fc-a793-e0e50a7cadf8",
+      "key": "hermes-v1-skills-endpoint-broken-2026-10-07",
+      "name": "GET /v1/skills is 100% broken -- clean signature mismatch, no load required",
+      "tags": [
+        "hermes",
+        "bug",
+        "api-server",
+        "skills"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-08T01:07:39.804955+00:00"
+    },
+    {
+      "attributes": {
+        "contrast": "this is the single genuinely GOOD resilience finding of the whole testing effort, in contrast to the single-slot concurrency crash and the stale-overwrite gap found the same session",
+        "input_size": "~396,000 characters (~90-100k tokens), well past the 65536 context_length ceiling",
+        "result": "fast (3.7s), clean, no crash, no hang, no silent truncation -- Hermes attempted auto-compression first ('couldn't shrink it enough automatically'), then returned a clear actionable message suggesting /new, /compress, or a bigger-context model"
+      },
+      "body": "Deliberately exceeding the context window by ~50% produced a clean, fast, user-actionable error instead of a crash or silent data loss -- confirms the 65536 context_length ceiling is enforced safely, unlike the concurrency and stale-overwrite gaps found elsewhere.",
+      "created_at": "2026-10-08T01:11:37.961763+00:00",
+      "id": "3da9deda-4195-47f6-a5e3-164380b64525",
+      "key": "hermes-context-exceeded-handled-gracefully-2026-10-07",
+      "name": "Context window genuinely exceeded (~100k tokens vs 65536 limit) -- handled gracefully",
+      "tags": [
+        "hermes",
+        "positive-finding",
+        "context-window",
+        "resilience"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-08T01:11:37.961763+00:00"
     }
   ],
-  "exported_at": "2026-10-08T01:04:52.849851+00:00",
+  "exported_at": "2026-10-08T01:11:44.867567+00:00",
   "relations": [
     {
       "attributes": {},
@@ -9476,6 +9543,36 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-fallback-needs-circuit-breaker-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-08T01:07:39.846785+00:00",
+      "id": "e6ae259a-d429-4769-b433-de71e460bfe7",
+      "object_key": "hermes-v1-skills-endpoint-broken-2026-10-07",
+      "object_type": "entity",
+      "predicate": "includes_finding",
+      "subject_key": "hermes-integration-priority-list-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-08T01:10:56.145152+00:00",
+      "id": "402b9a08-50ca-43fb-bd3b-3becb4cf7d8b",
+      "object_key": "hermes-stale-overwrite-guard-not-enforced-2026-10-07",
+      "object_type": "entity",
+      "predicate": "includes_finding",
+      "subject_key": "hermes-integration-priority-list-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-08T01:11:38.009039+00:00",
+      "id": "c7099fdc-f5f5-4108-ab97-df4f8055c506",
+      "object_key": "hermes-context-exceeded-handled-gracefully-2026-10-07",
+      "object_type": "entity",
+      "predicate": "extended_by",
+      "subject_key": "hermes-qwen-capability-battery-2-results-2026-10-07",
       "subject_type": "entity"
     }
   ],
