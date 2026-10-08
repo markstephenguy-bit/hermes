@@ -6721,9 +6721,31 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-08T01:01:35.468395+00:00"
+    },
+    {
+      "attributes": {
+        "observed_mechanism": "during the concurrency crash, Hermes's own client-side retry logic auto-retried multiple zombie requests every ~10-16s for up to 5 cycles each, all competing for the single local slot -- free because it hit a local model",
+        "requirement": "any fallback provider implementation needs a rate limit or circuit breaker scoped to the fallback path specifically -- cap retry/escalation attempts, fail closed (clear error to the user) instead of indefinitely hammering a paid API, and alert before cost compounds. Not just pointing an existing fallback_model config at a cloud provider and reusing the current retry logic as-is.",
+        "risk_if_fallback_added_naively": "the same retry storm, if the local model errors/crashes the same way with a fallback configured, would redirect every one of those retries to a PAID cloud API -- and subagent fan-out (one request spawning N more) multiplies this further. A burst like the one that just happened could translate into an unexpected bill, not just a local outage.",
+        "user_quote_context": "Mark raised this explicitly after the crash incident: 'even if i did have a fallback i would blow up the usage if it just goes crazy with usage'"
+      },
+      "body": "The exact retry-storm mechanism that crashed the local model for free would, with a naive fallback provider wired in, redirect to a paid API instead -- any future fallback implementation must include its own rate limit/circuit breaker, not just reuse the existing retry logic against a paid endpoint.",
+      "created_at": "2026-10-08T01:04:38.004442+00:00",
+      "id": "b03d4019-992d-45bc-bd8f-ffad7279df31",
+      "key": "hermes-fallback-needs-circuit-breaker-2026-10-07",
+      "name": "Fallback provider must include a rate limit/circuit breaker on the fallback path, not just a model pointer",
+      "tags": [
+        "hermes",
+        "decision",
+        "cost",
+        "resilience",
+        "fallback"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-08T01:04:38.004442+00:00"
     }
   ],
-  "exported_at": "2026-10-08T01:01:53.338027+00:00",
+  "exported_at": "2026-10-08T01:04:52.849851+00:00",
   "relations": [
     {
       "attributes": {},
@@ -9444,6 +9466,16 @@
       "object_type": "entity",
       "predicate": "includes_finding",
       "subject_key": "hermes-integration-priority-list-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-08T01:04:38.029972+00:00",
+      "id": "f288ef5c-14ae-4d70-bc84-f5d748620f8b",
+      "object_key": "hermes-fallback-provider-restoration-sequenced-2026-10-07",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-fallback-needs-circuit-breaker-2026-10-07",
       "subject_type": "entity"
     }
   ],

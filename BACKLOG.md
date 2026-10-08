@@ -36,6 +36,12 @@ superseded by this — it now is.
   sequenced after the current issue-finding phase completes — not yet
   implemented.** Until then: never fire more than 1-2 concurrent
   model-requiring requests at this setup.
+  **Requirement for when it's implemented:** the fallback path needs its own
+  rate limit/circuit breaker, not just a model pointer reusing the existing
+  retry logic — the exact zombie-retry storm that crashed the local model for
+  free would, against a paid cloud API, turn into an unexpected bill. Cap
+  retry/escalation attempts and fail closed instead of indefinitely hammering
+  a paid endpoint.
 
 **P1 — needed for daily-use parity with Claude Code:**
 - Vision routing: confirmed hard floor (no mmproj, text-only local model), but
