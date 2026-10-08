@@ -13,11 +13,29 @@ superseded by this — it now is.
 - Tilde (`~`) path resolution bug: `write_file`/`patch` can silently target a
   different effective home directory than `terminal`/`read_file` in the same
   turn, while still reporting `verified: true`. Workaround today: always use
-  absolute paths. Needs a real fix in hermes-agent's path-resolution layer.
+  absolute paths. Root-caused precisely: `is_container()` checks whether the
+  *agent process* is containerized, not whether the *terminal backend* is —
+  fires on any standard hermes-agent deployment using the docker terminal
+  backend (the vendor's own recommended sandboxing pattern), not something
+  specific to this install. Needs a real fix in hermes-agent's path-resolution
+  layer.
 - Destructive actions get zero human confirmation: a flagged recursive `rm -rf`
   was auto-approved by smart-approval with no pause, under
   `GATEWAY_ALLOW_ALL_USERS=true` on the unattended api_server surface. Needs an
   actual policy decision, not silent auto-approval.
+- **No fallback provider, and the local model has zero concurrency headroom.**
+  Live-reproduced: ~10 simultaneous model-requiring requests (an 8-way subagent
+  fan-out plus 2 concurrent same-session calls) crashed the single-slot
+  ik_llama.cpp server outright (Windows Task Scheduler recorded
+  `STATUS_STACK_BUFFER_OVERRUN`) and took down all of Hermes, including the
+  default daily-use profile, with no automatic recovery — the Codex fallback
+  was intentionally removed for pure-local-Qwen mode. Restarting the model
+  server wasn't even enough on its own; zombie retry loops inside the Hermes
+  gateway kept re-occupying the single recovered slot until the gateway itself
+  was restarted. **Decision (2026-10-07): a fallback provider must be restored,
+  sequenced after the current issue-finding phase completes — not yet
+  implemented.** Until then: never fire more than 1-2 concurrent
+  model-requiring requests at this setup.
 
 **P1 — needed for daily-use parity with Claude Code:**
 - Vision routing: confirmed hard floor (no mmproj, text-only local model), but

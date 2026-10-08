@@ -6699,9 +6699,31 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-08T00:43:11.212267+00:00"
+    },
+    {
+      "attributes": {
+        "relevant_prep": "when this is picked up, hermes-testing-battery-2 found 5 cloud providers already configured in config.yaml providers.vultr (deepseek-v4.1-flash, glm-5.3, gemini equivalents, etc.) -- worth verifying at least one is reachable/working via explicit per-request provider override before committing to it as the fallback",
+        "sequencing": "Mark's explicit instruction: find all remaining issues in the current pure-local-Qwen setup FIRST, add the fallback provider AFTER -- do not implement this yet",
+        "status": "deferred, not yet implemented",
+        "trigger": "hermes-llama-server-crash-resolved-2026-10-07 -- a single-slot local model crash took down all of Hermes with zero fallback, since Codex was intentionally removed in f575d91"
+      },
+      "body": "Mark decided a fallback provider must be restored given the single-slot local model's demonstrated zero-redundancy failure mode, but explicitly sequenced this after the current round of issue-finding completes -- not to be implemented yet.",
+      "created_at": "2026-10-08T01:01:35.468395+00:00",
+      "id": "8c9600b5-76cf-4109-bf12-5a2172d712b8",
+      "key": "hermes-fallback-provider-restoration-sequenced-2026-10-07",
+      "name": "Decision: restore a fallback provider, sequenced after the current issue-finding phase completes",
+      "tags": [
+        "hermes",
+        "decision",
+        "plan",
+        "fallback",
+        "resilience"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-08T01:01:35.468395+00:00"
     }
   ],
-  "exported_at": "2026-10-08T00:43:13.308039+00:00",
+  "exported_at": "2026-10-08T01:01:53.338027+00:00",
   "relations": [
     {
       "attributes": {},
@@ -9401,6 +9423,26 @@
       "object_key": "hermes-llama-server-crash-resolved-2026-10-07",
       "object_type": "entity",
       "predicate": "prioritizes",
+      "subject_key": "hermes-integration-priority-list-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-08T01:01:35.528655+00:00",
+      "id": "9cbc47c9-64d3-4d30-aee1-4819114b3ee3",
+      "object_key": "hermes-llama-server-crash-resolved-2026-10-07",
+      "object_type": "entity",
+      "predicate": "responds_to",
+      "subject_key": "hermes-fallback-provider-restoration-sequenced-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-08T01:01:35.528655+00:00",
+      "id": "dcd9af96-40da-4740-a764-c62f6f5eb995",
+      "object_key": "hermes-fallback-provider-restoration-sequenced-2026-10-07",
+      "object_type": "entity",
+      "predicate": "includes_finding",
       "subject_key": "hermes-integration-priority-list-2026-10-07",
       "subject_type": "entity"
     }
