@@ -6873,6 +6873,23 @@
     },
     {
       "attributes": {
+        "verification": "import edge_tts/aiohttp succeeded after the --with reinstall; edge_tts.Communicate().save() produced a valid 11KB MP3 confirming real synthesis works, not just import"
+      },
+      "body": "Plain `uv tool install hermes-agent==0.19.0` omits aiohttp (breaks the API server platform with 'No adapter available for api_server') and edge-tts (breaks the default free TTS provider). Both are core, default-selected features in hermes setup's own wizard, not edge cases -- looks like an extras/packaging gap in this release rather than intentionally optional deps. Fixed via `uv tool install hermes-agent==0.19.0 --with aiohttp --with edge-tts --reinstall`. Also found two stale platform_toolsets entries ('messaging') left by the setup wizard referencing a tool that no longer exists in 0.19.0 -- outbound messaging was redesigned to not be model-callable at all (handled by cron delivery / gateway notifier / `hermes send` instead); removed the dead entries.",
+      "created_at": "2026-10-08T05:52:31.512611+00:00",
+      "id": "e9cd0477-b37f-4300-8197-cd71d0bba05a",
+      "key": "hermes-0.19.0-missing-pip-extras-2026-10-08",
+      "name": "hermes-agent 0.19.0's base pip install is missing aiohttp and edge-tts as dependencies",
+      "tags": [
+        "hermes",
+        "bug",
+        "vps-reimage"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-08T05:52:31.512611+00:00"
+    },
+    {
+      "attributes": {
         "backup_fix_needed": "two root-owned 0600 config.yaml.bak files blocked the first backup attempt (exit 1); chown to hermes fixed it, rerun succeeded clean",
         "backup_location": "local machine only, .local-only-backups/pre-reimage-backup-20261007.zip -- never git",
         "backup_size_mb": 343,
@@ -7108,9 +7125,30 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-08T05:44:46.790998+00:00"
+    },
+    {
+      "attributes": {
+        "password_location": "given to Mark directly in chat, not stored in this catalog entity or in plaintext anywhere else",
+        "related": [
+          "hermes-web-dashboard-survey-2026-10-05 (SH-06, previously found 401-gated on the OLD pre-reimage box -- this fresh rebuild regressed that until now)"
+        ],
+        "username": "mark"
+      },
+      "body": "The fresh setup never configured dashboard.basic_auth, so hermes-dashboard.service ran with zero authentication on all interfaces (0.0.0.0:9119) on a box with no firewall (per BACKLOG.md's deferred-on-purpose note) -- reachable from the raw internet. This was silent on 0.16.0; upgrading to 0.19.0 added a hard refusal to bind non-loopback without an auth provider, which surfaced as an 82-restart crash loop rather than a security notice, but correctly caught a real exposure. Fixed by generating a random 20-char password, hashing it via plugins.dashboard_auth.basic.hash_password, and setting dashboard.basic_auth.username/password_hash in config.yaml. Verified clean restart (HERMES_DASHBOARD_READY, NRestarts=0).",
+      "created_at": "2026-10-08T05:52:31.486785+00:00",
+      "id": "20b0b208-2f28-4698-acbf-be07f9860d54",
+      "key": "hermes-dashboard-was-unauthenticated-2026-10-08",
+      "name": "Dashboard was running fully unauthenticated on 0.0.0.0:9119 throughout the fresh setup -- caught only because 0.19.0 added a hard refusal",
+      "tags": [
+        "hermes",
+        "security",
+        "vps-reimage"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-08T05:52:31.486785+00:00"
     }
   ],
-  "exported_at": "2026-10-08T05:44:46.930476+00:00",
+  "exported_at": "2026-10-08T05:52:31.653802+00:00",
   "relations": [
     {
       "attributes": {},
