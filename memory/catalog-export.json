@@ -7312,6 +7312,27 @@
     },
     {
       "attributes": {
+        "caveat": "did not fully resolve why the container's own $HOME/install path differs between attempts (sometimes appears bind-mounted, sometimes appears to be the container's own ephemeral /root) -- not investigated further since the practical outcome (host protected) was directly verified",
+        "fix": "chattr -R +i on the hermes-agent install directory and chattr +i on its parent tools/ directory, in addition to the existing chown root:hermes + chmod a-w",
+        "root_cause": "chmod/chown-only locks are insufficient against a root-capable container with a bind-mounted host path -- CAP_DAC_OVERRIDE bypasses standard permission checks",
+        "verification": "identical self-update command re-run through the live Docker-backed terminal tool; host install, immutable flag, and gateway/dashboard services all confirmed unaffected afterward"
+      },
+      "body": "The chown root:hermes + chmod a-w lock from earlier (hermes-vps-os-level-version-lock-2026-10-08) was bypassed: Hermes's own Docker-sandboxed terminal tool runs as root inside the container, and Docker's default capability set includes CAP_DAC_OVERRIDE, which lets root ignore normal Unix permission bits entirely -- including on host directories bind-mounted into the container (docker_mount_cwd_to_workspace: true). This broke the real hermes-agent installation (wrong Python version, broken symlinks pointing at /workspace/... paths that only resolve inside a container) and required a full wipe+reinstall to fix. Hardened the lock with chattr +i (filesystem immutable attribute) in addition to the ownership/permission lock -- CAP_LINUX_IMMUTABLE (required to bypass chattr) is NOT in Docker's default capability set, unlike CAP_DAC_OVERRIDE. Verified effective against the exact attack: re-ran the identical 'uv tool install hermes-agent@latest' through Hermes's own real terminal tool (Docker-backed) and confirmed the real host installation was untouched afterward (version, immutable flag, and both services all unaffected).",
+      "created_at": "2026-10-08T17:01:04.135383+00:00",
+      "id": "88db65c6-a9da-4e11-806e-c64a8f550fab",
+      "key": "hermes-vps-third-self-update-chattr-fix-2026-10-08",
+      "name": "Hermes self-updated a third time, this time bypassing the chmod lock via Docker container root capabilities -- fixed with chattr +i",
+      "tags": [
+        "hermes",
+        "security",
+        "incident",
+        "vps-reimage"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-08T17:01:04.135383+00:00"
+    },
+    {
+      "attributes": {
         "backup_destination_corrected": "the new daily backup cron's off-server rsync copy was initially pointed at server by mistake; corrected to fileserver (~/hermes-vps-backups/) with a dedicated SSH key for the hermes user",
         "fileserver_side_correct_config": "AllowedIPs = 10.60.0.1/32 only (no subnet -- that only belongs on the hermes-vps side)",
         "hermes_vps_side_unchanged": "10.60.0.1/24, port 51820, AllowedIPs 10.60.0.2/32 + 192.168.40.0/24 -- this side was always correct",
@@ -7439,7 +7460,7 @@
       "updated_at": "2026-10-08T16:51:20.197671+00:00"
     }
   ],
-  "exported_at": "2026-10-08T16:51:20.429482+00:00",
+  "exported_at": "2026-10-08T17:01:04.278407+00:00",
   "relations": [
     {
       "attributes": {},
