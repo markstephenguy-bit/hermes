@@ -7532,9 +7532,32 @@
       ],
       "type": "incident",
       "updated_at": "2026-10-08T22:21:54.335961+00:00"
+    },
+    {
+      "attributes": {
+        "cascade": "config.yaml, .env, and auth.json all ended up root:root owned within the same minute (23:01-23:02 UTC); hermes CLI loads .env unconditionally at startup so every hermes subcommand (including hermes logs, used to diagnose this) was broken too, not just the gateway",
+        "fix_applied": "chown hermes:hermes + chmod 600 on all three files, done directly by Claude Code since the hermes CLI itself was non-functional until this was fixed (bootstrapping gap, same category as the earlier config.yaml-vanished incident); then systemctl restart hermes-gateway from the host (outside the sandbox) to pick up the corrected config -- verified live with a one-shot inference call routing through ik_llama/Qwen",
+        "hermes_self_awareness": "Hermes correctly detected it could not restart its own gateway from inside the gateway's own docker sandbox (hermes gateway restart is deliberately blocked from inside the gateway process tree), stopped, and wrote a handoff seed + memory notes for a fresh session instead of forcing a workaround -- good behavior, not a failure",
+        "mark_reaction": "Mark said incidents like this make him feel Hermes is not stable -- this is a legitimate reaction; the config *decisions* Hermes made were all correct, but the platform-level sandboxing defect means any session that edits config.yaml via the terminal tool is likely to repeat this exact breakage until the structural fix lands",
+        "structural_fix_needed": "the real fix is making Hermes's docker terminal sandbox not write host-bind-mounted files as literal root -- e.g. Docker user-namespace remapping or running the sandbox container as the hermes uid/gid for this bind mount -- rather than relying on Claude Code to chown things back after the fact every time; not yet implemented, worth prioritizing since it will recur on the next config.yaml-writing session otherwise",
+        "trigger": "Hermes correctly ran the config-fix steps Claude Code asked for (providers.ik_llama, model switch, approvals.mode=smart, approvals.deny list) -- all content ended up correct -- but each hermes config set call executed via the sandboxed terminal tool left config.yaml root-owned afterward"
+      },
+      "body": "Traced the config.yaml/.env/auth.json permission-denied cascade that broke the whole hermes CLI (every invocation loads .env at startup, so this took down hermes logs, hermes config, and gateway restart alike, not just inference). Root cause: Hermes's terminal tool runs inside a Docker sandbox as root with CAP_DAC_OVERRIDE, bind-mounting the real ~/.hermes to /workspace/.hermes. Every one of the routine hermes config set calls Claude Code asked it to run (providers.ik_llama, model.provider, approvals.mode) rewrote config.yaml correctly content-wise but left it root:root owned on the host, unreadable by the actual hermes user/gateway process outside the sandbox. auth.json was caught by the same mechanism. This generalizes the earlier chattr+i incident (hermes-vps-third-self-update-chattr-fix-2026-10-08), which was scoped to self-update specifically -- this shows the same CAP_DAC_OVERRIDE problem hits completely ordinary, correct, intended config edits too, not just malicious/accidental self-update attempts.",
+      "created_at": "2026-10-08T23:23:44.007238+00:00",
+      "id": "a17cff43-dabf-44f9-b66f-55bef5379283",
+      "key": "hermes-vps-docker-sandbox-root-ownership-is-general-2026-10-08",
+      "name": "The Docker-sandbox CAP_DAC_OVERRIDE host-file-ownership bug is not self-update-specific -- it breaks on any config.yaml/.env/auth.json write Hermes makes through its own terminal tool",
+      "tags": [
+        "hermes",
+        "fact",
+        "security",
+        "stability"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-08T23:23:44.007238+00:00"
     }
   ],
-  "exported_at": "2026-10-08T22:22:01.416188+00:00",
+  "exported_at": "2026-10-08T23:23:44.176948+00:00",
   "relations": [
     {
       "attributes": {},
@@ -10395,6 +10418,26 @@
       "object_type": "entity",
       "predicate": "regresses",
       "subject_key": "hermes-vps-config-yaml-vanished-2026-10-08",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-08T23:23:44.038623+00:00",
+      "id": "59df0335-5361-4235-bddd-ac6fad177d9e",
+      "object_key": "hermes-vps-third-self-update-chattr-fix-2026-10-08",
+      "object_type": "entity",
+      "predicate": "generalizes",
+      "subject_key": "hermes-vps-docker-sandbox-root-ownership-is-general-2026-10-08",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-08T23:23:44.051032+00:00",
+      "id": "a07acd3b-e0ef-405e-99f2-abf3aafcd00f",
+      "object_key": "hermes-vps-config-yaml-vanished-2026-10-08",
+      "object_type": "entity",
+      "predicate": "generalizes",
+      "subject_key": "hermes-vps-docker-sandbox-root-ownership-is-general-2026-10-08",
       "subject_type": "entity"
     }
   ],
