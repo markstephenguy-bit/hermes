@@ -6870,9 +6870,31 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-08T01:55:35.680465+00:00"
+    },
+    {
+      "attributes": {
+        "backup_fix_needed": "two root-owned 0600 config.yaml.bak files blocked the first backup attempt (exit 1); chown to hermes fixed it, rerun succeeded clean",
+        "backup_location": "local machine only, .local-only-backups/pre-reimage-backup-20261007.zip -- never git",
+        "backup_size_mb": 343,
+        "commits_behind_upstream": 4645,
+        "next_action": "Mark does Phase 2 (Vultr console Reinstall on 207.148.2.224), then confirm back here to resume Phase 3",
+        "plan_file": "/home/mark/.claude/plans/splendid-stargazing-flurry.md",
+        "version_at_backup_time": "0.21.5+4477.g449fae0 (upstream 449fae03)"
+      },
+      "body": "Ran hermes backup on hermes-vps, copied the 343MB archive off-box to .local-only-backups/ (gitignored, not committed), refreshed the SOUL/USER/MEMORY snapshot, and confirmed the mcp_servers config block matches the plan. Waiting on Mark to do Phase 2 (Vultr console reinstall) before Phase 3 resumes.",
+      "created_at": "2026-10-08T04:06:08.303114+00:00",
+      "id": "cce5183f-d35b-4c3d-a340-5c79d2a584f2",
+      "key": "hermes-vps-reimage-phase1-backup-complete-2026-10-07",
+      "name": "Phase 1 (pre-reimage backup) of the VPS rebuild plan completed",
+      "tags": [
+        "hermes",
+        "vps-reimage"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-08T04:06:08.303114+00:00"
     }
   ],
-  "exported_at": "2026-10-08T01:55:40.543555+00:00",
+  "exported_at": "2026-10-08T04:06:11.864024+00:00",
   "relations": [
     {
       "attributes": {},
