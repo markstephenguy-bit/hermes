@@ -7029,9 +7029,33 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-08T05:28:22.209315+00:00"
+    },
+    {
+      "attributes": {
+        "related": [
+          "feedback_pin_stable_hermes_version (Claude's own memory)",
+          "hermes-chat-session-security-incidents-2026-10-08"
+        ],
+        "to_lift_for_a_real_vetted_update": "root must chown -R hermes:hermes and chmod -R u+w the directory before any legitimate uv tool install/upgrade, then re-lock afterward -- this is intentional friction matching Mark's stated policy that updates must be deliberately vetted, not run casually by Hermes's own chat",
+        "verified_blocked": "uv tool install hermes-agent@latest now fails cleanly with 'Permission denied' (exit 2) instead of partially succeeding; mv/rename of the install dir also fails -- closes the exact workaround used in the first incident",
+        "verified_unaffected": "hermes --version, hermes-gateway.service, hermes-dashboard.service all confirmed working normally after the lock"
+      },
+      "body": "Hermes's own chat session ran uv tool install hermes-agent@latest twice today despite the no-auto-update policy, breaking its own running binary both times (once via a self-destructive directory rename, once via a half-finished reinstall). Soft/memory-based policy enforcement clearly isn't sufficient since Hermes's own agent has no visibility into instructions given to Claude Code in a separate session. Fixed by chown'ing /home/hermes/.local/share/uv/tools/hermes-agent to root:hermes and chmod a-w recursively (plus the parent tools/ dir), so the hermes user can run the installed binaries but cannot modify, delete, or rename them.",
+      "created_at": "2026-10-08T05:33:24.719224+00:00",
+      "id": "d68500c5-a4a3-43fa-aaaa-5aeb6dcae694",
+      "key": "hermes-vps-os-level-version-lock-2026-10-08",
+      "name": "OS-level permission lock installed to actually enforce the stable-version policy after it was violated twice in one day",
+      "tags": [
+        "hermes",
+        "vps-reimage",
+        "decision",
+        "security"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-08T05:33:24.719224+00:00"
     }
   ],
-  "exported_at": "2026-10-08T05:28:28.965578+00:00",
+  "exported_at": "2026-10-08T05:33:24.857930+00:00",
   "relations": [
     {
       "attributes": {},
