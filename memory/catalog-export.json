@@ -7370,9 +7370,27 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-08T16:28:50.717318+00:00"
+    },
+    {
+      "attributes": {
+        "acceptance": "end-to-end capability verification",
+        "intent": "explore self-setup handoff"
+      },
+      "body": "Mark wants to use Hermes itself, potentially through kanban, to finish setup and verify that its agent features work.",
+      "created_at": "2026-10-08T16:29:40.215852+00:00",
+      "id": "ceea1e24-a5ce-4b02-ac46-38241a9602bc",
+      "key": "hermes-kanban-self-setup-interest-2026-10-08",
+      "name": "Hermes self-setup through kanban",
+      "tags": [
+        "hermes",
+        "kanban",
+        "bootstrap"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-08T16:29:40.215852+00:00"
     }
   ],
-  "exported_at": "2026-10-08T16:28:50.903423+00:00",
+  "exported_at": "2026-10-08T16:29:55.059427+00:00",
   "relations": [
     {
       "attributes": {},
@@ -10163,6 +10181,16 @@
       "object_type": "entity",
       "predicate": "synthesizes",
       "subject_key": "hermes-vps-reimage-session-handoff-2026-10-07",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-08T16:29:40.234002+00:00",
+      "id": "02391441-1fe3-4bc6-b5d2-760fb6c332b0",
+      "object_key": "hermes-vps-fresh-setup-progress-2026-10-08",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-kanban-self-setup-interest-2026-10-08",
       "subject_type": "entity"
     }
   ],
