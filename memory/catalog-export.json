@@ -7728,9 +7728,77 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-10T20:25:58.057553+00:00"
+    },
+    {
+      "attributes": {
+        "detection_method": "user asked to validate the ACTUALLY active model instead of trusting the prior handoff; grep + hermes config get on live config.yaml, confirmed via gateway logs (journalctl) showing live 404s",
+        "fix": "hermes config set model.base_url http://192.168.40.100:8090/v1 ; hermes config set model.provider custom ; systemctl --user restart hermes-gateway",
+        "root_cause": "model.base_url was pointing at https://inference-api.nousresearch.com/v1 while model.default was still the Qwen gguf filename -- same underlying hermes fallback add wizard bug from the prior session that clobbers model.* before completing the Tool Gateway step, this time it also clobbered base_url not just default",
+        "symptom": "every request failed: openai.NotFoundError 404 - Model 'E:\\ik_llama_models\\Qwen3.6-35B-A3B-Q4_K_M.gguf' not found. The requested model does not exist in our configuration or OpenRouter catalog.",
+        "verification": "hermes -z one-shot literal-reply-exactly test, twice (before and after the full fallback/vision config pass), both returned the exact requested string"
+      },
+      "body": "The prior session verified model.default was restored to Qwen but never re-ran a live end-to-end request; base_url had also been silently clobbered back to Nous Portal by the same fallback-wizard bug, so every single request was 404ing the whole time the handoff claimed Qwen was confirmed working.",
+      "created_at": "2026-10-10T20:44:08.537271+00:00",
+      "id": "67eae3d6-1f3b-4bfc-b56e-9668fb0c9d9f",
+      "key": "hermes-vps-base-url-drift-outage-2026-10-10",
+      "name": "CRITICAL: model.base_url silently drifted to Nous Portal, took down Hermes entirely (404 on every request)",
+      "tags": [
+        "hermes",
+        "incident",
+        "critical",
+        "outage",
+        "vps"
+      ],
+      "type": "incident",
+      "updated_at": "2026-10-10T20:44:08.537271+00:00"
+    },
+    {
+      "attributes": {
+        "also_missed": "hermes-vultr-destroyed-2026-10-10 was logged same day but not surfaced until a targeted vultr/nous search much later in the conversation",
+        "compounding_factor": "trusted prior handoff's claim of a validated fix without checking that the validation method (config string match) was weaker than an actual live request",
+        "missed_entity": "hermes-nous-deepseek-plan-2026-10-10, worded with setup_model/execution_tier_model, not fallback -- my keyword searches for fallback/model missed it"
+      },
+      "body": "The Vultr-to-Nous transition and the Qwen-as-execution-tier decision were both logged to the catalog same-day, just in different vocabulary (setup_model/execution_tier_model rather than fallback/provider) than what I searched for -- a retrieval gap, not a missing-logging gap. Lesson: when reconstructing routing state, search broadly (provider names, not just the word fallback) before asserting a decision is settled.",
+      "created_at": "2026-10-10T20:44:08.537271+00:00",
+      "id": "fd01587b-5183-4933-ae78-a219c4510fcc",
+      "key": "hermes-catalog-retrieval-gap-identified-2026-10-10",
+      "name": "Root cause of this session's 'forgot a lot of stuff': vocabulary mismatch in catalog retrieval, not a logging gap",
+      "tags": [
+        "hermes",
+        "log-entry",
+        "process",
+        "memory"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-10T20:44:08.537271+00:00"
+    },
+    {
+      "attributes": {
+        "circuit_breaker_status": "STILL NOT IMPLEMENTED -- no built-in per-fallback-provider rate-limit/circuit-breaker exists in this hermes-agent version; lowering api_max_retries is a partial mitigation only, not what was required",
+        "fallback": "deepseek/deepseek-v4.1-flash via Nous Portal (provider: nous) -- Vultr Serverless Inference is gone entirely, Nous Portal (portal.nousresearch.com / inference-api.nousresearch.com) is its replacement for all cloud model access",
+        "fallback_set_via": "hermes config set fallback_providers \"[{provider: nous, model: deepseek/deepseek-v4.1-flash}]\" -- bypasses the broken hermes fallback add interactive wizard entirely, confirmed working",
+        "mission_context": "this routing exists to let Hermes replace Claude Code (CC) as Mark's actual working agent -- CC is only the bootstrap mechanism configuring its own replacement",
+        "primary": "Qwen3.6-35B-A3B-Q4_K_M via ik_llama.cpp, provider custom, base_url http://192.168.40.100:8090/v1 over WireGuard -- validated with a literal one-shot reply test, not just config inspection",
+        "retry_tuning": "agent.api_max_retries lowered 3 -> 1 for faster failover onto the fallback chain",
+        "vision_aux": "auxiliary.vision.provider pinned explicitly to nous (was auto) -- covers Qwen's text-only gap; Nous OAuth already authenticated (mark.stephen.guy@gmail.com)"
+      },
+      "body": "Default profile is Qwen first (confirmed live, not assumed), DeepSeek-v4.1-flash via Nous Portal as its direct replacement if Qwen goes offline, and Nous pinned for vision where Qwen/DeepSeek fall short. Vultr is gone as both the VPS host and as an LLM provider -- Nous Portal replaced it entirely.",
+      "created_at": "2026-10-10T20:44:08.537271+00:00",
+      "id": "ab014631-52e6-401c-8dde-4d65c9c8af60",
+      "key": "hermes-default-profile-routing-confirmed-2026-10-10",
+      "name": "Default Hermes profile model routing: Qwen primary (validated live), DeepSeek-v4.1-flash via Nous Portal fallback, Nous pinned for vision aux",
+      "tags": [
+        "hermes",
+        "decision",
+        "model-routing",
+        "vps",
+        "default-profile"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-10T20:44:08.537271+00:00"
     }
   ],
-  "exported_at": "2026-10-10T20:27:20.862743+00:00",
+  "exported_at": "2026-10-10T20:44:48.530145+00:00",
   "relations": [
     {
       "attributes": {},
@@ -10711,6 +10779,96 @@
       "object_type": "entity",
       "predicate": "informed_by",
       "subject_key": "hermes-vps-hostinger-qwen-main-2026-10-10",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T20:44:18.331123+00:00",
+      "id": "85f91adb-d5b5-487d-bc51-c94ddcbba5b5",
+      "object_key": "hermes-vps-hostinger-qwen-main-2026-10-10",
+      "object_type": "entity",
+      "predicate": "caused_by",
+      "subject_key": "hermes-vps-base-url-drift-outage-2026-10-10",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T20:44:18.331123+00:00",
+      "id": "d80a76ae-b9dd-428c-97a2-17ccf6b1dc29",
+      "object_key": "hermes-vps-base-url-drift-outage-2026-10-10",
+      "object_type": "entity",
+      "predicate": "fixes",
+      "subject_key": "hermes-default-profile-routing-confirmed-2026-10-10",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T20:44:18.331123+00:00",
+      "id": "2279bf31-82af-4157-b15e-0cf324eac8ce",
+      "object_key": "hermes-vps-default-model-ik-llama-2026-10-08",
+      "object_type": "entity",
+      "predicate": "supersedes",
+      "subject_key": "hermes-default-profile-routing-confirmed-2026-10-10",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T20:44:18.331123+00:00",
+      "id": "406198c2-4532-4f51-80cc-3c397b7a88af",
+      "object_key": "hermes-five-provider-choices-locked-2026-10-04",
+      "object_type": "entity",
+      "predicate": "supersedes",
+      "subject_key": "hermes-default-profile-routing-confirmed-2026-10-10",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T20:44:18.331123+00:00",
+      "id": "6253cc3a-cadc-4684-a730-97dcef0f0621",
+      "object_key": "hermes-vps-hostinger-remaining-work-2026-10-10",
+      "object_type": "entity",
+      "predicate": "resolves",
+      "subject_key": "hermes-default-profile-routing-confirmed-2026-10-10",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T20:44:18.331123+00:00",
+      "id": "fcec9cb7-79eb-49b5-811a-c5e4d7f79218",
+      "object_key": "hermes-fallback-needs-circuit-breaker-2026-10-07",
+      "object_type": "entity",
+      "predicate": "still_open",
+      "subject_key": "hermes-default-profile-routing-confirmed-2026-10-10",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T20:44:18.331123+00:00",
+      "id": "f46fadfb-8ed0-4fdc-8b75-689537ecbab3",
+      "object_key": "hermes-nous-deepseek-plan-2026-10-10",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-default-profile-routing-confirmed-2026-10-10",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T20:44:18.331123+00:00",
+      "id": "8450d9b8-60ad-4999-9c67-7f774060dcd9",
+      "object_key": "hermes-all-functions-model-recipe-objective-2026-10-07",
+      "object_type": "entity",
+      "predicate": "serves",
+      "subject_key": "hermes-default-profile-routing-confirmed-2026-10-10",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T20:44:18.331123+00:00",
+      "id": "70a0c72e-ce1b-490f-9c79-624cb58ceae8",
+      "object_key": "hermes-vps-base-url-drift-outage-2026-10-10",
+      "object_type": "entity",
+      "predicate": "explains",
+      "subject_key": "hermes-catalog-retrieval-gap-identified-2026-10-10",
       "subject_type": "entity"
     }
   ],

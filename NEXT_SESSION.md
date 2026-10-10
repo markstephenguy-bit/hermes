@@ -1,102 +1,91 @@
-# Session Seed — Continuing Hostinger hermes-vps Setup
+# Session Seed — Hermes Default Profile, Post-Outage
 
 Paste this whole file as your opening message.
 
 ## The one thing that matters most this session
 
-Mark said this session got "way too slow" fighting an interactive CLI prompt
-over piped SSH and told Claude to cut losses and start fresh. **Don't repeat
-that mistake** — if an interactive `hermes` wizard prompt doesn't respond to
-piped stdin within ~2 tries, stop and use `hermes config set <key> <value>`
-directly instead (documented, reliable, used successfully multiple times
-this session) rather than fighting the TUI longer.
+The handoff from the previous session claimed Qwen was "confirmed working"
+as the main model. **It was not** — `model.base_url` had silently drifted
+to Nous Portal while `model.default` stayed a Qwen filename, so every
+single request was 404ing the entire time. The previous session only
+verified `model.default` as a config string match; it never fired a live
+request. **Don't repeat that mistake**: after any config.yaml change here,
+validate with an actual live round trip —
+`hermes -z "Reply with exactly these three words and nothing else: <marker>"`
+— not just a `hermes config get`.
 
-## Current state — all verified live, not assumed
+## Current state — re-verified live 2026-10-10, not assumed
 
-- **VPS**: `srv2051520.hstgr.cloud`, Hostinger KVM 2, Ubuntu 24.04.5 LTS,
-  IP `31.220.53.141`, Phoenix DC. SSH as `root` or `hermes` — both Claude
-  Code's key (`~/.ssh/hostinger_hermes_vps_ed25519`) and Mark's own key
-  (`~/.ssh/id_ed25519`) are authorized on both users. Mark also has an SSH
-  config alias: `ssh hermes-vps` (from his laptop) with keepalives set.
-- **Firewall, two independent layers** (both must allow a port, confirmed
-  the hard way): Hostinger cloud firewall (`hermes-vps-baseline`, active)
-  + VPS `ufw` (active). Both currently allow TCP/22 and UDP/51820 only.
-- **HermesAgent**: official install, dedicated non-root `hermes` user,
-  systemd lingering. Full `hermes setup` wizard run section by section.
-  - **Terminal backend**: Docker (sandboxed). Hermes's own sandbox
-    containers are ephemeral (`--rm` per command) — nothing persists in
-    `docker ps`, that's correct, not a bug.
-  - **Gateway**: real systemd user service (`hermes-gateway.service`),
-    enabled + running.
-  - **Telegram**: connected, confirmed working live — Mark messaged the
-    bot from his phone and got a response before this session ended. ✅ Done.
-- **WireGuard**: native `wg-quick` on the VPS (10.60.0.1/24) ↔ fileserver
-  (10.60.0.2/24) via Salt-managed peer config, port 51820. Handshake
-  confirmed, 0% packet loss, Qwen's endpoint (192.168.40.100:8090) reachable
-  through the tunnel with HTTP 200. Fully working.
-- **Model — main model is Qwen, confirmed set:**
-  ```yaml
-  model:
-    provider: "custom"
-    base_url: "http://192.168.40.100:8090/v1"
-    default: "E:\\ik_llama_models\\Qwen3.6-35B-A3B-Q4_K_M.gguf"
-  ```
-  Set via `hermes config set model.provider custom`,
-  `hermes config set model.base_url http://192.168.40.100:8090/v1`, and
-  `hermes config set model.default '...'` (the backslash-heavy Windows path
-  needs to go through a transferred script file, not inline SSH args —
-  shell quoting mangles it otherwise; see `git log` for the exact script
-  used if needed, or just re-run `hermes config set` since it's idempotent).
+- **Default profile = model routing**, confirmed working end-to-end:
+  - **Primary**: Qwen3.6-35B-A3B-Q4_K_M via `ik_llama.cpp` on
+    `w_workstation` (192.168.40.100:8090), `provider: custom`,
+    `base_url: http://192.168.40.100:8090/v1`, reached over WireGuard.
+  - **Fallback**: `deepseek/deepseek-v4.1-flash` via **Nous Portal**
+    (`provider: nous`). **Vultr Serverless Inference is gone entirely** —
+    both the Vultr VPS host and Vultr as an LLM provider. Nous Portal
+    (portal.nousresearch.com / inference-api.nousresearch.com) is the
+    replacement for all cloud model access now. Nous OAuth already
+    authenticated as mark.stephen.guy@gmail.com.
+  - Set via `hermes config set fallback_providers "[{provider: nous, model: deepseek/deepseek-v4.1-flash}]"`
+    — this flat key works and bypasses the broken `hermes fallback add`
+    interactive wizard entirely. Confirmed with `hermes fallback list`.
+  - **Vision aux**: `auxiliary.vision.provider` pinned explicitly to
+    `nous` (was `auto`) — covers Qwen's text-only gap.
+  - `agent.api_max_retries` lowered 3 → 1 for faster failover onto the
+    fallback chain.
+- **VPS**: `srv2051520.hstgr.cloud`, Hostinger KVM 2, IP `31.220.53.141`.
+  SSH as `root` or `hermes`, key `~/.ssh/hostinger_hermes_vps_ed25519`.
+- **WireGuard**: native `wg-quick`, 10.60.0.1/24 ↔ fileserver 10.60.0.2/24,
+  0% packet loss, confirmed working.
+- **Telegram**: connected, confirmed working live.
 
 ## What's NOT done yet — pick up here
 
-1. **DeepSeek as fallback — not yet added.** `hermes fallback add` uses
-   the same provider/model picker as `hermes model`, but picking a model
-   through it appears to **immediately overwrite `model.default`** before
-   the later "Tool Gateway toggle" + "reasoning effort" steps actually move
-   it into the fallback chain. This caused `model.default` to get
-   clobbered back to deepseek twice this session (fixed both times via
-   direct `hermes config set`, confirmed Qwen is correctly restored as of
-   end of session).
-   **The specific blocker**: after picking `deepseek/deepseek-v4.1-flash`
-   as the fallback model, a "Tool Gateway — pick the tools to enable"
-   checkbox screen appears (Web search, Image gen, Video gen, Speech-to-
-   text, all pre-checked). This screen would not advance via piped stdin
-   over `ssh -tt` no matter what was tried (plain `\n`, `\r`, multiple
-   trailing newlines, up to 90s timeout) — it may be doing a live Nous API
-   call per tool that takes longer than tested, or it may need genuine TTY
-   raw-mode input piped stdin can't satisfy.
-   **Recommended next approach**: don't keep fighting this interactively.
-   Either (a) try it from Hermes Desktop's own built-in terminal (real TTY,
-   not piped SSH) since Mark already has that connected, or (b) check if
-   there's a way to directly write a `fallback:` array into config.yaml —
-   inspect the config.yaml schema/comments for the fallback section's shape
-   first (same technique used for `model:` this session) and set it via
-   `hermes config set` if a flat key path exists, or (c) ask in the
-   hermes-agent Discord/GitHub if there's a `--non-interactive` flag
-   equivalent for `fallback add` specifically.
-2. **Cheap/free auxiliary models for what Qwen can't do** (vision/image
-   processing — Qwen's endpoint is `input_modalities: ["text"]` only,
-   confirmed via `curl http://192.168.40.100:8090/v1/models` through the
-   tunnel). Mark said "go cheap in the model selections first" — prioritize
-   free tier Nous models, not premium. Likely `hermes model` → option
-   "Configure auxiliary models..." (was #43 this session, verify number)
-   or the `auxiliary:` block in config.yaml.
+1. **No real circuit breaker on the fallback path.** Mark's explicit
+   requirement (2026-10-07, still unmet): a fallback must not just be a
+   bare model pointer — it needs its own rate-limit/circuit-breaker so a
+   retry storm can't hammer a **paid** Nous API the way it hung the free
+   local Qwen slot during the concurrency crash. **Checked this session:
+   no built-in feature for this exists in the current hermes-agent
+   version** — only the global `agent.api_max_retries` knob (now set to
+   1) and the jittered global retry-storm backoff. A real breaker would
+   need either a config feature that doesn't exist yet, or a wrapper
+   around the fallback path. Don't consider this solved by the retry
+   tuning — it's a partial mitigation only.
+2. **Fallback chain is configured but not stress-tested.** We set
+   `deepseek/deepseek-v4.1-flash` via Nous as `fallback_providers[0]` and
+   confirmed it via `hermes fallback list`, but never actually forced a
+   failure on Qwen to watch it fail over live. Worth doing deliberately
+   (not via another concurrency crash).
+3. **Custom models for other gaps beyond vision** — Mark asked for
+   "custom models setup where these ai fall short via
+   portal.nousresearch.com" generally, not just vision. Vision is now
+   pinned to Nous; audit the other `auxiliary.*` blocks (web_extract,
+   compression, title_generation, moa_reference, etc. — see config.yaml
+   around line 900+) for whether any of them need the same explicit
+   `nous` pin instead of `auto`.
+
+## Why the last session's facts were hard to find (fixed now, but know this)
+
+The Vultr→Nous transition and the Qwen-as-execution-tier decision were
+both logged to the catalog same-day as everything else — just in
+different vocabulary (`setup_model`/`execution_tier_model` rather than
+`fallback`/`provider`). A keyword search for "fallback" or "model" missed
+them. This was a **retrieval gap, not a missing-logging gap**. When
+reconstructing routing state from the catalog, search broadly (provider
+names like `nous`/`vultr`, not just the word "fallback") before treating
+any prior routing decision as still current — and always re-verify live
+state over a prior session's claimed verification.
 
 ## Ground rules reaffirmed/established this session
 
-- **Don't presuppose from past session history** — verify live, don't
-  replay old catalog entities as instructions. Mark corrected this hard
-  mid-session.
-- **Visual confirmation for anything touching money/purchases** — see
-  `feedback_visual_confirm_for_money_actions.md` in Claude's own memory.
-- **"The Hostinger way" vs "the Hermes way"**: use Hostinger's own platform
-  features where they're genuine conveniences (cloud firewall, backups);
-  skip them where there's no real integration point (custom code deploys,
-  WireGuard — ended up using Salt + native wg-quick instead of their
-  Docker-catalog WireGuard Easy template, which had a broken admin login).
-- **When an interactive TUI fights piped automation, stop and use the
-  direct config path instead of escalating timeouts/retries** — this is
-  the mistake that ended this session; don't repeat it.
-- Memory and git upkeep are Claude's job — log to the catalog as things
-  happen, commit/push.
+- **Validate the actually active model, not the config file.** A config
+  value matching what you expect is not proof it works — fire a live
+  request.
+- **Vultr is gone, full stop** — not the VPS (already known), but also as
+  an LLM provider. Nous Portal is the sole cloud provider going forward.
+- **Mission context, restated by Mark**: Hermes is being set up to fully
+  replace Claude Code (CC) as the actual working agent. CC is only the
+  bootstrap mechanism used to configure its own replacement — this should
+  bias model-routing and capability decisions toward "good enough to
+  replace CC," not just "good enough to chat."
