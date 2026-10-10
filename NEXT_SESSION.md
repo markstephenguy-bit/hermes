@@ -39,6 +39,29 @@ validate with an actual live round trip —
   0% packet loss, confirmed working.
 - **Telegram**: connected, confirmed working live.
 
+## Also done this session: auxiliary task mixture (2026-10-10, later)
+
+Mark's direction: Qwen primary everywhere it's capable (cost control), Nous
+Portal specifically where Qwen lacks capability or mistakes are costly —
+not auto-routing everything to Nous, not staying 100% local either. Real
+key names were confirmed by grepping hermes-agent's own compiled Desktop
+UI bundle (`ModelsPage-*.js`), not guessed from the Desktop labels —
+config.yaml's comments only documented 7 of the 12 auxiliary task types,
+guessing the rest would have risked silent misconfiguration.
+
+Set via `hermes config set auxiliary.<task>.provider nous`:
+- **Nous**: `vision`, `approval`, `review`, `triage_specifier`, `kanban_decomposer`
+- **Qwen (auto)**: `compression`, `skills_hub`, `mcp`, `title_generation`,
+  `voice_chat`, `profile_describer`, `curator`
+
+Verified live after gateway restart with another `hermes -z` literal-reply
+test. See catalog entity `hermes-aux-task-model-mixture-2026-10-10`.
+
+A full capability map (what's live/available/unexplored across all of
+Hermes, not just model routing) was built as an artifact this session —
+check the conversation history or ask Mark for the link if picking up
+from here.
+
 ## What's NOT done yet — pick up here
 
 1. **No real circuit breaker on the fallback path.** Mark's explicit

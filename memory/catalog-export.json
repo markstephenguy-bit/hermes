@@ -7796,9 +7796,84 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-10T20:44:08.537271+00:00"
+    },
+    {
+      "attributes": {
+        "key_names_source": "confirmed via grep of hermes-agent's own compiled Desktop UI bundle (ModelsPage-*.js), not guessed -- config.yaml's comments only documented 7 of the 12 task types, would have risked silent misconfiguration if set from the UI labels alone",
+        "nous_pinned": [
+          "vision",
+          "approval",
+          "review",
+          "triage_specifier",
+          "kanban_decomposer"
+        ],
+        "qwen_auto": [
+          "compression",
+          "skills_hub",
+          "mcp",
+          "title_generation",
+          "voice_chat",
+          "profile_describer",
+          "curator"
+        ],
+        "reasoning": "low-frequency + high-stakes tasks (safety approval judgment, code review for the CC-replacement mission, spec fleshing, task decomposition) moved to nous for quality; high-frequency + low-stakes/routine tasks stay on free local Qwen to avoid blowing through money",
+        "verified_live": "hermes -z literal-reply test after gateway restart, main model (Qwen) still answers correctly"
+      },
+      "body": "Mark wants a mixture, not a binary: Qwen primary everywhere it's capable (cost control), Nous Portal filling in specifically where Qwen lacks capability or where mistakes are costly. Applied across all 12 Hermes Desktop auxiliary task rows.",
+      "created_at": "2026-10-10T21:05:07.682284+00:00",
+      "id": "b39bc96f-efba-490d-8772-4471134c1457",
+      "key": "hermes-aux-task-model-mixture-2026-10-10",
+      "name": "Default profile auxiliary tasks: mixture of Qwen (free, high-frequency/low-stakes) and Nous (paid, reasoning-heavy/consequential)",
+      "tags": [
+        "hermes",
+        "decision",
+        "model-routing",
+        "default-profile",
+        "cost"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-10T21:05:07.682284+00:00"
+    },
+    {
+      "attributes": {
+        "constraint": "the Hermes install must not come to depend on CC to function -- at some point Mark wants to operate Hermes+Hostinger alone, with no CC in the loop",
+        "implication": "prefer config/capabilities a future Hermes-native agent (or Mark himself via Desktop) could do, not one-off steps only Claude Code's SSH access can perform"
+      },
+      "body": "Restates and sharpens the existing bootstrap-tool framing: CC should rack up points by replacing itself in as many ways as possible, and the Hermes install's correctness must never be contingent on CC remaining available.",
+      "created_at": "2026-10-10T21:05:07.682284+00:00",
+      "id": "2529dbb6-1dc0-4954-9361-805fcb063efa",
+      "key": "hermes-cc-replacement-reinforced-2026-10-10",
+      "name": "Mark restated: Hermes is meant to replace Claude Code (CC); CC is only the bootstrap mechanism",
+      "tags": [
+        "hermes",
+        "fact",
+        "mission",
+        "cc-replacement"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-10T21:05:07.682284+00:00"
+    },
+    {
+      "attributes": {
+        "example_given": "seeing Hermes about to do something wrong and interrupting before it reaches an incorrect state, rather than having to fully stop and restart",
+        "status": "explicitly deferred by Mark -- 'dont go down that rabbit hole about cc but this is something that would be great in hermes... just an example we could look at later'"
+      },
+      "body": "Not an action item. Logged only so a future session doesn't need Mark to re-explain it -- a live-steerable agent loop is a real but unscoped want.",
+      "created_at": "2026-10-10T21:05:07.682284+00:00",
+      "id": "a52ccff7-3b07-4981-8544-f09c810a478c",
+      "key": "hermes-future-idea-interrupt-while-running-2026-10-10",
+      "name": "Future idea (explicitly deferred, not scoped): interrupt/steer Hermes mid-task without a full stop, unlike CC today",
+      "tags": [
+        "hermes",
+        "gap",
+        "future-idea",
+        "ux"
+      ],
+      "type": "gap",
+      "updated_at": "2026-10-10T21:05:07.682284+00:00"
     }
   ],
-  "exported_at": "2026-10-10T20:44:48.530145+00:00",
+  "exported_at": "2026-10-10T21:07:21.418436+00:00",
   "relations": [
     {
       "attributes": {},
@@ -10869,6 +10944,36 @@
       "object_type": "entity",
       "predicate": "explains",
       "subject_key": "hermes-catalog-retrieval-gap-identified-2026-10-10",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T21:05:12.143585+00:00",
+      "id": "149ff1fb-33e9-4f3d-a452-e96c09a9ece9",
+      "object_key": "hermes-default-profile-routing-confirmed-2026-10-10",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-aux-task-model-mixture-2026-10-10",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T21:05:12.143585+00:00",
+      "id": "b59c03d9-fc57-4623-b5ad-b1c768cdda1b",
+      "object_key": "hermes-default-profile-routing-confirmed-2026-10-10",
+      "object_type": "entity",
+      "predicate": "governs",
+      "subject_key": "hermes-cc-replacement-reinforced-2026-10-10",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T21:05:12.143585+00:00",
+      "id": "3dfad601-0e16-46a3-b37d-687202c81bff",
+      "object_key": "hermes-all-functions-model-recipe-objective-2026-10-07",
+      "object_type": "entity",
+      "predicate": "serves",
+      "subject_key": "hermes-aux-task-model-mixture-2026-10-10",
       "subject_type": "entity"
     }
   ],
