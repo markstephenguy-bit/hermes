@@ -62,6 +62,25 @@ Hermes, not just model routing) was built as an artifact this session —
 check the conversation history or ask Mark for the link if picking up
 from here.
 
+## Also done this session: concurrency cap (2026-10-10, later still)
+
+`max_concurrent_sessions` was `null` (unlimited) — directly the root cause
+of the 2026-10-07 crash (10 simultaneous requests hung Qwen's single
+inference slot). Capped it at 3. Above that, new sessions get a clean
+error instead of piling onto Qwen. Verified Qwen still answers after
+restart. This significantly reduces the urgency of the circuit-breaker
+item below — most of the pile-up that would trigger it can no longer
+happen. Still worth building eventually, just not urgently.
+
+Also confirmed and explained plainly: `auto` (used by 7 of the 12
+auxiliary tasks) already means "Qwen first, for everyone, always" —
+cloud only engages when Qwen's connection is actually broken, not
+because another model seems better. This is already live, needs no
+further setup. Verified against hermes-agent's own test suite
+(`tests/agent/test_auxiliary_main_first.py`), not just the config.yaml
+comment, which is stale/outdated documentation left over from an older,
+reversed policy — don't trust that comment block if you read it again.
+
 ## What's NOT done yet — pick up here
 
 1. **No real circuit breaker on the fallback path.** Mark's explicit

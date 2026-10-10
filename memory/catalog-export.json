@@ -7871,9 +7871,51 @@
       ],
       "type": "gap",
       "updated_at": "2026-10-10T21:05:07.682284+00:00"
+    },
+    {
+      "attributes": {
+        "behavior_above_cap": "new sessions beyond 3 get a clean error, existing active sessions are unaffected -- per Hermes's own documented behavior for this key",
+        "new_value": 3,
+        "previous_value": "null (unlimited)",
+        "root_cause_addressed": "the 2026-10-07 concurrency crash was ~10 simultaneous requests hitting Qwen's single inference slot at once (8-way subagent fanout + 2 concurrent calls) -- traffic-jam problem, not a model-choice problem, so no amount of smart routing between models fixes it",
+        "verified_live": "hermes -z literal-reply test after gateway restart, Qwen still answers correctly"
+      },
+      "body": "Mark independently reasoned his way to the exact gap this project already had open (circuit breaker / overload handling) while asking for a plain explanation of Qwen-first routing. Rather than building the complex graceful-failover feature he described (detect near-crash, shed to DeepSeek, swing back once a slot frees), capped concurrent sessions at the root so the pile-up that causes the crash mostly can't happen -- prevention instead of a more complex mitigation.",
+      "created_at": "2026-10-10T21:48:00.811413+00:00",
+      "id": "5e9ddd76-5ea7-4b66-94dd-56880947b3f2",
+      "key": "hermes-concurrency-cap-set-2026-10-10",
+      "name": "max_concurrent_sessions capped at 3 to prevent the single-slot Qwen crash at its root cause, not just mitigate it",
+      "tags": [
+        "hermes",
+        "decision",
+        "resilience",
+        "vps",
+        "default-profile"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-10T21:48:00.811413+00:00"
+    },
+    {
+      "attributes": {
+        "confusion_source": "earlier explanation of the auto-main-first policy (hermes-aux-task-model-mixture-2026-10-10 context) was too technical to land as 'this is the feature you're asking for'",
+        "plain_explanation_given": "Hermes already tries Qwen for everything by default; DeepSeek only engages when Qwen's connection is actually broken, not because it's 'better' -- already true today with zero added config"
+      },
+      "body": "Mark said 'you are confusing me... i am a noob' about the auto-first policy explained two turns earlier. Restated in plain cause-and-effect language rather than code/test-suite terms. Lesson for future sessions: lead with the plain-language version first, offer the verified technical grounding only if asked.",
+      "created_at": "2026-10-10T21:48:00.811413+00:00",
+      "id": "35197a24-404d-4cb2-9912-5ff536e07d3d",
+      "key": "hermes-auto-policy-explained-plainly-2026-10-10",
+      "name": "Clarified for Mark in plain terms: auto = Qwen first for everyone, cloud only engages on technical failure, already live, no setup needed",
+      "tags": [
+        "hermes",
+        "fact",
+        "default-profile",
+        "communication"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-10T21:48:00.811413+00:00"
     }
   ],
-  "exported_at": "2026-10-10T21:07:21.418436+00:00",
+  "exported_at": "2026-10-10T21:48:16.358097+00:00",
   "relations": [
     {
       "attributes": {},
@@ -10974,6 +11016,36 @@
       "object_type": "entity",
       "predicate": "serves",
       "subject_key": "hermes-aux-task-model-mixture-2026-10-10",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T21:48:05.14248+00:00",
+      "id": "e9368b1b-acb8-428a-aabf-be186f51d5f1",
+      "object_key": "hermes-concurrency-induced-llama-server-hang-2026-10-07",
+      "object_type": "entity",
+      "predicate": "mitigates",
+      "subject_key": "hermes-concurrency-cap-set-2026-10-10",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T21:48:05.14248+00:00",
+      "id": "467416e3-590c-490d-a238-d54acb7bacf5",
+      "object_key": "hermes-fallback-needs-circuit-breaker-2026-10-07",
+      "object_type": "entity",
+      "predicate": "reduces_urgency_of",
+      "subject_key": "hermes-concurrency-cap-set-2026-10-10",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T21:48:05.14248+00:00",
+      "id": "016ac97e-ab0f-43b2-a785-d49f2f81d837",
+      "object_key": "hermes-aux-task-model-mixture-2026-10-10",
+      "object_type": "entity",
+      "predicate": "clarifies",
+      "subject_key": "hermes-auto-policy-explained-plainly-2026-10-10",
       "subject_type": "entity"
     }
   ],
