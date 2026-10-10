@@ -7913,9 +7913,37 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-10T21:48:00.811413+00:00"
+    },
+    {
+      "attributes": {
+        "autostart_file": "/home/mark/.config/autostart/display-scale.desktop",
+        "effective_resolution": "1536x864",
+        "host": "laptop",
+        "kernel_headers_installed": "linux-headers-7.0.0-38-generic",
+        "native_mode": "1920x1080",
+        "nvidia_driver": "580",
+        "output": "DP-0",
+        "ui_magnification": "125%",
+        "xrandr_scale": "0.8x0.8"
+      },
+      "body": "After installing linux-headers-7.0.0-38-generic to restore the NVIDIA 580 driver on laptop, set DP-0 to 1536x864 effective resolution (xrandr --output DP-0 --mode 1920x1080 --scale 0.8x0.8) and persisted it via ~/.config/autostart/display-scale.desktop.",
+      "created_at": "2026-10-10T23:46:04.279675+00:00",
+      "id": "5206c0e3-33c5-4f71-9599-9321abb490e5",
+      "key": "laptop-display-scale-125pct-2026-10-10",
+      "name": "laptop DP-0 set to 125% scaling (1536x864 via xrandr --scale 0.8x0.8) after NVIDIA 580 driver repair",
+      "tags": [
+        "hermes",
+        "laptop",
+        "display",
+        "resolution",
+        "xrandr",
+        "nvidia"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-10T23:46:04.279675+00:00"
     }
   ],
-  "exported_at": "2026-10-10T21:48:16.358097+00:00",
+  "exported_at": "2026-10-10T23:46:04.410788+00:00",
   "relations": [
     {
       "attributes": {},
@@ -11046,6 +11074,16 @@
       "object_type": "entity",
       "predicate": "clarifies",
       "subject_key": "hermes-auto-policy-explained-plainly-2026-10-10",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T23:45:43.077154+00:00",
+      "id": "42c6e175-7dee-462c-ab8e-8fb7abb12228",
+      "object_key": "laptop",
+      "object_type": "host",
+      "predicate": "configured_on",
+      "subject_key": "laptop-display-scale-125pct-2026-10-10",
       "subject_type": "entity"
     }
   ],
