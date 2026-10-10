@@ -5202,6 +5202,25 @@
     },
     {
       "attributes": {
+        "execution_tier_model": "local Qwen",
+        "sequence": "1) Hostinger VPS up, 2) Nous/DeepSeek wired for setup work, 3) local Qwen brought online",
+        "setup_model": "DeepSeek via Nous"
+      },
+      "body": "Plan: use Nous API access to DeepSeek to do the Hostinger VPS setup work, then bring the local Qwen instance online as the ongoing tool-execution tier.",
+      "created_at": "2026-10-10T17:02:45.851787+00:00",
+      "id": "8802b188-850a-423f-ba76-8e3f0de84002",
+      "key": "hermes-nous-deepseek-plan-2026-10-10",
+      "name": "New Hermes AI-access plan: Nous (DeepSeek) for setup, local Qwen for execution tier",
+      "tags": [
+        "hermes",
+        "ai-access",
+        "deployment"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-10T17:02:45.851787+00:00"
+    },
+    {
+      "attributes": {
         "cold_start_delay": "10-15s clean start, 20-30s OS memory reclamation delay on fast restart",
         "policy": "Prefer runtime prompt/sampler parameter tuning over process restarts wherever possible; 24/7 background task preferred",
         "vram_ram_locking": "21.3GB allocation (4.9GB VRAM, ~18GB page-locked system RAM)"
@@ -7461,6 +7480,26 @@
     },
     {
       "attributes": {
+        "new_provider": "Hostinger",
+        "old_ip": "207.148.2.224",
+        "old_provider": "Vultr",
+        "status": "account not yet created"
+      },
+      "body": "Mark destroyed the Vultr hermes-vps (207.148.2.224) and is standing up a replacement on Hostinger instead.",
+      "created_at": "2026-10-10T17:02:45.799039+00:00",
+      "id": "1b4b0551-383a-4d19-94ea-183ae4765546",
+      "key": "hermes-vultr-destroyed-2026-10-10",
+      "name": "Vultr hermes-vps destroyed; migrating to Hostinger",
+      "tags": [
+        "hermes",
+        "deployment",
+        "vps"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-10T17:02:45.799039+00:00"
+    },
+    {
+      "attributes": {
         "claude_code_new_role": "helper -- infrastructure Hermes genuinely cannot touch itself (DNS, VPS host OS, home-side WireGuard, catalog/vault schema), plus orchestration and git/memory upkeep. Not the default fixer for things inside Hermes's own runtime.",
         "mark_quote": "i am moving from claude code to hermes so that i can use hermes to troubleshoot and repair hermes by itself. having claude code repair what hermes did to itself will never stand.",
         "related": [
@@ -7555,9 +7594,143 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-08T23:23:44.007238+00:00"
+    },
+    {
+      "attributes": {
+        "expiration": "2026-11-10",
+        "hostname": "srv2051520.hstgr.cloud",
+        "ip": "31.220.53.141",
+        "location": "Phoenix, US",
+        "os": "Ubuntu 24.04 LTS (plain, no app template)",
+        "plan": "KVM 2 (2 vCPU/8GB/100GB NVMe)",
+        "provider": "Hostinger"
+      },
+      "body": "Mark purchased a dedicated Hostinger KVM 2 VPS (srv2051520.hstgr.cloud, 31.220.53.141) as the hermes-vps replacement for the destroyed Vultr box; plain Ubuntu, not the Hostinger Hermes Agent app template.",
+      "created_at": "2026-10-10T18:26:04.479757+00:00",
+      "id": "c66f9d86-aa5e-4526-a8f7-f476805305ff",
+      "key": "hermes-vps-hostinger-live-2026-10-10",
+      "name": "New hermes-vps live on Hostinger (KVM 2)",
+      "tags": [
+        "hermes",
+        "deployment",
+        "vps"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-10T18:26:04.479757+00:00"
+    },
+    {
+      "attributes": {
+        "gateway": "systemd --user service, enabled+running, linger on",
+        "host": "srv2051520.hstgr.cloud",
+        "install_method": "official curl install.sh from hermes-agent.nousresearch.com, not replicated from prior Vultr session notes",
+        "ip": "31.220.53.141",
+        "model": "deepseek/deepseek-v4.1-flash via Nous Portal",
+        "service_user": "hermes",
+        "terminal_backend": "docker"
+      },
+      "body": "Ran the full official hermes setup wizard (model, tts, terminal, gateway, tools, telemetry, agent) end to end per Nous Research docs, deliberately not reusing the prior Vultr sessions ad-hoc process. Terminal backend set to Docker for sandbox isolation; gateway installed as a persistent systemd user service.",
+      "created_at": "2026-10-10T19:27:32.288002+00:00",
+      "id": "616e77e0-971a-463c-b64b-7e5df34c8a6f",
+      "key": "hermes-vps-hostinger-setup-complete-2026-10-10",
+      "name": "HermesAgent official setup wizard completed on new Hostinger VPS",
+      "tags": [
+        "hermes",
+        "deployment",
+        "vps"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-10T19:27:32.288002+00:00"
+    },
+    {
+      "attributes": {
+        "fileserver_pubkey": "SBwOsVCyu4EjjQ3q/QqlLPSqOxIM3SjM8pv5KkzoCHw=",
+        "fileserver_tunnel_ip": "10.60.0.2/24",
+        "method": "native wg-quick on VPS (not WireGuard Easy, which had a broken admin login and was removed); fileserver peer updated via Salt cmd.run",
+        "port": 51820,
+        "verified": "0% packet loss to fileserver and w_workstation; ik_llama.cpp Qwen endpoint (192.168.40.100:8090) returns HTTP 200 through the tunnel",
+        "vps_pubkey": "FNqG8jOz1OVH1iiOMeqoclQE+Hi7/nZ0g0V+HH5akzg=",
+        "vps_tunnel_ip": "10.60.0.1/24"
+      },
+      "body": "Replaced the dead Vultr peer entry on fileservers wg0.conf with the new Hostinger VPS keypair/endpoint via Salt; brought up native WireGuard on the VPS matching fileservers proven config shape. Handshake confirmed, full connectivity verified including the Qwen inference endpoint.",
+      "created_at": "2026-10-10T19:57:38.789077+00:00",
+      "id": "63dad4c1-a710-42e8-9c89-e918dff0915b",
+      "key": "hermes-vps-hostinger-wireguard-live-2026-10-10",
+      "name": "WireGuard tunnel re-established: new Hostinger VPS <-> fileserver",
+      "tags": [
+        "hermes",
+        "deployment",
+        "vps",
+        "wireguard"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-10T19:57:38.789077+00:00"
+    },
+    {
+      "attributes": {
+        "allowed_user": "8772762199",
+        "setup_method": "hermes setup gateway (official wizard), manual token entry",
+        "side_fix": "hermes users docker group membership was stale (usermod predated by running systemd --user session); fixed via systemctl restart user@1000.service",
+        "status": "Connected to Telegram (polling mode), confirmed in logs"
+      },
+      "body": "Telegram bot wired into hermes-gateway via the official setup wizard; confirmed connected and polling. Also fixed a stale-docker-group-membership bug in the hermes users long-running systemd --user session uncovered along the way.",
+      "created_at": "2026-10-10T20:11:52.869798+00:00",
+      "id": "feab7c7f-5f41-42a1-bd6b-7e8387603521",
+      "key": "hermes-vps-hostinger-telegram-live-2026-10-10",
+      "name": "Telegram gateway connected on new Hostinger hermes-vps",
+      "tags": [
+        "hermes",
+        "deployment",
+        "vps",
+        "telegram"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-10T20:11:52.869798+00:00"
+    },
+    {
+      "attributes": {
+        "current_main_model": "deepseek/deepseek-v4.1-flash via Nous Portal (set earlier in this session, needs to be swapped to Qwen as primary)",
+        "docker_group_fix": "hermes user needed its systemd --user session refreshed after usermod -aG docker hermes for group membership to take effect -- done, confirmed working, note for future if docker errors reappear after user-session-affecting changes",
+        "plan": "1) set Qwen (custom endpoint) as main model via hermes model -> option for custom endpoint URL, 2) hermes fallback add -> deepseek/deepseek-v4.1-flash, 3) configure auxiliary models (vision/image_gen) with cheap/free Nous Portal models since Qwen is text-only",
+        "qwen_endpoint": "http://192.168.40.100:8090/v1 (ik_llama.cpp, reachable through the new WireGuard tunnel, verified HTTP 200)"
+      },
+      "body": "Session ran out of budget before completing model routing. Qwen is network-reachable and verified (HTTP 200) through the new WireGuard tunnel but not yet set as the active model in Hermes config. DeepSeek is currently the main model and should become the fallback instead.",
+      "created_at": "2026-10-10T20:11:58.157657+00:00",
+      "id": "89d4b484-8439-4c84-b2bb-4cc4953f45ba",
+      "key": "hermes-vps-hostinger-remaining-work-2026-10-10",
+      "name": "Remaining work for next session: model routing (Qwen main/DeepSeek fallback/cheap Nous for gaps)",
+      "tags": [
+        "hermes",
+        "deployment",
+        "vps",
+        "gap"
+      ],
+      "type": "gap",
+      "updated_at": "2026-10-10T20:11:58.157657+00:00"
+    },
+    {
+      "attributes": {
+        "blocker": "hermes fallback add picker clobbers model.default before completing; Tool Gateway toggle screen will not advance via piped SSH stdin",
+        "model_base_url": "http://192.168.40.100:8090/v1",
+        "model_default": "E:\\ik_llama_models\\Qwen3.6-35B-A3B-Q4_K_M.gguf",
+        "model_provider": "custom",
+        "set_via": "hermes config set (direct), not the interactive wizard",
+        "telegram_status": "confirmed working, Mark tested live from phone"
+      },
+      "body": "Qwen (local, via WireGuard tunnel to w_workstation:8090) confirmed set as the main model. DeepSeek-as-fallback attempted repeatedly via hermes fallback add but blocked by an unresponsive Tool Gateway toggle screen over piped SSH; session ended here per Mark explicit call to stop and start fresh rather than keep fighting it.",
+      "created_at": "2026-10-10T20:25:58.057553+00:00",
+      "id": "e06140c3-f083-42d7-9217-56dd81d5b143",
+      "key": "hermes-vps-hostinger-qwen-main-2026-10-10",
+      "name": "Qwen set as main model on new hermes-vps; DeepSeek fallback blocked by TUI issue",
+      "tags": [
+        "hermes",
+        "deployment",
+        "vps"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-10T20:25:58.057553+00:00"
     }
   ],
-  "exported_at": "2026-10-08T23:23:44.176948+00:00",
+  "exported_at": "2026-10-10T20:27:20.862743+00:00",
   "relations": [
     {
       "attributes": {},
@@ -10438,6 +10611,106 @@
       "object_type": "entity",
       "predicate": "generalizes",
       "subject_key": "hermes-vps-docker-sandbox-root-ownership-is-general-2026-10-08",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T17:02:51.008633+00:00",
+      "id": "25e175e9-fb45-4a15-82a6-182f9b450dd6",
+      "object_key": "hermes-nous-deepseek-plan-2026-10-10",
+      "object_type": "decision",
+      "predicate": "informed_by",
+      "subject_key": "hermes-vultr-destroyed-2026-10-10",
+      "subject_type": "fact"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T18:26:04.508724+00:00",
+      "id": "e69b9573-cd4c-4654-84d0-13a3a3636845",
+      "object_key": "hermes-vultr-destroyed-2026-10-10",
+      "object_type": "fact",
+      "predicate": "supersedes",
+      "subject_key": "hermes-vps-hostinger-live-2026-10-10",
+      "subject_type": "fact"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T19:27:32.333121+00:00",
+      "id": "8d1842df-ac68-494a-9f67-eda5028ab7ab",
+      "object_key": "hermes-vps-hostinger-live-2026-10-10",
+      "object_type": "fact",
+      "predicate": "refines",
+      "subject_key": "hermes-vps-hostinger-setup-complete-2026-10-10",
+      "subject_type": "fact"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T19:57:38.823027+00:00",
+      "id": "a8e7e424-1a70-4f2b-b0c7-db3667b83815",
+      "object_key": "hermes-vps-hostinger-setup-complete-2026-10-10",
+      "object_type": "fact",
+      "predicate": "refines",
+      "subject_key": "hermes-vps-hostinger-wireguard-live-2026-10-10",
+      "subject_type": "fact"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T20:11:52.897437+00:00",
+      "id": "065e0856-f0af-47d9-9ca5-1074befbbae7",
+      "object_key": "hermes-vps-hostinger-wireguard-live-2026-10-10",
+      "object_type": "fact",
+      "predicate": "refines",
+      "subject_key": "hermes-vps-hostinger-telegram-live-2026-10-10",
+      "subject_type": "fact"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T20:12:02.401381+00:00",
+      "id": "4c9abfeb-c9e8-4929-9b68-8b11f701911a",
+      "object_key": "hermes-vps-hostinger-wireguard-live-2026-10-10",
+      "object_type": "fact",
+      "predicate": "blocks",
+      "subject_key": "hermes-vps-hostinger-remaining-work-2026-10-10",
+      "subject_type": "gap"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T20:25:58.08228+00:00",
+      "id": "ac7b6939-10e0-49f6-a755-07166f9bcb53",
+      "object_key": "hermes-vps-hostinger-telegram-live-2026-10-10",
+      "object_type": "fact",
+      "predicate": "refines",
+      "subject_key": "hermes-vps-hostinger-qwen-main-2026-10-10",
+      "subject_type": "fact"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T20:27:17.407278+00:00",
+      "id": "90eb3efb-2570-409e-bce6-ba1b035f41a9",
+      "object_key": "hermes-vps-hostinger-remaining-work-2026-10-10",
+      "object_type": "entity",
+      "predicate": "resolves",
+      "subject_key": "hermes-vps-hostinger-qwen-main-2026-10-10",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T20:27:17.407278+00:00",
+      "id": "4ee8b730-1aab-410c-8630-001e9af8f061",
+      "object_key": "hermes-vps-hostinger-wireguard-live-2026-10-10",
+      "object_type": "entity",
+      "predicate": "depends_on",
+      "subject_key": "hermes-vps-hostinger-qwen-main-2026-10-10",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-10T20:27:17.407278+00:00",
+      "id": "35eec8ef-74ff-4e6d-b208-9c7016beb5ff",
+      "object_key": "hermes-vps-hostinger-telegram-live-2026-10-10",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-vps-hostinger-qwen-main-2026-10-10",
       "subject_type": "entity"
     }
   ],
