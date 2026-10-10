@@ -1,4 +1,11 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "fastmcp>=2.0",
+#     "httpx>=0.27",
+# ]
+# ///
 """MCP server exposing the home-lab secrets vault (Postgres + pgcrypto, via
 PostgREST) to Claude Code, Codex, and Hermes alike - one shared passcode
 unlocks any stored secret, for use against any connected system.
