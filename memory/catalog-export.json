@@ -7964,9 +7964,31 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-11T23:00:24.011093+00:00"
+    },
+    {
+      "attributes": {
+        "added": "verify live before claiming something works (directly from tonight's base_url outage and stale confirmed-working claim); decisive executor not hedging auditor (from Claude Code's own memory of Mark re: credential use)",
+        "bytes": 1150,
+        "kept_from_default": "direct/no-filler tone, honest uncertainty, earned depth, pushback-when-right",
+        "scope_note": "applies to Hermes as a whole agent across any project/task -- not scoped to the Hermes-install project itself; Mark explicitly clarified this distinction before customizing"
+      },
+      "body": "Replaced the never-touched, Hermes-seeded default SOUL.md with one built on tonight's actual lessons. Verified live: a fresh session correctly self-identified using the new text.",
+      "created_at": "2026-10-11T23:08:24.797214+00:00",
+      "id": "3a2212d5-7c70-4015-aa61-674de721131a",
+      "key": "hermes-soul-customized-2026-10-11",
+      "name": "SOUL.md customized from Hermes's auto-generated default -- verify-before-claiming and decisive-executor traits added",
+      "tags": [
+        "hermes",
+        "decision",
+        "memory",
+        "default-profile",
+        "identity"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-11T23:08:24.797214+00:00"
     }
   ],
-  "exported_at": "2026-10-11T23:00:42.597726+00:00",
+  "exported_at": "2026-10-11T23:08:35.180539+00:00",
   "relations": [
     {
       "attributes": {},
@@ -11127,6 +11149,16 @@
       "object_type": "entity",
       "predicate": "fixes",
       "subject_key": "hermes-user-memory-restored-2026-10-11",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-11T23:08:27.228966+00:00",
+      "id": "9e874c81-6f0b-4649-a024-9ec150d46d9c",
+      "object_key": "hermes-user-memory-restored-2026-10-11",
+      "object_type": "entity",
+      "predicate": "completes",
+      "subject_key": "hermes-soul-customized-2026-10-11",
       "subject_type": "entity"
     }
   ],

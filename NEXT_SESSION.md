@@ -103,11 +103,17 @@ Fixed `USER.md` and `MEMORY.md`:
   state facts from each file; both echoed correct content back.
 - Logged to catalog as `hermes-user-memory-restored-2026-10-11`.
 
-**Still open: SOUL.md and projects.** SOUL.md customization was offered
-(docs show "pragmatic engineer" / "research partner" archetype examples)
-but Mark hadn't decided whether to touch it. Projects are at zero — the
-old "Prograder Price Changes" project is gone with the migration; whether
-to recreate it or anything else wasn't addressed this session.
+**SOUL.md done too.** Replaced the never-touched Hermes-seeded default
+(1,150 bytes). Kept what it already got right (direct/no-filler, honest
+uncertainty, earned depth, pushback-when-right) and added two traits
+tonight's lessons made obvious were missing: verify live before claiming
+something works, and be a decisive executor rather than a hedging
+auditor. Verified live — a fresh session correctly self-identified using
+the new text. Logged as `hermes-soul-customized-2026-10-11`.
+
+**Still open: projects.** Projects are at zero — the old "Prograder Price
+Changes" project is gone with the migration; whether to recreate it or
+anything else wasn't addressed this session.
 
 ## What's NOT done yet — pick up here
 
