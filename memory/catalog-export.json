@@ -7986,9 +7986,33 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-11T23:08:24.797214+00:00"
+    },
+    {
+      "attributes": {
+        "agents_md_bytes": 4765,
+        "agents_md_cap": 20000,
+        "architecture_clarified": "projects do NOT get a SOUL/USER/MEMORY triplet -- confirmed via hermes-agent's own which-file-does-what.md doc. Projects get exactly one auto-loaded context file (first match wins: .hermes.md > AGENTS.md > CLAUDE.md > .cursorrules). Root SOUL/USER/MEMORY stay global across all projects by design.",
+        "folder": "/home/hermes/projects/hermes-install",
+        "project_id": "p_8e2a7887",
+        "verification_method": "hermes -z run with cwd set to the project folder, asked a question only answerable from AGENTS.md content -- answered correctly"
+      },
+      "body": "Mark wanted a project scoped to the Hermes install itself, separate from the global root files, to hold what's been learned and keep accumulating new operational history. Real per-project architecture is one auto-loaded file (AGENTS.md), not three -- seeded it with infrastructure facts, current model routing, known gaps, and tonight's full decision history, with room to keep growing (4,765 of 20,000 chars used).",
+      "created_at": "2026-10-11T23:16:26.219463+00:00",
+      "id": "4a3c1134-8df8-451c-845a-e6a0ad3ef846",
+      "key": "hermes-install-project-created-2026-10-11",
+      "name": "Created 'Hermes Install' project (p_8e2a7887) with AGENTS.md as its operational history/rules file",
+      "tags": [
+        "hermes",
+        "decision",
+        "memory",
+        "projects",
+        "default-profile"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-11T23:16:26.219463+00:00"
     }
   ],
-  "exported_at": "2026-10-11T23:08:35.180539+00:00",
+  "exported_at": "2026-10-11T23:16:39.281633+00:00",
   "relations": [
     {
       "attributes": {},
@@ -11159,6 +11183,26 @@
       "object_type": "entity",
       "predicate": "completes",
       "subject_key": "hermes-soul-customized-2026-10-11",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-11T23:16:29.359484+00:00",
+      "id": "1237302c-0693-42f8-9b9e-bab2b549a303",
+      "object_key": "hermes-soul-customized-2026-10-11",
+      "object_type": "entity",
+      "predicate": "completes",
+      "subject_key": "hermes-install-project-created-2026-10-11",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-11T23:16:29.359484+00:00",
+      "id": "637d2b75-557e-48d2-a245-9b22174c8ad7",
+      "object_key": "hermes-general-vs-project-memory-principle-2026-10-06",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-install-project-created-2026-10-11",
       "subject_type": "entity"
     }
   ],

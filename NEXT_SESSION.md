@@ -111,9 +111,22 @@ something works, and be a decisive executor rather than a hedging
 auditor. Verified live — a fresh session correctly self-identified using
 the new text. Logged as `hermes-soul-customized-2026-10-11`.
 
-**Still open: projects.** Projects are at zero — the old "Prograder Price
-Changes" project is gone with the migration; whether to recreate it or
-anything else wasn't addressed this session.
+**Projects: done too — "Hermes Install" created.** Mark wanted a project
+scoped to the Hermes install itself, separate from the global root
+files. Real architecture check first: projects do NOT get a SOUL/USER/
+MEMORY triplet — confirmed via hermes-agent's own `which-file-does-what.md`
+doc, projects get exactly one auto-loaded context file (`.hermes.md` >
+`AGENTS.md` > `CLAUDE.md` > `.cursorrules`, first match wins). Created the
+project (`p_8e2a7887`, folder `/home/hermes/projects/hermes-install`) and
+seeded `AGENTS.md` (4,765/20,000 chars) with infrastructure facts, current
+model routing, known gaps, and the full decision history from this
+session. Verified live: ran `hermes -z` with cwd set to the project
+folder, asked a question only answerable from AGENTS.md, got it right.
+Logged as `hermes-install-project-created-2026-10-11`.
+
+The old "Prograder Price Changes" project from before the migration was
+not recreated — unrelated to the Hermes-install project, no signal Mark
+wants it back.
 
 ## What's NOT done yet — pick up here
 
