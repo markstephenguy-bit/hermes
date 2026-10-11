@@ -81,6 +81,34 @@ further setup. Verified against hermes-agent's own test suite
 comment, which is stale/outdated documentation left over from an older,
 reversed policy — don't trust that comment block if you read it again.
 
+## Also done this session: memory system validated and restored (2026-10-11)
+
+Validated all three kinds of Hermes memory. Findings: the Vultr→Hostinger
+migration silently wiped `USER.md` (didn't exist at all), reset `MEMORY.md`
+to near-empty, and deleted all projects (`hermes project list` → none) —
+nobody had checked file *content* after the rebuild, only that services
+were running. SOUL.md survived but was just the unmodified Hermes-seeded
+default, never customized.
+
+Fixed `USER.md` and `MEMORY.md`:
+- Sourced from three places and cross-checked before writing: Claude
+  Code's own memory of Mark, a tool-enabled agent's independent
+  re-investigation of the catalog + a separate shared memory folder, and
+  a second ChatGPT query that honestly declined facts it couldn't verify
+  (good calibration check — no contradictions, no fabrication).
+- `USER.md`: 1,337/1,375 chars. `MEMORY.md`: 1,761/2,200 chars (kept the
+  one pre-existing validated entry about `computer_use`'s sandbox
+  limitation, added the rest).
+- Verified live, not just written: asked a fresh `hermes -z` session to
+  state facts from each file; both echoed correct content back.
+- Logged to catalog as `hermes-user-memory-restored-2026-10-11`.
+
+**Still open: SOUL.md and projects.** SOUL.md customization was offered
+(docs show "pragmatic engineer" / "research partner" archetype examples)
+but Mark hadn't decided whether to touch it. Projects are at zero — the
+old "Prograder Price Changes" project is gone with the migration; whether
+to recreate it or anything else wasn't addressed this session.
+
 ## What's NOT done yet — pick up here
 
 1. **No real circuit breaker on the fallback path.** Mark's explicit

@@ -7941,9 +7941,32 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-10T23:46:04.279675+00:00"
+    },
+    {
+      "attributes": {
+        "memory_md_bytes": 1761,
+        "memory_md_limit": 2200,
+        "sources": "Claude Code's own memory of Mark (feedback_* files), a tool-enabled agent's independent re-investigation (catalog + shared Home-Claude memory folder), and a separately-queried ChatGPT that honestly declined facts it couldn't verify -- triangulated across all three before drafting",
+        "user_md_bytes": 1337,
+        "user_md_limit": 1375,
+        "verification_method": "hermes -z literal prompt asking the live agent to state facts from USER/MEMORY -- both echoed correct content back, confirming the files are actually loaded, not just present on disk"
+      },
+      "body": "USER.md did not exist and MEMORY.md was nearly empty after the Vultr-to-Hostinger migration silently wiped them. Rewrote both from real, cross-checked material instead of guessing: Mark's identity/preferences/workflow habits in USER.md, and the operational facts a future session needs (model routing shape, the unresolved circuit breaker gap, Vultr being gone, the migration's own data loss, a verify-live-don't-trust-config-comments lesson, and the web search staleness finding) in MEMORY.md.",
+      "created_at": "2026-10-11T23:00:24.011093+00:00",
+      "id": "deaf2362-dcad-4c3d-87f0-66d9a8ccd1ea",
+      "key": "hermes-user-memory-restored-2026-10-11",
+      "name": "USER.md and MEMORY.md rewritten from scratch after migration wipe -- sourced, cross-checked, verified live",
+      "tags": [
+        "hermes",
+        "decision",
+        "memory",
+        "default-profile"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-11T23:00:24.011093+00:00"
     }
   ],
-  "exported_at": "2026-10-10T23:46:04.410788+00:00",
+  "exported_at": "2026-10-11T23:00:42.597726+00:00",
   "relations": [
     {
       "attributes": {},
@@ -11084,6 +11107,26 @@
       "object_type": "host",
       "predicate": "configured_on",
       "subject_key": "laptop-display-scale-125pct-2026-10-10",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-11T23:00:27.251424+00:00",
+      "id": "d06f77b0-c6eb-48f6-9227-f6c97a504c38",
+      "object_key": "hermes-im01-02-09-identity-files-committed-2026-10-06",
+      "object_type": "entity",
+      "predicate": "supersedes",
+      "subject_key": "hermes-user-memory-restored-2026-10-11",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-11T23:00:27.251424+00:00",
+      "id": "c2296fda-d9fc-486d-8b3d-2f17bb13e788",
+      "object_key": "hermes-vultr-destroyed-2026-10-10",
+      "object_type": "entity",
+      "predicate": "fixes",
+      "subject_key": "hermes-user-memory-restored-2026-10-11",
       "subject_type": "entity"
     }
   ],
