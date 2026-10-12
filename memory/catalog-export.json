@@ -8467,9 +8467,33 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-12T04:22:10.060249+00:00"
+    },
+    {
+      "attributes": {
+        "attempt_2_result": "real hindsight-api process started, pulled ~6.5GB deps into ~/.cache/uv, ran several minutes using real CPU/memory, then disappeared with no success/failure logged to hindsight-embed.log and no ~/.pg0/instances/ dir ever created",
+        "false_success_pattern": "hermes -z retain call replied Stored in memory while server logs showed RuntimeError: Failed to start the Hindsight daemon underneath -- same pattern as the tokens/sec stub incident, now confirmed twice in one session",
+        "next_steps": "retry retain with a fresh marker, verify via ps/ss/ls ~/.pg0/instances/ and hindsight-embed.log tail -- NOT the chat response text -- before considering this resolved",
+        "oom_check": "no OOM evidence in dmesg or journalctl -k for that window, but not conclusively ruled out -- VPS is 8GB RAM total",
+        "root_cause_1_fixed": "uv/uvx installed at ~/.hermes/tools/uv-0.12.3-linux-x64/ but not on hermes user PATH -- symlinked into ~/.local/bin",
+        "severity": "high",
+        "status": "UNCONFIRMED -- do not trust hermes memory status showing provider active as proof retain/recall work"
+      },
+      "body": "End-of-session state: Hindsight memory provider is configured and the chat agent believes it works, but the actual daemon has never been confirmed to successfully start and persist data. Full detail and next steps in NEXT_SESSION.md.",
+      "created_at": "2026-10-12T04:33:46.359164+00:00",
+      "id": "01c0d6d4-0ecf-4f8e-9028-69f7e3cf2058",
+      "key": "hermes-hindsight-daemon-unconfirmed-2026-10-12",
+      "name": "Hindsight daemon status unconfirmed -- chat agent falsely claimed a retain succeeded",
+      "tags": [
+        "hermes",
+        "risk",
+        "local-model",
+        "incident"
+      ],
+      "type": "risk",
+      "updated_at": "2026-10-12T04:33:46.359164+00:00"
     }
   ],
-  "exported_at": "2026-10-12T04:22:16.419364+00:00",
+  "exported_at": "2026-10-12T04:33:50.566442+00:00",
   "relations": [
     {
       "attributes": {},
@@ -11960,6 +11984,26 @@
       "object_type": "entity",
       "predicate": "informed_by",
       "subject_key": "hermes-doctor-self-monitoring-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T04:33:50.416032+00:00",
+      "id": "2d1c2957-b1a8-4018-af15-9ca56f174d40",
+      "object_key": "hermes-hindsight-deployed-local-embedded-2026-10-12",
+      "object_type": "entity",
+      "predicate": "supersedes",
+      "subject_key": "hermes-hindsight-daemon-unconfirmed-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T04:33:50.416032+00:00",
+      "id": "7b586ee0-b930-40e0-8fc7-977905a6c784",
+      "object_key": "hermes-sandbox-env-forwarding-added-2026-10-12",
+      "object_type": "entity",
+      "predicate": "relates_to",
+      "subject_key": "hermes-hindsight-daemon-unconfirmed-2026-10-12",
       "subject_type": "entity"
     }
   ],
