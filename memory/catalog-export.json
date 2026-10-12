@@ -3726,35 +3726,6 @@
     },
     {
       "attributes": {
-        "depends_on": "SV-15 (catalog/vault migration) for the shared-database option",
-        "mode": "local Docker, own Postgres, no cloud dependency",
-        "provider": "Hindsight",
-        "rejected": [
-          "ByteRover (vendor-self-reported top benchmark)",
-          "Supermemory",
-          "Mem0",
-          "Honcho",
-          "OpenViking",
-          "Holographic",
-          "RetainDB",
-          "Mnemosyne"
-        ]
-      },
-      "body": "User locked in Hindsight as the extended memory provider, after comparing all 8 official Hermes memory plugins. Hindsight has the best independently-verified benchmark (94.6% LongMemEval, officially reproduced leaderboard result) vs ByteRovers higher but vendor-self-reported LoCoMo number. Its reflect operation also directly matches the stated requirement: broad scope but curated, not raw total recall.",
-      "created_at": "2026-10-05T00:17:06.095662+00:00",
-      "id": "bb6a3b5a-42a7-43a8-93c5-ba8a87158551",
-      "key": "hermes-memory-provider-locked-hindsight-2026-10-04",
-      "name": "Extended memory provider locked: Hindsight",
-      "tags": [
-        "hermes",
-        "decision",
-        "local-model"
-      ],
-      "type": "decision",
-      "updated_at": "2026-10-05T00:17:06.095662+00:00"
-    },
-    {
-      "attributes": {
         "fix_required": "usermod -aG docker hermes; systemctl restart hermes-gateway (hermes user lacked docker group membership, caused permission denied on docker.sock)",
         "host_total_ram": "3.8GiB",
         "previous_default_mb": 5120,
@@ -8310,9 +8281,111 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-12T03:11:05.77032+00:00"
+    },
+    {
+      "attributes": {
+        "depends_on": "none -- self-contained mode chosen; shared-database option via catalog/vault migration rejected as unnecessary",
+        "mode": "self-contained local Docker, own Postgres, deployed directly on hermes-vps (Hostinger) -- no fileserver/WireGuard dependency",
+        "provider": "Hindsight",
+        "rejected": [
+          "ByteRover (vendor-self-reported top benchmark)",
+          "Supermemory",
+          "Mem0",
+          "Honcho",
+          "OpenViking",
+          "Holographic",
+          "RetainDB",
+          "Mnemosyne"
+        ]
+      },
+      "body": "User locked in Hindsight as the extended memory provider, after comparing all 8 official Hermes memory plugins. Hindsight has the best independently-verified benchmark (94.6% LongMemEval, officially reproduced leaderboard result) vs ByteRovers higher but vendor-self-reported LoCoMo number. Its reflect operation also directly matches the stated requirement: broad scope but curated, not raw total recall.",
+      "created_at": "2026-10-05T00:17:06.095662+00:00",
+      "id": "bb6a3b5a-42a7-43a8-93c5-ba8a87158551",
+      "key": "hermes-memory-provider-locked-hindsight-2026-10-04",
+      "name": "Extended memory provider locked: Hindsight",
+      "tags": [
+        "hermes",
+        "decision",
+        "local-model"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-05T00:17:06.095662+00:00"
+    },
+    {
+      "attributes": {
+        "correction": "Vultr was destroyed 2026-10-10 (hermes-vultr-destroyed-2026-10-10); hermes-vps is now Hostinger KVM 2",
+        "resolution": "self-sufficiency rule means Hindsight must never depend on fileserver/WireGuard at all, not just tolerate it dropping -- deploy self-contained (own Postgres) directly on hermes-vps; shared-database option via catalog migration is moot, not just blocked",
+        "stale_assumption": "Hindsight shared-database option depended on migrating catalog/vault to Vultr Managed Postgres"
+      },
+      "body": "User corrected Claude: Vultr is decommissioned, fileserver is home-network-only infra Hermes must not depend on at all, and the only local dependency is w_workstation (falling back to Nous if that is down). Updated the Hindsight memory-provider decision to drop the stale Vultr/SV-15 shared-DB dependency in favor of self-contained deployment on hermes-vps.",
+      "created_at": "2026-10-12T03:17:10.590747+00:00",
+      "id": "d137aa2d-ef59-4762-85e1-48109eee937d",
+      "key": "hermes-hindsight-vultr-dependency-stale-corrected-2026-10-11",
+      "name": "Corrected stale Vultr/SV-15 dependency on Hindsight deployment mode",
+      "tags": [
+        "hermes",
+        "log-entry",
+        "correction",
+        "local-model"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-12T03:17:10.590747+00:00"
+    },
+    {
+      "attributes": {
+        "concurrency_confirmed": "3 simultaneous 150-token completions finished in 4.2s wall-clock at ~41 tok/s each (vs ~53-58 tok/s single-request) -- continuous batching genuinely working, not serialized",
+        "engine": "mainline llama.cpp b11559 (not ik_llama.cpp)",
+        "known_gap_unresolved": "boot-persistence via scheduled task still blocked -- schtasks /change hangs non-interactively (same as the Qwen3-14B attempt), needs the llm account password or a logon-type change to fix properly; server is running via a manually-launched detached process, survives until next reboot only",
+        "launch_flags": "--jinja -fa on -ctk q8_0 -ctv q8_0 -b 4096 -ub 4096 -t 4 --parallel 3 --ctx-size 192000 -ngl 999 --host 0.0.0.0 --port 8090",
+        "model": "Qwen3.5-9B Q4_K_M (bartowski GGUF)",
+        "rollback_path": "C:\\ik_llama.cpp.old and C:\\start_server.bat.old on w_workstation hold the prior working Qwen3.6-35B-A3B setup; model.default on hermes-vps would need reverting to E:\\ik_llama_models\\Qwen3.6-35B-A3B-Q4_K_M.gguf",
+        "side_note": "hermes config set triggered an unplanned hermes-agent source-update/dependency-install step on the VPS mid-command -- worth checking what version/changes landed, not yet investigated",
+        "unused_tensor_note": "GGUF load logs show blk.32.nextn.* tensors (an MTP/speculative-decoding head) being ignored as unused -- harmless, just means this llama.cpp build doesnt use the draft head bundled in this quant",
+        "vram_usage_confirmed": "11.3GB / 16.4GB idle, 11.33GB under 3-concurrent load -- better than the ~13.6GB estimate"
+      },
+      "body": "Swapped Hermes local execution tier from Qwen3.6-35B-A3B (ik_llama.cpp, CPU-offloaded MoE) to Qwen3.5-9B Q4_K_M (mainline llama.cpp, fully GPU-resident, parallel=3). Context-floor gate checked FIRST via the models own loaded metadata (n_ctx_train=262144, confirmed not inferred) before any production change, learning directly from the Qwen3-14B rollback earlier the same day. All validation passed: n_slots=3/n_ctx_slot=64000 with no capping warning, GPU offload confirmed (11.3GB/16GB VRAM, ~5GB margin), tool-calling returns correct structured tool_calls, 3 genuinely concurrent requests completed in 4.2s total (not ~11s serialized) at ~41 tok/s each. hermes -z live-validated post-switch with exact string match. Old ik_llama.cpp install and start_server.bat renamed aside (not deleted) for rollback safety.",
+      "created_at": "2026-10-12T03:38:27.894757+00:00",
+      "id": "435162d1-dc3e-49b9-9c7b-fe53fdad660b",
+      "key": "hermes-qwen35-9b-deployed-2026-10-12",
+      "name": "Qwen3.5-9B deployed as Hermes local model, replacing Qwen3.6-35B-A3B",
+      "tags": [
+        "hermes",
+        "qwen",
+        "llama.cpp",
+        "deployed",
+        "model-selection"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-12T03:38:27.894757+00:00"
+    },
+    {
+      "attributes": {
+        "caveat": "LLM backend for memory extraction is w_workstation via WireGuard, same as main chat model -- not independent of home-network reachability; only the daemon+DB are self-contained on the VPS",
+        "llm_api_key": "none (local no-auth server)",
+        "llm_base_url": "http://192.168.40.100:8090/v1",
+        "llm_model": "E:\\ik_llama_models\\Qwen3.6-35B-A3B-Q4_K_M.gguf",
+        "llm_provider": "openai_compatible",
+        "mode": "local_embedded",
+        "no_docker": "local_embedded runs as a separate hindsight-api process with its own embedded Postgres, not a container -- Hostinger Docker Manager was investigated and found unnecessary",
+        "post_steps": "hermes pm repair + restart hermes-gateway.service and hermes-dashboard.service to load hindsight_client/hindsight_embed",
+        "setup_method": "scripted hermes memory setup via pexpect (curses mode/provider pickers driven with arrow-key sequences + setwinsize, plain input() prompts for url/model/key)",
+        "verified": "hermes memory status shows provider: hindsight, plugin installed, status available"
+      },
+      "body": "Installed and configured the Hindsight memory plugin on hermes-vps in local_embedded mode, pointed at the same w_workstation endpoint the main model uses, per user direction to track whatever the default profile is going forward.",
+      "created_at": "2026-10-12T03:38:41.475041+00:00",
+      "id": "73d7bd7c-d5fc-4417-b4b6-2f9bf9aaa697",
+      "key": "hermes-hindsight-deployed-local-embedded-2026-10-12",
+      "name": "Hindsight memory provider deployed on hermes-vps (local_embedded mode)",
+      "tags": [
+        "hermes",
+        "log-entry",
+        "local-model"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-12T03:38:41.475041+00:00"
     }
   ],
-  "exported_at": "2026-10-12T03:11:19.961135+00:00",
+  "exported_at": "2026-10-12T03:38:47.763157+00:00",
   "relations": [
     {
       "attributes": {},
@@ -11683,6 +11756,86 @@
       "object_type": "entity",
       "predicate": "informed_by",
       "subject_key": "laptop-wireguard-peer-via-vps-relay-2026-10-11",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T03:17:27.838021+00:00",
+      "id": "21a59f9a-c11d-4b5c-9ec1-c113cd524569",
+      "object_key": "hermes-memory-provider-locked-hindsight-2026-10-04",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-hindsight-vultr-dependency-stale-corrected-2026-10-11",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T03:17:27.838021+00:00",
+      "id": "effd11c2-db9b-4842-aeb8-812134e4d48f",
+      "object_key": "hermes-vps-self-sufficiency-rule-2026-10-04",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-hindsight-vultr-dependency-stale-corrected-2026-10-11",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T03:38:27.926457+00:00",
+      "id": "aecf115e-af22-4d62-a2f8-8f7520a096b5",
+      "object_key": "hermes-local-model-64k-gated-search-2026-10-12",
+      "object_type": "entity",
+      "predicate": "actions",
+      "subject_key": "hermes-qwen35-9b-deployed-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T03:38:27.926457+00:00",
+      "id": "5aa0c855-5086-4e18-85b1-c852ef92a52c",
+      "object_key": "hermes-vps-default-model-ik-llama-2026-10-08",
+      "object_type": "entity",
+      "predicate": "supersedes",
+      "subject_key": "hermes-qwen35-9b-deployed-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T03:38:47.577048+00:00",
+      "id": "6ff51874-f02d-4027-be1c-f24820a6f465",
+      "object_key": "hermes-memory-provider-locked-hindsight-2026-10-04",
+      "object_type": "entity",
+      "predicate": "fulfills",
+      "subject_key": "hermes-hindsight-deployed-local-embedded-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T03:38:47.577048+00:00",
+      "id": "7c3b5b28-c8cd-4c67-a61b-06cbfae1b069",
+      "object_key": "hermes-hindsight-vultr-dependency-stale-corrected-2026-10-11",
+      "object_type": "entity",
+      "predicate": "supersedes",
+      "subject_key": "hermes-hindsight-deployed-local-embedded-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T03:38:47.577048+00:00",
+      "id": "deb0a96a-8728-4d95-bed0-877ddfce2a25",
+      "object_key": "hermes-vps-self-sufficiency-rule-2026-10-04",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-hindsight-deployed-local-embedded-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T03:38:47.577048+00:00",
+      "id": "83801e02-407f-4798-a4c9-4f8117437c06",
+      "object_key": "hermes-default-profile-routing-confirmed-2026-10-10",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-hindsight-deployed-local-embedded-2026-10-12",
       "subject_type": "entity"
     }
   ],
