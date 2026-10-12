@@ -8446,9 +8446,30 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-10-12T04:12:58.281317+00:00"
+    },
+    {
+      "attributes": {
+        "baseline_established": "18 known warnings at setup time (npm lockfile advisories, unconfigured optional auth providers/tools) -- none are active problems",
+        "mechanism": "~/.hermes/scripts/doctor_watch.sh runs hermes doctor, diffs warning lines against ~/.hermes/state/doctor_baseline.txt, Telegram-alerts only on NEW or RESOLVED issues (no repeat noise for known baseline warnings)",
+        "principle": "Hermes-first: prefer standing capabilities Hermes runs on itself over manual steps that route through Mark or Claude Code",
+        "schedule": "systemd --user timer hermes-doctor-watch.timer, every 6h, OnBootSec=10min, Persistent=true, linger already enabled",
+        "why": "chat agent cannot run hermes doctor on itself -- sandbox isolation blocks it by design (security boundary, not a bug); manual trigger via dashboard button or asking Claude Code still makes Mark the go-between"
+      },
+      "body": "User pushed back on being the manual go-between for diagnostics; built a self-monitoring systemd timer instead of relying on the chat agent, dashboard button, or Claude Code to trigger hermes doctor.",
+      "created_at": "2026-10-12T04:22:10.060249+00:00",
+      "id": "cd90cc66-0300-40b8-928b-2a90c6fa0de8",
+      "key": "hermes-doctor-self-monitoring-2026-10-12",
+      "name": "hermes doctor runs as a self-monitoring systemd timer, not a manual/chat-triggered check",
+      "tags": [
+        "hermes",
+        "decision",
+        "automation"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-12T04:22:10.060249+00:00"
     }
   ],
-  "exported_at": "2026-10-12T04:13:05.814634+00:00",
+  "exported_at": "2026-10-12T04:22:16.419364+00:00",
   "relations": [
     {
       "attributes": {},
@@ -11929,6 +11950,16 @@
       "object_type": "entity",
       "predicate": "supersedes",
       "subject_key": "hermes-hindsight-model-synced-qwen3.5-9b-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T04:22:16.269042+00:00",
+      "id": "29140866-98fc-4cd2-9460-123f2c6af0f3",
+      "object_key": "hermes-sandbox-env-forwarding-added-2026-10-12",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-doctor-self-monitoring-2026-10-12",
       "subject_type": "entity"
     }
   ],
