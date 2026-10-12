@@ -8721,9 +8721,32 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-10-12T15:47:30.947046+00:00"
+    },
+    {
+      "attributes": {
+        "authorized_user": "hermes@31.220.53.141",
+        "non_interactive_path_fix": "Added node, npm, uv, uvx, and hermes to top of /home/hermes/.bashrc plus XDG_RUNTIME_DIR=/run/user/1000 and /usr/local/bin symlinks",
+        "sandbox_key_path": "/home/hermes/.hermes/sandboxes/docker/default/home/.ssh/id_ed25519",
+        "ssh_config": "Host 31.220.53.141 hermes-vps 172.17.0.1 localhost -> User hermes, IdentityFile ~/.ssh/id_ed25519, StrictHostKeyChecking accept-new",
+        "ssh_wrapper": "/usr/local/bin/ssh inside sandbox rewrites root@/mark@ on local VPS targets to hermes@ to prevent root:root file ownership bugs"
+      },
+      "body": "Generated an ed25519 keypair in the persistent Docker sandbox home (~/.ssh/id_ed25519) and authorized it for hermes@31.220.53.141 so Hermes can inspect and administer its own VPS host as UID 1000 without password auth or root-owned file corruption.",
+      "created_at": "2026-10-12T16:24:35.835256+00:00",
+      "id": "fa2571a3-bcfc-4b4a-b243-c1f5644b5a65",
+      "key": "hermes-vps-sandbox-ssh-access-2026-10-12",
+      "name": "Provisioned passwordless SSH key in Docker sandbox for hermes@31.220.53.141 host access",
+      "tags": [
+        "hermes",
+        "decision",
+        "security",
+        "sandbox",
+        "ssh"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-12T16:24:35.835256+00:00"
     }
   ],
-  "exported_at": "2026-10-12T15:48:30.676733+00:00",
+  "exported_at": "2026-10-12T16:26:11.291099+00:00",
   "relations": [
     {
       "attributes": {},
@@ -12364,6 +12387,30 @@
       "object_type": "entity",
       "predicate": "informs",
       "subject_key": "hermes-computer-use-unavailable-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {
+        "notes": "Extends sandbox self-inspection from env vars to passwordless SSH access as hermes@31.220.53.141"
+      },
+      "created_at": "2026-10-12T16:25:18.096051+00:00",
+      "id": "ffedfc01-22f9-4ae5-b753-80d5289078f2",
+      "object_key": "hermes-sandbox-env-forwarding-added-2026-10-12",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-vps-sandbox-ssh-access-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {
+        "notes": "Connects as UID 1000 (hermes) instead of bind-mounting ~/.hermes as container root with CAP_DAC_OVERRIDE"
+      },
+      "created_at": "2026-10-12T16:25:18.096051+00:00",
+      "id": "e998ae85-ffe6-415b-b9fd-16c3f7f8d9d1",
+      "object_key": "hermes-vps-docker-sandbox-root-ownership-is-general-2026-10-08",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-vps-sandbox-ssh-access-2026-10-12",
       "subject_type": "entity"
     }
   ],
