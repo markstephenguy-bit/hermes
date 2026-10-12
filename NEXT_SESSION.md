@@ -162,27 +162,29 @@ as evidence of successful memory operations.
   and `tui_gateway` child environments. Symlinked `uv` and `uvx` into
   `/usr/local/bin` and added the full `Environment="PATH=..."` to
   `hermes-dashboard.service`.
-- **Root cause 5 (Turn 1 blind spot & observation-only filter on recall):**
-  `recall_sync` defaulted to `false` (designed for slow cloud APIs), which meant
-  Turn 1 of any new session (`hermes -z`, Telegram, dashboard) injected zero
-  recalled memories and Turn 2 injected memories matched against Turn 1's query.
-  `recall_types` also defaulted to `"observation"` only, hiding newly retained
-  `world`/`experience` facts until background consolidation finished. Because
-  local embedded recall takes only **0.20–0.33s**, set `"recall_sync": true` and
-  `"recall_types": "observation,world,experience"` in
-  `~/.hermes/hindsight/config.json`.
+- **Root cause 5 (Recall budget & CPU cross-encoder tuning as bank grew to 216+ facts):**
+  When the bank was empty, synchronous recall over `"observation,world,experience"` with `budget: "mid"` (`max_tokens: 4096`) took 0.20s. Once the bank reached 216+ facts, scoring 216–223 candidates through the local CPU cross-encoder on 2 vCPUs took **16.85s** (exceeding Hermes's 8.0s prefetch timeout) and injected **4,092 tokens (96 facts)** per turn. Updated `~/.hermes/hindsight/config.json` to `"recall_budget": "low"`, `"recall_max_tokens": 1024`, `"recall_types": "observation"` (Hindsight's consolidated layer), and `"recall_sync": false` (async prefetch between turns), cutting recall time to **5.56s** off the critical reply path.
 - **Deployment remains self-contained:** `local_embedded`, API loopback
   `127.0.0.1:9177`, embedded Postgres under
   `~/.pg0/instances/hindsight-embed-hermes`, local embedding/reranking models.
   Only inference uses `w_workstation:8090`, matching the active Qwen3.5-9B.
 - **Evidence:** verified live with an ordinary `hermes -z` conversation turn (no
   explicit memory tool calls): automatic `batch_retain` extracted and stored the
-  fact in 4.35s, consolidation completed in 4.90s, and a subsequent fresh
-  single-turn `hermes -z` session recalled the exact fact on Turn 1 in 0.20s
-  before test artifacts were cleaned up via `DELETE /documents/{id}`.
+  fact in 4.35s, consolidation completed in 4.90s, and recall was verified live.
 - **Built-in memory remains complementary:** MEMORY.md and USER.md still
   exist and were not reset. The dashboard deliberately displays them
   alongside Hindsight.
+
+## Resource & Responsiveness Tuning — 2026-10-12
+
+- **Fixed 4–8 minute turn stalls caused by local `context_compressor` `<think>` generation:**
+  `agent/context_compressor.py` called `w_workstation:8090` (`Qwen_Qwen3.5-9B-Q4_K_M.gguf`) without `enable_thinking: false` and with uncapped `max_tokens`, spending **239–515s (4–8.5 minutes)** generating 6,000–15,000 `<think>` tokens that `strip_think_blocks()` immediately discarded. Added `extra_body: {chat_template_kwargs: {enable_thinking: false}}` to all local Qwen auxiliary tasks (`compression`, `title_generation`, `skills_hub`, `mcp`, `voice_chat`, `profile_describer`, `curator`). Live compression call latency dropped to **1.28s**.
+- **Fixed compression re-triggering on every turn (`protect_last_n: 20` -> `8`):**
+  With 11 active MCP servers injecting ~35,000–39,000 tokens of tool schemas into every turn out of the 64,000-token slot context (`threshold: 0.5` = `54,400` tokens), `protect_last_n: 20` (~14,000 tokens) left post-compression prompts at ~44,000–50,350 tokens — re-triggering compression every 1–2 turns. Lowered `compression.protect_last_n` to `8` and `protect_first_n` to `1`.
+- **Fixed `auxiliary.background_review` and `nous`-pinned auxiliary tasks:**
+  Hermes Desktop's UI saved `auxiliary.review: {provider: nous}`, whereas `agent/background_review.py` reads `auxiliary.background_review` AND requires both `provider` and `model` (otherwise silently falling back to the main local GPU and running a 50k-token review fork + compression after every turn). Additionally, `agent/auxiliary_client.py` (`resolve_provider_client`) pre-filled `model` from `model.default` (`E:\ik_llama_models\Qwen_Qwen3.5-9B-Q4_K_M.gguf`) whenever a non-vision `nous` task omitted `model`. Explicitly pinned `model: deepseek/deepseek-v4.1-flash` on `approval`, `review`, `background_review`, `triage_specifier`, and `kanban_decomposer`, and `model: google/gemini-3.8-flash` on `vision`.
+- **VPS swap & live resource visibility (`/usr/local/bin/hermes-status`):**
+  Killed 1.1 GiB of orphaned `agent-browser` / headless Chromium processes, provisioned a persistent **4 GiB `/swapfile`** in `/etc/fstab` (was `0B` swap on 7.8 GiB RAM), and installed `/usr/local/bin/hermes-status` on both `hermes-vps` and inside the Docker sandbox containers so resource/GPU-slot utilization can be inspected anytime from SSH or Hermes Desktop chat.
 
 ## Configuration audit — 2026-10-12
 
@@ -227,19 +229,14 @@ as evidence of successful memory operations.
   valid MP3. Telegram bot identity and gateway polling, Hindsight health,
   local-model chat, a direct request to the configured Nous fallback model,
   and the dashboard's authentication challenge also passed.
-- Vision described a generated image correctly on one `vision_analyze` call,
-  but a repeat call reached the text-only local Qwen endpoint and failed with
-  `image input is not supported` (HTTP 500). `auxiliary.vision.provider: nous`
-  is configured; routing remains intermittent and needs a targeted fix.
+- Vision (`auxiliary.vision`) is now pinned to `provider: nous`, `model: google/gemini-3.8-flash` (fixing the earlier intermittent fallback where an unset `model` let `get_text_auxiliary_client("vision")` pre-fill the local text-only Qwen GGUF path).
 - The local browser is still blocked. The managed Chromium binary was found
   and its missing Ubuntu runtime libraries installed, but its normal sandbox
   cannot start under the VPS's AppArmor user-namespace restriction. A proposed
   unconfined AppArmor profile was rejected by automatic approval review for
   weakening a host security boundary; no policy bypass was applied.
 - `computer_use` is enabled in the tool list, but `hermes computer-use status`
-  reports `cua-driver: not installed` on this headless VPS. No MCP servers or
-  Hermes cron jobs are configured. These are inventory, not failures of the
-  selected Telegram/web/memory workflow.
+  reports `cua-driver: not installed` on this headless VPS.
 - Fallback endpoint availability was tested directly; automatic failover
   during a local-model outage remains untested. TTS output exists on the host,
   but Telegram audio attachment delivery was not tested. The separate tool
@@ -255,9 +252,6 @@ as evidence of successful memory operations.
 2. **Fallback chain configured but never stress-tested** — `deepseek-v4.1-flash`
    via Nous is `fallback_providers[0]`, confirmed via `hermes fallback list`,
    but no one has deliberately forced a Qwen failure to watch it fail over.
-3. **Audit remaining `auxiliary.*` blocks** (web_extract, compression,
-   title_generation, moa_reference, etc.) for whether any need an explicit
-   `nous` pin like `vision` got, instead of `auto`.
 
 ## Ground rules reaffirmed/added this session
 

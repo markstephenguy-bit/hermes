@@ -8842,9 +8842,44 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-12T23:04:07.669569+00:00"
+    },
+    {
+      "attributes": {
+        "fixes_applied": {
+          "compression_window": "Lowered compression.protect_last_n from 20 to 8 and protect_first_n from 3 to 1",
+          "hindsight_recall": "Set recall_budget=low, recall_max_tokens=1024, recall_types=observation, recall_sync=false in ~/.hermes/hindsight/config.json",
+          "local_aux_extra_body": "Set extra_body.chat_template_kwargs.enable_thinking=false on compression, title_generation, skills_hub, mcp, voice_chat, profile_describer, curator (compression call dropped from 239-515s to 1.28s)",
+          "nous_aux_models": "Set explicit model=deepseek/deepseek-v4.1-flash on approval, review, background_review, triage_specifier, kanban_decomposer and model=google/gemini-3.8-flash on vision",
+          "vps_resources": "Killed 1.1 GiB orphaned headless Chrome/browser_harness processes, enabled 4 GiB /swapfile in /etc/fstab, and installed /usr/local/bin/hermes-status on host and inside Docker sandboxes"
+        },
+        "host": "hermes-vps (31.220.53.141)",
+        "root_causes": [
+          "auxiliary.compression called local Qwen3.5-9B on w_workstation:8090 without enable_thinking=false, spending 239-515s generating 6k-15k <think> tokens that strip_think_blocks() immediately discarded",
+          "11 active MCP servers added ~39k tokens of tool schemas per turn; combined with compression.protect_last_n=20 (~14k tokens), post-compression context stayed at ~50k tokens right next to the 54,400 threshold, re-triggering compression every 1-2 turns",
+          "Desktop UI saved auxiliary.review={provider: nous}, but agent/background_review.py reads auxiliary.background_review and requires both provider and model; also auxiliary_client.py pre-filled model with the Windows GGUF path when model was omitted on nous text tasks",
+          "Hindsight recall with budget=mid and types=observation,world,experience scored 216-223 candidates via CPU cross-encoder on 2 vCPUs (16.85s > 8.0s prefetch timeout) and injected 4,092 tokens per turn",
+          "Orphaned agent-browser + 11 headless Chromium processes held 1.1 GiB RAM and VPS had 0B swap"
+        ]
+      },
+      "body": "Resolved 4-8 minute turn stalls caused by local context_compressor generating discarded <think> tokens, background_review running unrouted on w_workstation:8090, and Hindsight cross-encoder CPU saturation on 216+ facts.",
+      "created_at": "2026-10-12T23:05:00.008455+00:00",
+      "id": "a85ba9fd-d811-45d1-aba0-815c27676905",
+      "key": "hermes-resource-and-compression-tuning-2026-10-12",
+      "name": "Fixed Hermes Desktop unresponsiveness: disabled Qwen3.5 <think> on local compression, routed background_review to Nous, tuned Hindsight recall CPU, added 4GB swap + hermes-status",
+      "tags": [
+        "hermes",
+        "performance",
+        "compression",
+        "auxiliary",
+        "hindsight",
+        "hermes-vps",
+        "w_workstation"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-12T23:05:00.008455+00:00"
     }
   ],
-  "exported_at": "2026-10-12T23:04:27.239293+00:00",
+  "exported_at": "2026-10-12T23:06:01.404619+00:00",
   "relations": [
     {
       "attributes": {},
@@ -12541,6 +12576,26 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-live-performance-audit-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T23:05:00.086407+00:00",
+      "id": "993e2a1d-e93d-4ff3-9ed9-47e072387238",
+      "object_key": "hermes-hindsight-repaired-2026-10-12",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-resource-and-compression-tuning-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T23:05:00.155899+00:00",
+      "id": "d42f6486-519a-4518-b2a4-1268d702d344",
+      "object_key": "hermes-mcp-gitlab-disabled-2026-10-12",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-resource-and-compression-tuning-2026-10-12",
       "subject_type": "entity"
     }
   ],
