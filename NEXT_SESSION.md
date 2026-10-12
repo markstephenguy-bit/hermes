@@ -177,9 +177,13 @@ as evidence of successful memory operations.
   found missing Chromium libraries (installed) and then Ubuntu AppArmor's
   user-namespace restriction. The managed browser remains unavailable; see
   the selected-plugin audit below.
-- No MCP servers or Hermes cron jobs are configured. This is inventory, not a
-  defect by itself: the catalog tool is available through Hermes's toolset,
-  and the separate doctor systemd timer already runs.
+- **MCP servers configured (2026-10-12):** `linear` and `notion` (OAuth
+  authenticated and connected), plus `aws-knowledge`, `context7`, `wolfram`,
+  `deepwiki`, `microsoft-learn`, `twilio-docs`, `trivago`, `kiwi`, and
+  `alltrails`. `gitlab` (`https://gitlab.com/api/v4/mcp`) was set to
+  `enabled: false` after GitLab returned `403 Forbidden - MCP server not enabled
+  for any of your groups` (GitLab Duo group-level requirement; misreported by
+  `humanize_oauth_registration_error` as a DCR 403).
 - The doctor's three reported npm dependency advisories (browser runtime,
   web build workspace, TUI build workspace) are upstream lockfile issues; a
   local `npm audit fix` would be overwritten by the next Hermes update.

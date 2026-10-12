@@ -8744,9 +8744,42 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-12T16:24:35.835256+00:00"
+    },
+    {
+      "attributes": {
+        "active_mcp_servers": [
+          "linear",
+          "notion",
+          "aws-knowledge",
+          "context7",
+          "wolfram",
+          "deepwiki",
+          "microsoft-learn",
+          "twilio-docs",
+          "trivago",
+          "kiwi",
+          "alltrails"
+        ],
+        "actual_gitlab_error": "HTTP 403 from POST https://gitlab.com/api/v4/mcp: {\"message\":\"403 Forbidden - MCP server not enabled for any of your groups\"}",
+        "disabled_server": "gitlab (https://gitlab.com/api/v4/mcp)",
+        "hermes_bug": "tools/mcp_oauth.py:humanize_oauth_registration_error matches any 403 Forbidden and rewrites it to a DCR pre-approved client refusal message"
+      },
+      "body": "Set mcp_servers.gitlab.enabled=false on hermes-vps after GitLab returned 403 Forbidden (MCP server not enabled for any of your groups), which hermes-agent misreported as an OAuth client registration 403.",
+      "created_at": "2026-10-12T19:00:36.403734+00:00",
+      "id": "39d87c3c-c0dd-40d9-8bf3-f0070fe505da",
+      "key": "hermes-mcp-gitlab-disabled-2026-10-12",
+      "name": "Disabled gitlab remote MCP server on hermes-vps; 11 other MCP servers active",
+      "tags": [
+        "hermes",
+        "decision",
+        "mcp",
+        "gitlab"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-12T19:00:36.403734+00:00"
     }
   ],
-  "exported_at": "2026-10-12T16:26:11.291099+00:00",
+  "exported_at": "2026-10-12T19:00:36.910642+00:00",
   "relations": [
     {
       "attributes": {},
@@ -12411,6 +12444,18 @@
       "object_type": "entity",
       "predicate": "informed_by",
       "subject_key": "hermes-vps-sandbox-ssh-access-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {
+        "notes": "Updates MCP server inventory on hermes-vps"
+      },
+      "created_at": "2026-10-12T19:00:36.479718+00:00",
+      "id": "8a3e28c4-44e0-4294-b754-fb4de8f37607",
+      "object_key": "hermes-plugin-audit-current-setup-2026-10-12",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-mcp-gitlab-disabled-2026-10-12",
       "subject_type": "entity"
     }
   ],
