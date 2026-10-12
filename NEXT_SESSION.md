@@ -92,47 +92,48 @@ regardless.
   **If they go missing a third time, that's a real pattern worth root-causing
   properly instead of just rewriting again.**
 
-## Long-term memory provider: Hindsight — UNCONFIRMED, pick up here first
+## Long-term memory provider: Hindsight — verified working 2026-10-12
 
-Decision (2026-10-04, re-affirmed tonight): **Hindsight**, `local_embedded`
-mode (own process + embedded Postgres, no Docker — a separate `hindsight-api`
-binary via `uvx`, not a container). Configured to use the same local-model
-endpoint as the main chat model, per Mark's instruction to track "whatever
-the default profile is."
+Direct VPS repair and verification completed around 14:35 UTC. The plugin's
+`ready` dashboard badge only checks configuration/client imports; do not use it
+as evidence of successful memory operations.
 
-**What actually happened tonight, in order:**
-1. First retain attempt: chat replied "Stored" — **actually failed**
-   server-side. Root cause: `uv`/`uvx` were installed
-   (`~/.hermes/tools/uv-0.12.3-linux-x64/`) but not on the `hermes` user's
-   `PATH`, so the embedded daemon's `uvx hindsight-api@0.10.3` launch command
-   failed with "command not found."
-2. Fixed: symlinked `uv`/`uvx` into `~/.local/bin` (already on `PATH`).
-3. Second retain attempt: the real `hindsight-api` process **did** start,
-   pulled ~6.5GB of embedding-model dependencies into `~/.cache/uv`, ran for
-   several minutes using real CPU/memory — then **disappeared** without
-   logging success or failure to `~/.hermes/logs/hindsight-embed.log`, and
-   `~/.pg0/instances/` (where its embedded Postgres would live) was **never
-   created**. No OOM-kill evidence in `dmesg`/`journalctl -k` for that window,
-   but not conclusively ruled out either (VPS has 8GB RAM, ~5.9GB was free
-   at the time).
-
-**Status at session end: genuinely unknown whether Hindsight works.** Do not
-assume it does because the plugin shows `active` in `hermes memory status`
-— that only means it's configured, not that retain/recall actually succeed.
-
-**Next steps, in order:**
-1. `hermes -z "Use your memory tool to retain this fact: <new unique
-   marker>. Confirm you stored it."` then immediately check, don't trust the
-   reply: `ps aux | grep hindsight-api`, `ss -tlnp | grep -E '8888|9177'`,
-   `ls ~/.pg0/instances/`, and the tail of
-   `~/.hermes/logs/hindsight-embed.log` for an actual success/failure line.
-2. If it dies again mid-startup with no logged reason, check
-   `journalctl -k` more broadly (wider time window) for OOM, and consider
-   whether the 8GB VPS is simply too tight for Hindsight's embedding stack
-   alongside the gateway/dashboard/sandbox already running — may need to
-   test on a bigger box or look at Hindsight's lighter-weight modes.
-3. Only once a retain+recall round trip is confirmed via process/file state
-   (not chat text) should this be marked actually working.
+- **Root cause 1:** the daemon's own log
+  (`~/.hindsight/profiles/hermes.log`, distinct from Hermes's
+  `~/.hermes/logs/hindsight-embed.log`) showed a fatal missing
+  `HINDSIGHT_API_LLM_API_KEY`. The local model requires no authentication, but
+  Hindsight requires a nonempty value. Set the non-secret placeholder
+  `local-no-auth` in `hindsight/config.json` (`llm_api_key`) and the profile env.
+- **Root cause 2:** the daemon adds `HINDSIGHT_API_PORT` to its profile env.
+  The plugin compared the entire file against its own settings, so each new
+  plugin instance treated port metadata as drift and restarted the daemon,
+  interrupting writes with HTTP 500. Patched the installed plugin to compare
+  only Hermes-owned settings. Recoverable patch:
+  `patches/hindsight-profile-restart.patch` (apply inside the installed
+  `~/.hermes/plugins/hindsight` directory with `patch -p1` after checking
+  whether an update already includes the fix). Plugin updates may overwrite
+  this local repair. Original source/config backups remain alongside their
+  files with `.before-20261012-repair` suffixes.
+- **Deployment remains self-contained:** `local_embedded`, API loopback
+  `127.0.0.1:9177`, embedded Postgres under
+  `~/.pg0/instances/hindsight-embed-hermes`, local embedding/reranking models.
+  Only inference uses `w_workstation:8090`, matching the active Qwen3.5-9B.
+  The installed server ignores `idle_timeout=300`; it no longer auto-exits.
+- **Evidence:** the real Hermes plugin retained diagnostic marker
+  `amber-lighthouse-7429`; daemon logs confirmed one persisted fact and
+  completed consolidation into one observation. Database stats confirmed
+  two nodes, one document, and zero failed operations. After restarting both
+  Hermes user services to load the patch, a fresh `hermes -z` conversation
+  recalled the marker without it being included in the question. Server logs
+  independently confirmed retrieval of the stored observation (0.306s).
+- **Latency:** initial single-fact extraction took 98 seconds on the current
+  local model; consolidation took another 15 seconds. Default recall is
+  observation-only, so newly retained facts are not visible until background
+  consolidation finishes. This is working but writes are slow; the current
+  plugin request timeout is 120 seconds. Larger inputs remain unbenchmarked.
+- **Built-in memory remains complementary:** MEMORY.md and USER.md still
+  exist and were not reset. The dashboard deliberately displays them
+  alongside Hindsight.
 
 ## Carried over, untouched tonight (from 2026-10-10/11 sessions)
 
