@@ -92,55 +92,68 @@ regardless.
   **If they go missing a third time, that's a real pattern worth root-causing
   properly instead of just rewriting again.**
 
-## Long-term memory provider: Hindsight — explicit tools work; automatic saves need tuning
+## Long-term memory provider: Hindsight — fully repaired & verified (explicit + automatic retain/recall)
 
-Direct VPS repair and verification completed around 14:35 UTC. The plugin's
+Direct VPS repair and verification completed 2026-10-12 (~15:12 UTC). The plugin's
 `ready` dashboard badge only checks configuration/client imports; do not use it
 as evidence of successful memory operations.
 
-- **Root cause 1:** the daemon's own log
+- **Root cause 1 (missing dummy API key):** the daemon's own log
   (`~/.hindsight/profiles/hermes.log`, distinct from Hermes's
   `~/.hermes/logs/hindsight-embed.log`) showed a fatal missing
   `HINDSIGHT_API_LLM_API_KEY`. The local model requires no authentication, but
   Hindsight requires a nonempty value. Set the non-secret placeholder
   `local-no-auth` in `hindsight/config.json` (`llm_api_key`) and the profile env.
-- **Root cause 2:** the daemon adds `HINDSIGHT_API_PORT` to its profile env.
-  The plugin compared the entire file against its own settings, so each new
-  plugin instance treated port metadata as drift and restarted the daemon,
-  interrupting writes with HTTP 500. Patched the installed plugin to compare
-  only Hermes-owned settings. Recoverable patch:
-  `patches/hindsight-profile-restart.patch` (apply inside the installed
-  `~/.hermes/plugins/hindsight` directory with `patch -p1` after checking
-  whether an update already includes the fix). Plugin updates may overwrite
-  this local repair. Original source/config backups remain alongside their
-  files with `.before-20261012-repair` suffixes.
+- **Root cause 2 (profile `.env` drift restart loop):** the daemon adds
+  `HINDSIGHT_API_PORT` to its profile env. The plugin compared the entire file
+  against its own settings, so each new plugin instance treated port metadata as
+  drift and restarted the daemon, interrupting writes with HTTP 500. Also,
+  `_materialize_embedded_profile_env` previously overwrote `hermes.env` with only
+  6 hardcoded keys, wiping any custom `HINDSIGHT_API_*` tuning on model swaps.
+  Patched `~/.hermes/plugins/hindsight/__init__.py` and `embedded.py` to compare
+  only Hermes-owned settings, forward `llm_reasoning_effort` / `llm_extra_body` /
+  `llm_max_concurrent` / `llm_max_retries` / `llm_timeout` from `config.json`,
+  and preserve existing keys when rewriting `hermes.env`. Recoverable patch:
+  `patches/hindsight-profile-restart.patch` (apply inside
+  `~/.hermes/plugins/hindsight` with `patch -p1`). Original backups remain with
+  `.before-20261012-repair` suffixes.
+- **Root cause 3 (`Qwen3.5-9B` `<think>` mode causing 120s extraction timeouts):**
+  `ik_llama.cpp` on `w_workstation:8090` defaults Qwen3.5's chat template to
+  `<|im_start|>assistant\n<think>\n` with `max_tokens: 64000`. On Hindsight's
+  ~3.5k-token `retain_extract_facts` prompt, Qwen3.5-9B generated 4,000–5,000+
+  `<think>` tokens before emitting JSON — making single-fact retains take 98s and
+  ordinary automatic chat retains exceed the 120s timeout on all 4 attempts
+  (locking up `w_workstation` slots for 8+ minutes per turn and failing to save).
+  Set `llm_reasoning_effort: "none"`,
+  `llm_extra_body: {"chat_template_kwargs": {"enable_thinking": false}}`,
+  `llm_max_concurrent: 1`, and `llm_max_retries: 2` in
+  `~/.hermes/hindsight/config.json` (and `~/.hindsight/profiles/hermes.env`).
+  **Result:** automatic chat fact extraction dropped from **>480s timeout** to
+  **4.35s**, and consolidation dropped from **15.4s** to **4.90s**.
+- **Root cause 4 (`Command not found: uvx` in dashboard / isolated sessions):**
+  `uv` and `uvx` were only symlinked in `/home/hermes/.local/bin`, which was in
+  `hermes-gateway.service`'s `PATH` but missing from `hermes-dashboard.service`
+  and `tui_gateway` child environments. Symlinked `uv` and `uvx` into
+  `/usr/local/bin` and added the full `Environment="PATH=..."` to
+  `hermes-dashboard.service`.
+- **Root cause 5 (Turn 1 blind spot & observation-only filter on recall):**
+  `recall_sync` defaulted to `false` (designed for slow cloud APIs), which meant
+  Turn 1 of any new session (`hermes -z`, Telegram, dashboard) injected zero
+  recalled memories and Turn 2 injected memories matched against Turn 1's query.
+  `recall_types` also defaulted to `"observation"` only, hiding newly retained
+  `world`/`experience` facts until background consolidation finished. Because
+  local embedded recall takes only **0.20–0.33s**, set `"recall_sync": true` and
+  `"recall_types": "observation,world,experience"` in
+  `~/.hermes/hindsight/config.json`.
 - **Deployment remains self-contained:** `local_embedded`, API loopback
   `127.0.0.1:9177`, embedded Postgres under
   `~/.pg0/instances/hindsight-embed-hermes`, local embedding/reranking models.
   Only inference uses `w_workstation:8090`, matching the active Qwen3.5-9B.
-  The installed server ignores `idle_timeout=300`; it no longer auto-exits.
-- **Evidence:** the real Hermes plugin retained diagnostic marker
-  `amber-lighthouse-7429`; daemon logs confirmed one persisted fact and
-  completed consolidation into one observation. Database stats confirmed
-  two nodes, one document, and zero failed operations. After restarting both
-  Hermes user services to load the patch, a fresh `hermes -z` conversation
-  recalled the marker without it being included in the question. Server logs
-  independently confirmed retrieval of the stored observation (0.306s).
-- **Latency:** initial single-fact extraction took 98 seconds on the current
-  local model; consolidation took another 15 seconds. Default recall is
-  observation-only, so newly retained facts are not visible until background
-  consolidation finishes. The plugin request timeout is 120 seconds.
-- **Unresolved, discovered in follow-up audit:** an ordinary `hermes -z`
-  conversation queued an automatic Hindsight save that timed out on all four
-  120-second local-model attempts, then retried the whole job. It never
-  persisted that conversation. The diagnostic job was cancelled after
-  confirming its payload; a second diagnostic browser conversation generated
-  another automatic save, which was also cancelled to free the single local
-  inference slot. Hindsight's `ready` status and the successful explicit
-  retain/recall test do not prove automatic chat retention works. Tune the
-  extraction workload/deadline/retry policy, then verify a normal chat save
-  reaches `completed` in the operations API and can be recalled in a later
-  session. Do not silently count a queued save as durable memory.
+- **Evidence:** verified live with an ordinary `hermes -z` conversation turn (no
+  explicit memory tool calls): automatic `batch_retain` extracted and stored the
+  fact in 4.35s, consolidation completed in 4.90s, and a subsequent fresh
+  single-turn `hermes -z` session recalled the exact fact on Turn 1 in 0.20s
+  before test artifacts were cleaned up via `DELETE /documents/{id}`.
 - **Built-in memory remains complementary:** MEMORY.md and USER.md still
   exist and were not reset. The dashboard deliberately displays them
   alongside Hindsight.

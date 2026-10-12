@@ -13,3 +13,32 @@
                  if _may_rewrite_profile_env(self._config):
                      _materialize_embedded_profile_env(self._config)
                      if _daemon_is_running(profile):
+--- a/embedded.py
++++ b/embedded.py
+@@ -337,6 +337,16 @@
+         idle_timeout = os.environ.get("HINDSIGHT_IDLE_TIMEOUT")
+     if idle_timeout is not None and idle_timeout != "":
+         env_values["HINDSIGHT_EMBED_DAEMON_IDLE_TIMEOUT"] = str(_parse_int_setting(idle_timeout, _DEFAULT_IDLE_TIMEOUT))
++    for cfg_key, env_key in (
++        ("llm_reasoning_effort", "HINDSIGHT_API_LLM_REASONING_EFFORT"),
++        ("llm_extra_body", "HINDSIGHT_API_LLM_EXTRA_BODY"),
++        ("llm_max_concurrent", "HINDSIGHT_API_LLM_MAX_CONCURRENT"),
++        ("llm_max_retries", "HINDSIGHT_API_LLM_MAX_RETRIES"),
++        ("llm_timeout", "HINDSIGHT_API_LLM_TIMEOUT"),
++    ):
++        val = config.get(cfg_key)
++        if val is not None and val != "":
++            env_values[env_key] = json.dumps(val) if isinstance(val, (dict, list)) else str(val)
+     return env_values
+ 
+ 
+@@ -369,7 +379,8 @@
+     permissions could not be verified."""
+     profile_env = _embedded_profile_env_path(config)
+     profile_env.parent.mkdir(parents=True, exist_ok=True)
+-    env_values = _build_embedded_profile_env(config, llm_api_key=llm_api_key)
++    existing_values = _load_simple_env(profile_env)
++    env_values = {**existing_values, **_build_embedded_profile_env(config, llm_api_key=llm_api_key)}
+     content = "".join(f"{key}={value}\n" for key, value in env_values.items())
+     try:
+         _secure_write_profile_env(profile_env, content)

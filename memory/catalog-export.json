@@ -5613,27 +5613,6 @@
     },
     {
       "attributes": {
-        "diagnostic_jobs_cancelled": 2,
-        "effect": "can occupy single local inference slot for minutes",
-        "model": "Qwen3.5-9B",
-        "provider": "local_embedded",
-        "status": "unresolved"
-      },
-      "body": "A normal Hermes conversation triggered four 120-second local-model extraction timeouts and a whole-job retry; automatic retention is not yet dependable.",
-      "created_at": "2026-10-12T14:48:53.222002+00:00",
-      "id": "f36b3727-58b5-4860-978c-1db012235de5",
-      "key": "hermes-hindsight-auto-retain-timeout-2026-10-12",
-      "name": "Hindsight automatic chat saves time out",
-      "tags": [
-        "hermes",
-        "hindsight",
-        "gap"
-      ],
-      "type": "log-entry",
-      "updated_at": "2026-10-12T14:48:53.222002+00:00"
-    },
-    {
-      "attributes": {
         "anti_runaway_mechanisms": [
           "in_flight_tool_loop_lock",
           "spend_velocity_throttling_1usd_per_5min",
@@ -8561,9 +8540,66 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-10-12T14:32:55.346838+00:00"
+    },
+    {
+      "attributes": {
+        "effect": "occupied local inference slots for minutes while generating <think> tokens",
+        "model": "Qwen3.5-9B",
+        "provider": "local_embedded",
+        "resolved_by": "hermes-hindsight-nothink-sync-recall-fix-2026-10-12",
+        "status": "resolved"
+      },
+      "body": "A normal Hermes conversation triggered four 120-second local-model extraction timeouts and a whole-job retry; automatic retention is not yet dependable.",
+      "created_at": "2026-10-12T14:48:53.222002+00:00",
+      "id": "f36b3727-58b5-4860-978c-1db012235de5",
+      "key": "hermes-hindsight-auto-retain-timeout-2026-10-12",
+      "name": "Hindsight automatic chat saves time out",
+      "tags": [
+        "hermes",
+        "hindsight",
+        "resolved"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-12T14:48:53.222002+00:00"
+    },
+    {
+      "attributes": {
+        "auto_retain_seconds": 4.35,
+        "consolidation_seconds": 4.9,
+        "host": "hermes-vps",
+        "llm_extra_body": {
+          "chat_template_kwargs": {
+            "enable_thinking": false
+          }
+        },
+        "llm_max_concurrent": 1,
+        "llm_max_retries": 2,
+        "llm_reasoning_effort": "none",
+        "patch": "patches/hindsight-profile-restart.patch",
+        "recall_seconds": 0.2,
+        "recall_sync": true,
+        "recall_types": "observation,world,experience",
+        "uvx_symlinks": [
+          "/usr/local/bin/uv",
+          "/usr/local/bin/uvx"
+        ]
+      },
+      "body": "Disabled Qwen3.5 thinking mode and capped concurrency to 1 for Hindsight LLM calls, symlinked uv/uvx into /usr/local/bin, and enabled synchronous multi-type recall; automatic chat retain dropped from >480s timeout to 4.35s.",
+      "created_at": "2026-10-12T15:14:46.583139+00:00",
+      "id": "1cc8c6b2-49e2-4fd3-8a4f-6d1f22f8e20e",
+      "key": "hermes-hindsight-nothink-sync-recall-fix-2026-10-12",
+      "name": "Hindsight local LLM no-think, concurrency cap, uvx PATH, and synchronous recall fix",
+      "tags": [
+        "hermes",
+        "hindsight",
+        "memory",
+        "qwen3.5"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-12T15:14:46.583139+00:00"
     }
   ],
-  "exported_at": "2026-10-12T14:49:05.684844+00:00",
+  "exported_at": "2026-10-12T15:14:48.008846+00:00",
   "relations": [
     {
       "attributes": {},
@@ -12134,6 +12170,26 @@
       "object_type": "entity",
       "predicate": "governs",
       "subject_key": "hermes-config-audit-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T15:14:46.666767+00:00",
+      "id": "da8dd99d-ef81-4133-8c40-346219e17454",
+      "object_key": "hermes-hindsight-auto-retain-timeout-2026-10-12",
+      "object_type": "entity",
+      "predicate": "resolves",
+      "subject_key": "hermes-hindsight-nothink-sync-recall-fix-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T15:14:46.731529+00:00",
+      "id": "e92898c5-5934-4ec1-885b-30b58025b27b",
+      "object_key": "hermes-hindsight-startup-repair-2026-10-12",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-hindsight-nothink-sync-recall-fix-2026-10-12",
       "subject_type": "entity"
     }
   ],
