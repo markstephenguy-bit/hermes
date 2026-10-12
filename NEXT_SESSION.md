@@ -27,6 +27,31 @@ regardless.
 
 ## Current state — re-verified live 2026-10-12, not assumed
 
+### Responsiveness audit (23:00 UTC)
+
+Mark reports intermittent local-model nonresponse and wants daily use and
+settings tuned for responsiveness. Live checks found **one active Hermes
+desktop slot out of a configured 10**, 42 stored sessions in a 4.6 MB database,
+and 4.3 GiB VPS memory available; old saved sessions and VPS memory pressure
+are not the current cause. The model endpoint was healthy and exposed **three
+64K-token slots** (the older single-slot description in BACKLOG.md is stale),
+all idle when checked, with recent prompts of about 14.6K, 33.2K, and 44.8K
+tokens. Two persistent terminal containers used about 142 MiB and 10 MiB.
+
+The concrete latency fault is Hindsight recall: a recent query reranked 223
+candidates on CPU in 7.54 seconds, nearly all of Hermes's 8-second memory
+prefetch window, and recent turns repeatedly logged prefetch timeouts. The
+Hindsight process held about 1.4 GB RSS. The `kiwi` MCP server also repeatedly
+failed keepalives. **No live settings or processes were changed in this audit.**
+Recommended first tuning pass: cap concurrent Hermes sessions at 2, delegated
+children at 1, and Hindsight reranker candidates around 80; then measure
+recall latency and task quality before changing model context or local server
+slots. Use `/stop` for a live stuck turn and `/new` at task boundaries; deleting
+stored sessions will not free model slots. These are recommendations, not
+deployed settings. Full facts and priority signal are in the catalog entities
+`hermes-live-performance-audit-2026-10-12` and
+`hermes-responsiveness-priority-2026-10-12`.
+
 - **VPS**: Hostinger KVM 2, `srv2051520.hstgr.cloud`, `31.220.53.141`. SSH as
   `root` (key: default `~/.ssh/id_ed25519`). **Vultr is gone, full stop** —
   destroyed 2026-10-10, not the host, not an LLM provider. Don't reference it.

@@ -1598,6 +1598,31 @@
     },
     {
       "attributes": {
+        "priority": "high",
+        "reported_on": "2026-10-12",
+        "scope": [
+          "concurrent sessions",
+          "local inference",
+          "memory recall",
+          "daily session habits"
+        ]
+      },
+      "body": "Mark reports intermittent local-model nonresponse and wants Hermes settings and usage tuned for responsiveness.",
+      "created_at": "2026-10-12T23:04:07.669569+00:00",
+      "id": "c8736258-7c3a-494e-8cfd-12cb96c5f738",
+      "key": "hermes-responsiveness-priority-2026-10-12",
+      "name": "Keep Hermes and local inference responsive during daily use",
+      "tags": [
+        "hermes",
+        "performance",
+        "responsiveness",
+        "user-priority"
+      ],
+      "type": "goal",
+      "updated_at": "2026-10-12T23:04:07.669569+00:00"
+    },
+    {
+      "attributes": {
         "config_dir": "~/.hermes/ (config.yaml, .env, auth.json, SOUL.md, memories/, skills/, sessions/, logs/)",
         "context_files": [
           "AGENTS.md (project root)",
@@ -8777,9 +8802,49 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-12T19:00:36.403734+00:00"
+    },
+    {
+      "attributes": {
+        "hermes_active_slots": "1/10",
+        "hindsight_prefetch_timeout_seconds": 8,
+        "hindsight_rerank_candidates": 223,
+        "hindsight_rerank_seconds": 7.54,
+        "hindsight_rss_gib": 1.35,
+        "local_model": "Qwen3.5-9B-Q4_K_M",
+        "model_context_tokens_per_slot": 64000,
+        "model_server_slots": 3,
+        "recent_slot_prompt_tokens": [
+          33185,
+          44757,
+          14629
+        ],
+        "saved_sessions": 42,
+        "session_db_mib": 4.6,
+        "terminal_container_memory_mib": [
+          141.8,
+          10.3
+        ],
+        "terminal_containers": 2,
+        "unreliable_mcp": "kiwi",
+        "vps_load_average_1m": 0.09,
+        "vps_memory_available_gib": 4.3
+      },
+      "body": "Live inspection found one active Hermes desktop slot, healthy but long-context local inference, and repeated Hindsight prefetch timeouts caused by slow local reranking.",
+      "created_at": "2026-10-12T23:04:07.669569+00:00",
+      "id": "c7137634-20cf-497b-b51d-1ba66d1edc1e",
+      "key": "hermes-live-performance-audit-2026-10-12",
+      "name": "Live Hermes resource and latency audit on Hostinger VPS",
+      "tags": [
+        "hermes",
+        "performance",
+        "responsiveness",
+        "live-audit"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-12T23:04:07.669569+00:00"
     }
   ],
-  "exported_at": "2026-10-12T19:00:36.910642+00:00",
+  "exported_at": "2026-10-12T23:04:27.239293+00:00",
   "relations": [
     {
       "attributes": {},
@@ -12456,6 +12521,26 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-mcp-gitlab-disabled-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T23:04:10.724065+00:00",
+      "id": "2945c404-34b9-45f9-ae25-d5a847d10640",
+      "object_key": "hermes-responsiveness-priority-2026-10-12",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-live-performance-audit-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T23:04:10.724065+00:00",
+      "id": "afe5292c-a820-4d54-9cc2-567b76c80f37",
+      "object_key": "hermes-integration-priority-list-2026-10-07",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-live-performance-audit-2026-10-12",
       "subject_type": "entity"
     }
   ],
