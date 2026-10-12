@@ -8383,9 +8383,72 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-10-12T03:38:41.475041+00:00"
+    },
+    {
+      "attributes": {
+        "first_fix_regression": "setting HERMES_DASHBOARD_PUBLIC_URL alone made Hermes refuse to bind at all (public_url engages an internal auth gate; none was configured) -- hermes-dashboard.service crash-looped 43+ restarts",
+        "full_fix": "added dashboard.basic_auth (username mark, new generated password, scrypt hash) to config.yaml alongside HERMES_DASHBOARD_PUBLIC_URL=https://theguylab.duckdns.org",
+        "pending": "new dashboard password generated but not yet vaulted -- needs vault passcode from user, currently only in chat",
+        "root_cause": "HERMES_DASHBOARD_PUBLIC_URL was unset, so trusted_public_hosts was empty and every WS/pty upgrade through Caddy got origin_mismatch rejected",
+        "status": "NRestarts=0 since fix, HERMES_DASHBOARD_READY logged, external 401/302 as expected"
+      },
+      "body": "Dashboard public_url fix for the WS origin_mismatch reconnect loop initially caused a worse regression (hard crash loop) because Hermes requires its own internal auth provider once a public_url is set; added dashboard.basic_auth to resolve both issues.",
+      "created_at": "2026-10-12T04:12:48.152933+00:00",
+      "id": "4289adcf-8f37-44e4-8267-3f451b84a335",
+      "key": "hermes-dashboard-public-url-crashloop-fixed-2026-10-12",
+      "name": "Dashboard origin_mismatch fixed, caused a crash loop, fixed properly",
+      "tags": [
+        "hermes",
+        "log-entry",
+        "incident"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-12T04:12:48.152933+00:00"
+    },
+    {
+      "attributes": {
+        "actual_root_cause": "sandbox container gets a bare env with no config.yaml mount and no BASE_URL/MODEL env vars -- genuinely no way to self-discover its own endpoint",
+        "caveat": "duplicates config.yaml model: section -- must be updated together whenever the local model is swapped again, same caveat as Hindsight llm_model",
+        "fix": "added HERMES_LOCAL_MODEL_BASE_URL and HERMES_LOCAL_MODEL_NAME to ~/.hermes/.env, wired into terminal.docker_forward_env in config.yaml, recycled the stale long-lived sandbox container",
+        "root_cause_ruled_out": "sandbox network isolation -- verified the hermes-sandbox:desktop container CAN reach 192.168.40.100:8090 directly (200 OK, 60ms)",
+        "symptom": "agent asked to benchmark tokens/sec wrote a stub script with placeholder BASE_URL/MODEL_NAME instead of running a real test, presented as a deliverable rather than a disclosed limitation",
+        "verified": "hermes -z one-shot re-run of the same benchmark task completed for real: 10 live requests, 23-75 tps, parsed actual llama.cpp response timing fields -- no stub"
+      },
+      "body": "Diagnosed and fixed a tool-grounding failure where the local model (Qwen3.5-9B) fabricated a benchmark stub instead of disclosing it could not see its own API config from inside the sandboxed code-execution tool; gave the sandbox real self-knowledge instead.",
+      "created_at": "2026-10-12T04:12:48.152933+00:00",
+      "id": "851fa089-afa9-4562-a877-8c8b0d08a795",
+      "key": "hermes-sandbox-env-forwarding-added-2026-10-12",
+      "name": "Code-execution sandbox given its own model identity via docker_forward_env",
+      "tags": [
+        "hermes",
+        "log-entry",
+        "local-model"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-12T04:12:48.152933+00:00"
+    },
+    {
+      "attributes": {
+        "files_updated": "~/.hermes/hindsight/config.json, ~/.hindsight/profiles/hermes.env",
+        "new_model": "E:\\ik_llama_models\\Qwen_Qwen3.5-9B-Q4_K_M.gguf",
+        "old_model": "E:\\ik_llama_models\\Qwen3.6-35B-A3B-Q4_K_M.gguf",
+        "verified_benchmark": "53.6 tok/s (400 completion tokens, 7.46s, single large request); separately 23-75 tps range across 10 small requests via sandbox tool"
+      },
+      "body": "User swapped the w_workstation default local model from Qwen3.6-35B-A3B to Qwen3.5-9B; synced Hindsight memory-extraction config to match, per the standing instruction that it tracks whatever the default profile model is.",
+      "created_at": "2026-10-12T04:12:58.281317+00:00",
+      "id": "8ed0fd73-c552-439f-b5dc-bc15f56cc62d",
+      "key": "hermes-hindsight-model-synced-qwen3.5-9b-2026-10-12",
+      "name": "Hindsight llm_model synced to new local model Qwen3.5-9B",
+      "tags": [
+        "hermes",
+        "log-entry",
+        "local-model"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-12T04:12:58.281317+00:00"
     }
   ],
-  "exported_at": "2026-10-12T03:38:47.763157+00:00",
+  "exported_at": "2026-10-12T04:13:05.814634+00:00",
   "relations": [
     {
       "attributes": {},
@@ -11836,6 +11899,36 @@
       "object_type": "entity",
       "predicate": "informed_by",
       "subject_key": "hermes-hindsight-deployed-local-embedded-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T04:12:58.418646+00:00",
+      "id": "70a86c7b-de33-4db5-9089-bb57417821fb",
+      "object_key": "hermes-vps-hostinger-public-dashboard-2026-10-11",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-dashboard-public-url-crashloop-fixed-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T04:12:58.418646+00:00",
+      "id": "958329ed-be8a-4a62-a1df-708c477216fc",
+      "object_key": "hermes-vps-ik-llama-wired-2026-10-08",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-sandbox-env-forwarding-added-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T04:12:58.418646+00:00",
+      "id": "54a1528c-4df9-46f8-8d61-af62f1db745d",
+      "object_key": "hermes-hindsight-deployed-local-embedded-2026-10-12",
+      "object_type": "entity",
+      "predicate": "supersedes",
+      "subject_key": "hermes-hindsight-model-synced-qwen3.5-9b-2026-10-12",
       "subject_type": "entity"
     }
   ],
