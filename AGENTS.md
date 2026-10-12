@@ -1,8 +1,22 @@
-# Hermes — working notes for Codex
+# Hermes — working notes for Codex, Antigravity, and other agentic tools
 
 This repo is the source for Hermes, a self-hosted personal AI agent for the
 home network. See [README.md](README.md), [ARCHITECTURE.md](ARCHITECTURE.md),
 and [BACKLOG.md](BACKLOG.md) first.
+
+## Read NEXT_SESSION.md before anything else
+
+[NEXT_SESSION.md](NEXT_SESSION.md) is the single most current, authoritative
+record of infrastructure state — more current than ARCHITECTURE.md/BACKLOG.md,
+which lag behind it and get reconciled only periodically. If anything in those
+two files conflicts with NEXT_SESSION.md, **NEXT_SESSION.md wins.** It's
+written as a session-opening brief; read it as a status doc regardless of
+which tool you are.
+
+If the catalog (below) is unreachable — no LAN/WireGuard access, e.g. working
+from outside the home network without the laptop's WireGuard tunnel up — this
+repo's own files (NEXT_SESSION.md + `memory/catalog-export.json`) are the only
+record of project state. Treat them as load-bearing, not a backup.
 
 ## Before assuming anything about the network
 

@@ -5479,6 +5479,32 @@
     },
     {
       "attributes": {
+        "cross_cutting_finding": "the Qwen3-14B trap (large max_position_embeddings masking much smaller real trained context) recurred in 9 of 13 families checked -- context verification is the real bottleneck for this search, not benchmarks",
+        "fallback_pick": "DeepSeek-R1-0528-Qwen3-8B -- self-documented YaRN 32768->131072 matching Qwen3-8Bs confirmed native length, mature llama.cpp support, fits 16GB even at fp16 KV, but scattered/weaker tool-calling scores",
+        "methodology_note": "4 parallel researchers each self-contained (context gate -> VRAM math -> tool-calling -> llama.cpp risk) rather than split by axis, to avoid cross-researcher dependency",
+        "primary_pick": "Qwen3.5-9B",
+        "primary_pick_confidence_gap": "262144 native context rests on two independent secondary analyses, not a directly-quoted primary technical report",
+        "primary_pick_llamacpp_risk": "hybrid linear-attention parallel-serving crash bug, now fixed (ggml-org/llama.cpp#20222 -> PR #20232); unverified whether llama.cpp actually gives linear-attention layers a small constant KV cache vs silently allocating full dense cache -- check via llama-server --verbose before trusting VRAM math",
+        "report_path": "/home/mark/projects/Hermes/reports/Hermes local model 64k context gate.md",
+        "status": "recommendation, not yet deployed"
+      },
+      "body": "After the Qwen3-14B disqualification (32768 native context vs Hermes required 64000 minimum), ran a 4-way parallel deep-research sweep across ~40 checkpoints in 13 model families, applying the native-context-first gate before any benchmark/VRAM evaluation. Primary recommendation: Qwen3.5-9B (262144 native context via continued pretraining, Q4_K_M 6.17GB weights, ~2.15GB KV cache at 64K thanks to hybrid linear/full attention, BFCL v4 0.661 -- best current tool-calling score among all gate-passing candidates). Fallback: DeepSeek-R1-0528-Qwen3-8B (more mature llama.cpp support, more certain context claim, weaker tool-calling signal). Not yet deployed or tested -- recommendation only.",
+      "created_at": "2026-10-12T02:49:11.360127+00:00",
+      "id": "603919a4-3bf5-4eb9-9270-048dd6bff035",
+      "key": "hermes-local-model-64k-gated-search-2026-10-12",
+      "name": "Systematic 13-family search for a 64K-context-qualified Hermes local model: Qwen3.5-9B recommended",
+      "tags": [
+        "hermes",
+        "qwen",
+        "research",
+        "model-selection",
+        "recommendation"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-12T02:49:11.360127+00:00"
+    },
+    {
+      "attributes": {
         "artifact_path": "hermes_model_contingency_plan.md",
         "budget_cap": 20.0,
         "scenarios_covered": 7,
@@ -8010,9 +8036,283 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-11T23:16:26.219463+00:00"
+    },
+    {
+      "attributes": {
+        "api_calls": 6,
+        "distinguishing_test": "curl /v1/models and /v1/chat/completions directly against 192.168.40.100:8090 returned fast -- rules out a global server hang like 2026-10-07",
+        "model_server_state_at_check": "idle, slots_processing=0",
+        "session_id": "20261011_231751_60606b",
+        "tool_turns": 11,
+        "total_duration_s": 1093.7
+      },
+      "body": "Session 20261011_231751_60606b logged a 79s stream-stale watchdog warning mid-turn; live check showed the ik_llama.cpp model server idle/healthy and the turn later completed normally after 6 model calls + 11 tool calls totaling 1093.7s -- the watchdog fires on any token-silence gap, including legitimate long tool execution, not just real hangs.",
+      "created_at": "2026-10-11T23:47:04.320917+00:00",
+      "id": "c3506f41-89ef-4605-be30-60ceb40fbccf",
+      "key": "hermes-stream-stale-false-positive-2026-10-11",
+      "name": "Stream-stale watchdog warning was a long tool-chain, not a hang",
+      "tags": [
+        "hermes",
+        "qwen",
+        "ik_llama",
+        "diagnosis",
+        "resolved"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-11T23:47:04.320917+00:00"
+    },
+    {
+      "attributes": {
+        "cpu": "Intel Xeon W-2225, 4 cores / 8 logical",
+        "full_command": "build\\bin\\llama-server.exe --model E:\\ik_llama_models\\Qwen3.6-35B-A3B-Q4_K_M.gguf --jinja -fa on -ctk q8_0 -ctv q8_0 -b 4096 -ub 4096 -t 4 --mlock --parallel 1 --ctx-size 65536 --cpu-moe -ngl 999 --spec-type ngram-cache:n_max=4,ngram_size_n=4 --spec-autotune --host 0.0.0.0 --port 8090",
+        "gpu": "RTX A4000 (16GB VRAM per catalog; WMI AdapterRAM misreports due to known 32-bit overflow quirk)",
+        "key_flags_explained": {
+          "--cpu-moe -ngl 999": "correct hybrid offload for a 35B MoE model that cannot fully fit in 16GB VRAM: dense/attention layers on GPU, MoE expert layers on CPU",
+          "--parallel 1": "single inference slot, explicit -- the actual lever behind the 2026-10-07 concurrency hang; raising it would split --ctx-size across slots and add CPU contention on only 4 physical cores, so Hermes-side max_concurrent_sessions=3 queuing cap (not a llama-server flag change) is the correct mitigation for this hardware",
+          "--spec-type ngram-cache": "self-speculative decoding via n-gram lookup in existing context, NOT a separate draft model -- corrects an earlier wrong guess this session that draft_n_accepted=0 meant a misconfigured draft model; it is expected to be 0 on short/unique completions with nothing to pattern-match, and should help more on repetitive output (code, JSON tool calls)",
+          "-ctk/-ctv q8_0, -fa on": "quantized KV cache + flash attention, already memory-efficient choices that make ctx-size 65536 affordable",
+          "-t 4": "matches physical core count exactly -- already correctly tuned, not a bottleneck"
+        },
+        "verification_method": "Salt API (http://192.168.40.2:8000) login as mark via PAM eauth using the server-mark-sudo catalog secret, then cmd.run targeting w_workstation -- passphrase supplied live by Mark in chat, used once, never persisted or logged"
+      },
+      "body": "Confirmed live via Salt cmd.run (PowerShell Get-CimInstance Win32_Process) the exact command line running llama-server.exe for Qwen3.6-35B-A3B-Q4_K_M on w_workstation:8090 -- config is already well-tuned for the hardware (Xeon W-2225, 4 physical/8 logical cores, RTX A4000 16GB VRAM), no free config win was sitting unapplied.",
+      "created_at": "2026-10-11T23:55:54.31037+00:00",
+      "id": "2e6ac961-fc4c-4682-851e-a1d331ab2522",
+      "key": "hermes-ik-llama-launch-flags-confirmed-2026-10-11",
+      "name": "ik_llama.cpp llama-server.exe actual launch flags on w_workstation (verified via Salt)",
+      "tags": [
+        "hermes",
+        "qwen",
+        "ik_llama",
+        "w_workstation",
+        "configuration",
+        "verified"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-11T23:55:54.31037+00:00"
+    },
+    {
+      "attributes": {
+        "engine_recommendation": "mainline llama.cpp (or ExLlamaV2/TabbyAPI for single-stream latency); ik_llama.cpp CPU-offload kernels become pointless once fully GPU-resident; vLLM flagged as risky due to open hermes-parser streaming bugs",
+        "key_finding": "parameter count is a weak predictor of tool-calling reliability; Qwen3 training lineage matters more than scale",
+        "report_path": "/home/mark/projects/Hermes/reports/Local tool calling model for Hermes.md",
+        "status": "recommendation, not yet decided",
+        "validation_method_suggested": "~20 trials per task type at production quant, target 80%+ success floor before switching"
+      },
+      "body": "Deep-research (4 subagents) recommends replacing the current CPU-offloaded Qwen3.6-35B-A3B + ik_llama.cpp setup with a dense Qwen3-8B or Qwen3-14B at Q4_K_M running fully GPU-resident on mainline llama.cpp (16GB VRAM, zero CPU dependency), based on a same-hardware-class benchmark showing dense beating CPU-offloaded MoE 2.8x on generation and 6.3x on prompt processing, plus documented malformed-tool-call/reasoning-loop reports specific to Qwen3.6-35B-A3B in long agent chains -- not yet actioned, Mark has not decided.",
+      "created_at": "2026-10-12T00:11:03.482757+00:00",
+      "id": "2f44064a-2eea-4723-aaf9-3234efdf597f",
+      "key": "hermes-local-model-rightsizing-research-2026-10-11",
+      "name": "Research recommends dropping Qwen3.6-35B-A3B MoE for a dense 8-14B GPU-resident model",
+      "tags": [
+        "hermes",
+        "qwen",
+        "ik_llama",
+        "research",
+        "model-selection",
+        "recommendation"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-12T00:11:03.482757+00:00"
+    },
+    {
+      "attributes": {
+        "gguf_sizes_bartowski": {
+          "Q4_K_M": "9.00GB",
+          "Q5_K_M": "10.51GB",
+          "Q6_K": "12.12GB",
+          "Q8_0": "15.70GB"
+        },
+        "hermes_side_mismatch_found": "agent.log shows compression.codex_responses_compact_threshold defaults to 200000 when unset -- a cloud-model-scaled default that does not match any local 16GB-class model; worth setting a lower provider-specific compaction threshold (e.g. ~32-35K) for the local provider so Hermes compacts before hitting the models real 40960 ceiling",
+        "important_caveat": "ctx-size should not exceed the models native max_position_embeddings (40960) -- the current Qwen3.6-35B setup runs --ctx-size 65536, beyond native context, which may contribute to its reported reasoning-loop/malformed-tool-call issues in long chains",
+        "kv_cache_per_token_q8_0": "~80KiB (2 x 40 layers x 8 kv_heads x 128 head_dim x 1 byte)",
+        "qwen3_14b_hf_config": {
+          "head_dim": 128,
+          "kv_heads": 8,
+          "layers": 40,
+          "native_max_context": 40960
+        },
+        "recommendation": "Qwen3-14B Q5_K_M, --ctx-size 40960 (native max, do not extend via RoPE), -ctk q8_0 -ctv q8_0 -- total ~14.2GB of 16GB"
+      },
+      "body": "Using confirmed Qwen3-14B HF config (40 layers, 8 KV heads, head_dim 128) and bartowski GGUF file sizes, Q5_K_M (10.51GB weights) + full native 40960-token context at q8_0 KV cache (~3.2GB) + compute buffer uses ~14.2GB of 16GB, leaving a safe ~1.8GB margin -- better use of the card than Q4_K_M (9GB weights, leaves 7GB idle) without the razor-thin margin of Q6_K (12.12GB weights, leaves only ~0.2GB, risky).",
+      "created_at": "2026-10-12T00:22:26.737816+00:00",
+      "id": "8857fbd5-ba28-4724-b8e6-9b31377f2aee",
+      "key": "hermes-qwen14b-vram-sizing-2026-10-12",
+      "name": "Qwen3-14B Q5_K_M is the VRAM-efficient sizing for a 16GB card, not Q4_K_M",
+      "tags": [
+        "hermes",
+        "qwen",
+        "vram",
+        "configuration",
+        "recommendation"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-12T00:22:26.737816+00:00"
+    },
+    {
+      "attributes": {
+        "bits_job_name": "Qwen3-14B-Q5_K_M-pull",
+        "destination": "E:\\ik_llama_models\\Qwen_Qwen3-14B-Q5_K_M.gguf",
+        "method": "PowerShell Start-BitsTransfer -Asynchronous via Salt cmd.run (same resumable pattern as the original 2026-10-06 35B pull)",
+        "not_yet_done": "model not yet wired into ik_llama/llama.cpp config, engine not yet switched from ik_llama.cpp to mainline llama.cpp, old 35B model not removed -- this step is only the file download",
+        "purpose": "candidate replacement model for Qwen3.6-35B-A3B on the Hermes local execution tier -- dense, fully GPU-resident on 16GB VRAM, per hermes-local-model-rightsizing-research-2026-10-11 and hermes-qwen14b-vram-sizing-2026-10-12",
+        "size_bytes_approx": 10510000000,
+        "source": "https://huggingface.co/bartowski/Qwen_Qwen3-14B-GGUF/resolve/main/Qwen_Qwen3-14B-Q5_K_M.gguf"
+      },
+      "body": null,
+      "created_at": "2026-10-12T00:57:08.280912+00:00",
+      "id": "600b1a7a-3997-4fef-b065-0e708bae4ea0",
+      "key": "hermes-qwen14b-q5km-pull-started-2026-10-12",
+      "name": "Qwen3-14B Q5_K_M GGUF pull started on w_workstation",
+      "tags": [
+        "hermes",
+        "qwen",
+        "w_workstation",
+        "local-inference",
+        "download"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-12T00:57:08.280912+00:00"
+    },
+    {
+      "attributes": {
+        "next_steps": "install/build mainline llama.cpp on w_workstation, configure llama-server with --ctx-size 40960 -ctk q8_0 -ctv q8_0 pointed at this file, run validation trials (~20/task type, 80%+ target) before switching model.default away from Qwen3.6-35B-A3B",
+        "path": "E:\\ik_llama_models\\Qwen_Qwen3-14B-Q5_K_M.gguf",
+        "size_bytes": 10514570272
+      },
+      "body": "BITS transfer completed and Complete-BitsTransfer moved it out of staging to the real path; file size verified byte-exact (10514570272 bytes) via Get-Item. Model file is on disk but not yet wired into any inference engine config -- Qwen3.6-35B-A3B via ik_llama.cpp remains the active model.",
+      "created_at": "2026-10-12T01:51:53.012062+00:00",
+      "id": "fd6fa278-f392-4dff-9e5f-da82dd420362",
+      "key": "hermes-qwen14b-q5km-pull-complete-2026-10-12",
+      "name": "Qwen3-14B-Q5_K_M.gguf fully pulled and finalized on w_workstation",
+      "tags": [
+        "hermes",
+        "qwen",
+        "w_workstation",
+        "local-inference",
+        "verification"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-12T01:51:53.012062+00:00"
+    },
+    {
+      "attributes": {
+        "corrected_filter_for_future_model_search": "any future local-model candidate MUST have a confirmed native (or officially YaRN-config-extended) context window >= 64000 tokens -- check this FIRST, before benchmarks or VRAM math, since it is a hard pass/fail gate",
+        "disqualified_model": "Qwen3-14B (and by extension Qwen3-8B, same architecture family) -- native/trained context 32768, rope_scaling: null in HF config, no safe extension path to 64K",
+        "hard_requirement": "Hermes Agent rejects any model.default whose served context window is below 64000 tokens -- this is an absolute floor, not a soft warning, and not configurable around",
+        "leftover_artifacts_on_w_workstation": "C:\\llama.cpp (mainline llama.cpp b11559 + cudart, unused, harmless), E:\\ik_llama_models\\Qwen_Qwen3-14B-Q5_K_M.gguf (10.51GB, unused, harmless), C:\\llama_cpp_dl (download staging, can be cleaned up)",
+        "rollback_verified": "ik_llama.cpp directory and start_server.bat restored, scheduled task ik_llama_server re-run successfully, model.default reverted on hermes-vps, hermes -z live round trip returned exact expected string",
+        "why_not_caught_earlier": "earlier same-session research (hermes-local-model-rightsizing-research-2026-10-11, hermes-qwen14b-vram-sizing-2026-10-12) focused on tool-calling benchmarks and VRAM fit, never checked Hermes own minimum-context gate against the candidate models native training context before recommending/downloading/building anything"
+      },
+      "body": "Attempted to swap Hermes local tier from Qwen3.6-35B-A3B (ik_llama.cpp) to dense Qwen3-14B Q5_K_M (mainline llama.cpp) based on earlier same-session research. Build, download, GPU offload, and tool-calling all verified working -- but hermes -z failed outright: \"Model ... has a context window of 32,768 tokens, which is below the minimum 64,000 required by Hermes Agent\", with no config override accepted below 64K. Qwen3-14B HF config confirms rope_scaling is null (no YaRN extension available) and llama.cpp detected real n_ctx_train=32768, so this model family is disqualified for the local tier regardless of tool-calling quality. Rolled back cleanly: killed new server, restored C:\\ik_llama.cpp and C:\\start_server.bat from their renamed .old copies, re-ran the ik_llama_server scheduled task, reverted model.default on hermes-vps, and live-validated recovery with hermes -z (exact string match returned). Hermes was never left broken for more than a couple minutes.",
+      "created_at": "2026-10-12T02:23:26.54206+00:00",
+      "id": "0797d343-77cb-4cb8-93be-7bd1acf55e15",
+      "key": "hermes-agent-hard-64k-context-minimum-2026-10-12",
+      "name": "CRITICAL: Hermes Agent hard-requires >= 64,000 token context window, discovered live during a model swap attempt",
+      "tags": [
+        "hermes",
+        "qwen",
+        "critical",
+        "configuration",
+        "rolled-back"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-12T02:23:26.54206+00:00"
+    },
+    {
+      "attributes": {
+        "auth": "Caddy HTTP Basic Auth (user mark, password in vault) + auto-TLS via Lets Encrypt",
+        "caddy_install": "native apt (cloudsmith repo), not Docker",
+        "domain": "theguylab.duckdns.org",
+        "gotcha": "reverse_proxy needed explicit header_up Host {upstream_hostport} - dashboard has its own Host-header check and 400s on the public domain name",
+        "upstream": "127.0.0.1:9119 (hermes-dashboard.service, systemd --user, loopback-only)"
+      },
+      "body": "Stood up a public, auth-gated web dashboard for the new Hostinger hermes-vps using native Caddy (not Docker), fulfilling the 2026-09-22 no-client-install remote-access requirement on the rebuilt box.",
+      "created_at": "2026-10-12T03:10:48.850085+00:00",
+      "id": "0e53c9a7-e748-45d8-a1fd-1071f3a100a6",
+      "key": "hermes-vps-hostinger-public-dashboard-2026-10-11",
+      "name": "Public web dashboard stood up on Hostinger hermes-vps via native Caddy",
+      "tags": [
+        "hermes",
+        "infrastructure",
+        "remote-access",
+        "hostinger"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-12T03:10:48.850085+00:00"
+    },
+    {
+      "attributes": {
+        "confirmed_with_user": true,
+        "impact": "home WordPress/NPM no longer reachable from the public internet at this domain; LAN-internal access unaffected (AdGuard local DNS rewrite still points it home)",
+        "new_target": "31.220.53.141 (hermes-vps, Hostinger)",
+        "old_target": "home public IP (served WordPress/NPM Custom Locations)",
+        "revert_path": "add a fresh DuckDNS subdomain instead of un-repointing theguylab (4 of 5 account slots still free)"
+      },
+      "body": "User chose to keep theguylab.duckdns.org pointed at the new Hostinger VPS rather than reverting it, accepting that home public-facing WordPress/NPM access is retired at this domain.",
+      "created_at": "2026-10-12T03:11:05.729116+00:00",
+      "id": "c67cdf34-5fc4-4c4c-8b5d-2c9fc91bbc73",
+      "key": "theguylab-duckdns-repointed-to-vps-2026-10-11",
+      "name": "theguylab.duckdns.org deliberately repointed from home IP to hermes-vps",
+      "tags": [
+        "hermes",
+        "infrastructure",
+        "dns",
+        "tradeoff"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-12T03:11:05.729116+00:00"
+    },
+    {
+      "attributes": {
+        "layer_1": "ufw (OS-level, on the VPS itself)",
+        "layer_2": "Hostinger hPanel firewall (cloud-level, separate from ufw)",
+        "symptom_seen": "ufw showed 80/443 ALLOW and the rules existed in hPanel, but raw TCP connect and Lets Encrypt HTTP-01/TLS-ALPN challenges both timed out until Synchronize was clicked",
+        "trap": "adding/editing a rule in hPanel is not enough - it must be explicitly applied via the Synchronize button or it silently has no effect on the live server"
+      },
+      "body": "Confirmed live: Hostinger VPS firewall rules added in hPanel do not take effect until the Synchronize button is clicked, independent of and in addition to the OS-level ufw ruleset.",
+      "created_at": "2026-10-12T03:11:05.753411+00:00",
+      "id": "56bdfcd0-23bf-4034-b61e-a017ae1de1da",
+      "key": "hostinger-dual-firewall-sync-gotcha-2026-10-11",
+      "name": "Hostinger VPS has two independent firewall layers; hPanel rules need explicit Synchronize",
+      "tags": [
+        "hermes",
+        "infrastructure",
+        "hostinger",
+        "gotcha"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-12T03:11:05.753411+00:00"
+    },
+    {
+      "attributes": {
+        "auto_start": false,
+        "down_command": "sudo wg-quick down wg0",
+        "fileserver_changes": "widened the VPS peers AllowedIPs from 10.60.0.1/32 to 10.60.0.0/24 in the WireGuard container, otherwise cryptokey routing drops traffic relayed from the new laptop IP as untrusted",
+        "home_routing_caveat": "AllowedIPs includes 192.168.40.0/24 so while up at home, LAN traffic is misrouted through the VPS relay instead of the direct connection - must be brought down when physically home",
+        "laptop_config_path": "/etc/wireguard/wg0.conf",
+        "topology": "laptop -> hermes-vps (10.60.0.1, public relay) -> fileserver (10.60.0.2) -> 192.168.40.0/24",
+        "tunnel_ip": "10.60.0.3/24",
+        "up_command": "sudo wg-quick up wg0",
+        "vps_changes": "new [Peer] block in /etc/wireguard/wg0.conf (AllowedIPs=10.60.0.3/32), net.ipv4.ip_forward=1, ufw route allow in on wg0 out on wg0",
+        "why_relay_not_direct": "direct laptop-to-home (66.170.221.155) would require home router port-forwarding; relaying through the already-public VPS avoids touching the home router entirely"
+      },
+      "body": "Gave the laptop standing WireGuard access to the full home LAN from anywhere (e.g. work) by relaying through hermes-vps, reusing the same hub-and-spoke pattern already proven for fileserver, with zero home router changes required.",
+      "created_at": "2026-10-12T03:11:05.77032+00:00",
+      "id": "dd7f1315-39e2-42b6-9dd2-696059b43d0a",
+      "key": "laptop-wireguard-peer-via-vps-relay-2026-10-11",
+      "name": "Laptop added as third WireGuard peer, relayed through hermes-vps into home LAN",
+      "tags": [
+        "hermes",
+        "infrastructure",
+        "wireguard",
+        "laptop"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-12T03:11:05.77032+00:00"
     }
   ],
-  "exported_at": "2026-10-11T23:16:39.281633+00:00",
+  "exported_at": "2026-10-12T03:11:19.961135+00:00",
   "relations": [
     {
       "attributes": {},
@@ -11203,6 +11503,186 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-install-project-created-2026-10-11",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-11T23:56:07.329931+00:00",
+      "id": "3ff5f191-28fb-4986-a576-3dec6c4882b4",
+      "object_key": "hermes-concurrency-induced-llama-server-hang-2026-10-07",
+      "object_type": "entity",
+      "predicate": "clarifies",
+      "subject_key": "hermes-ik-llama-launch-flags-confirmed-2026-10-11",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-11T23:56:07.329931+00:00",
+      "id": "8ebb73d5-71e5-40bf-8f3a-ec19cc21d507",
+      "object_key": "hermes-stream-stale-false-positive-2026-10-11",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-ik-llama-launch-flags-confirmed-2026-10-11",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T00:11:03.652024+00:00",
+      "id": "32afb9b6-f7e7-4a79-9ec4-16b3dbfde93f",
+      "object_key": "hermes-vps-default-model-ik-llama-2026-10-08",
+      "object_type": "entity",
+      "predicate": "challenges",
+      "subject_key": "hermes-local-model-rightsizing-research-2026-10-11",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T00:11:03.652024+00:00",
+      "id": "3fe748bf-2c4a-4062-90f1-d21c8de24b7e",
+      "object_key": "hermes-ik-llama-launch-flags-confirmed-2026-10-11",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-local-model-rightsizing-research-2026-10-11",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T00:22:26.833931+00:00",
+      "id": "65fe0f99-c28e-4ebd-9e08-0283ffa2412b",
+      "object_key": "hermes-local-model-rightsizing-research-2026-10-11",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-qwen14b-vram-sizing-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T00:57:08.313575+00:00",
+      "id": "cb9b7f2a-45ec-475c-a190-40e9838f6f09",
+      "object_key": "hermes-qwen14b-vram-sizing-2026-10-12",
+      "object_type": "entity",
+      "predicate": "actions",
+      "subject_key": "hermes-qwen14b-q5km-pull-started-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T01:51:53.067109+00:00",
+      "id": "f2a00154-70ca-4a2e-a35a-ed4cd5baf705",
+      "object_key": "hermes-qwen14b-q5km-pull-started-2026-10-12",
+      "object_type": "entity",
+      "predicate": "completes",
+      "subject_key": "hermes-qwen14b-q5km-pull-complete-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T02:23:26.599484+00:00",
+      "id": "7167531e-56d7-4680-bd63-a25f8ca37a21",
+      "object_key": "hermes-local-model-rightsizing-research-2026-10-11",
+      "object_type": "entity",
+      "predicate": "invalidates",
+      "subject_key": "hermes-agent-hard-64k-context-minimum-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T02:23:26.599484+00:00",
+      "id": "de31a546-100c-4e26-bc47-b366d04e6660",
+      "object_key": "hermes-qwen14b-vram-sizing-2026-10-12",
+      "object_type": "entity",
+      "predicate": "invalidates",
+      "subject_key": "hermes-agent-hard-64k-context-minimum-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T02:49:11.427285+00:00",
+      "id": "16a5898f-c8f3-4594-ac81-f05b08182fd7",
+      "object_key": "hermes-local-model-rightsizing-research-2026-10-11",
+      "object_type": "entity",
+      "predicate": "supersedes",
+      "subject_key": "hermes-local-model-64k-gated-search-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T02:49:11.427285+00:00",
+      "id": "55d44eb3-5a00-42c9-8a1b-57d15bd8f0c4",
+      "object_key": "hermes-agent-hard-64k-context-minimum-2026-10-12",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-local-model-64k-gated-search-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T03:11:17.961687+00:00",
+      "id": "d0243e55-7098-44e8-898d-1108eac49587",
+      "object_key": "hermes-remote-access-decision-2026-09-22",
+      "object_type": "entity",
+      "predicate": "fulfills",
+      "subject_key": "hermes-vps-hostinger-public-dashboard-2026-10-11",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T03:11:17.985972+00:00",
+      "id": "4fdb9787-836b-4260-8226-116fda3598f1",
+      "object_key": "hermes-vps-no-firewall-found-and-fixed-2026-09-25",
+      "object_type": "entity",
+      "predicate": "supersedes",
+      "subject_key": "hermes-vps-hostinger-public-dashboard-2026-10-11",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T03:11:18.013114+00:00",
+      "id": "38a173e1-bef0-4503-b9c6-cf6163078e45",
+      "object_key": "theguylab-duckdns-repointed-to-vps-2026-10-11",
+      "object_type": "entity",
+      "predicate": "depends_on",
+      "subject_key": "hermes-vps-hostinger-public-dashboard-2026-10-11",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T03:11:18.033877+00:00",
+      "id": "7d0c32ff-5ba2-4e3f-9ab8-67da4d2f26e6",
+      "object_key": "hostinger-dual-firewall-sync-gotcha-2026-10-11",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-vps-hostinger-public-dashboard-2026-10-11",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T03:11:18.057663+00:00",
+      "id": "5b72edf5-dc05-466c-a5ad-ce1d978228f8",
+      "object_key": "hermes-remote-access-decision-2026-09-22",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "theguylab-duckdns-repointed-to-vps-2026-10-11",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T03:11:18.074738+00:00",
+      "id": "b4b89b78-a09e-456c-9636-9e777acba7df",
+      "object_key": "hermes-vps-hostinger-wireguard-live-2026-10-10",
+      "object_type": "entity",
+      "predicate": "reuses_pattern_of",
+      "subject_key": "laptop-wireguard-peer-via-vps-relay-2026-10-11",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T03:11:18.100965+00:00",
+      "id": "e63de243-444d-47ab-9e22-908a9e3d7944",
+      "object_key": "hermes-remote-access-decision-2026-09-22",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "laptop-wireguard-peer-via-vps-relay-2026-10-11",
       "subject_type": "entity"
     }
   ],

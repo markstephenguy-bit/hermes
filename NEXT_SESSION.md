@@ -1,6 +1,49 @@
 # Session Seed — Hermes Default Profile, Post-Outage
 
-Paste this whole file as your opening message.
+This is the single most current record of infrastructure state for this
+project — more current than ARCHITECTURE.md/BACKLOG.md. If you're an agent
+(Claude Code, Codex, Antigravity, or otherwise) picking this project up cold,
+read this file in full before touching anything. If you're a human in a chat
+UI, paste this whole file as your opening message instead.
+
+## 2026-10-11 (later still): public dashboard, DNS, laptop WireGuard peer
+
+Done this session (not yet reflected anywhere except here + the catalog):
+
+- **Public web dashboard for hermes-vps (Hostinger)**, reachable from any
+  browser, anywhere, no client install: `https://theguylab.duckdns.org`,
+  Basic Auth (`mark` / password in catalog vault, not repeated here). Native
+  Caddy (apt, not Docker) reverse-proxies to the dashboard on loopback
+  `127.0.0.1:9119` (`hermes-dashboard.service`, systemd `--user`, added
+  alongside the existing `hermes-gateway.service`). Caddy's `reverse_proxy`
+  needed an explicit `header_up Host {upstream_hostport}` — the dashboard
+  has its own Host-header check and 400s if it sees the public domain name
+  instead of the loopback host it's bound to.
+- **`theguylab.duckdns.org` was deliberately repointed** from the home
+  network's public IP to the VPS. This was an explicit tradeoff, confirmed
+  with the user, not an accident: home's WordPress/NPM public-facing presence
+  at that domain is now unreachable from the internet (LAN-internal access
+  still fine via AdGuard's local DNS rewrite). If this needs reverting, a
+  fresh DuckDNS subdomain is the clean fix (4 of 5 slots still free on the
+  account) rather than un-repointing `theguylab`.
+- **Two firewall layers on the Hostinger VPS, not one:** ufw (OS-level) *and*
+  a separate Hostinger hPanel firewall (cloud-level) both gate inbound
+  traffic independently. hPanel rule changes additionally require clicking
+  **Synchronize** before they actually apply to the server — adding a rule
+  alone isn't enough, confirmed by this session hitting exactly that trap
+  (rules existed and looked active but traffic was still blocked until sync).
+- **Laptop added as a third WireGuard peer (`10.60.0.3`)**, relayed through
+  the VPS into the home LAN (not a direct connection to home's real public
+  IP, which would have needed home router port-forwarding — deliberately
+  avoided). Full detail and the exact config in ARCHITECTURE.md's Network
+  Topology section. Config lives at `/etc/wireguard/wg0.conf` on the laptop.
+  **Not auto-started.** Commands:
+  - Away from home (e.g. at work): `sudo wg-quick up wg0`
+  - Back home: `sudo wg-quick down wg0` (otherwise home-LAN traffic
+    needlessly routes through the VPS relay instead of the direct LAN path)
+- All of the above needs logging to the catalog + `scripts/export_catalog_memory.py`
+  re-run + commit if that hasn't happened yet by the time you're reading this
+  — check the catalog for entities tagged `hermes` dated 2026-10-11 to confirm.
 
 ## The one thing that matters most this session
 

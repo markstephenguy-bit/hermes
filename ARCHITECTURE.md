@@ -5,6 +5,14 @@ Model configuration and the preparation recipe below were reviewed on
 against the catalog. The recipe is a proposed configuration and research
 sequence, not a claim that its settings have been deployed or optimized.
 
+**Infra note (2026-10-11):** the "What's real right now" section below still
+described the Vultr VPS, which was destroyed 2026-10-10 and replaced with a
+Hostinger box — fixed in place below. The Qwen-heavy model prep recipe later
+in this file is mostly provider-agnostic (about `w_workstation`/Qwen tuning,
+not which VPS hosts the gateway) and hasn't been re-audited line-by-line; if
+anything there mentions Vultr or Codex-as-fallback specifically, treat that as
+stale and check [NEXT_SESSION.md](NEXT_SESSION.md) instead.
+
 ## Core design principle: network resources are agent capabilities
 
 Hermes isn't just "a chat UI backed by a local model." The home network's
@@ -18,15 +26,26 @@ something Claude Code wired up once by hand.
 
 ## What's real right now
 
-- **`hermes-vps`** (Vultr High Performance AMD, Dallas TX): Dedicated 2 vCPU,
-  4GB RAM, 100GB NVMe. Runs the official Nous Research `HermesAgent` Ubuntu 24.04
-  marketplace image (historically recorded as v0.19.0; current source revision
-  still needs pinning). On 2026-10-07 the live configuration selects local
-  Qwen through `http://127.0.0.1:11500/v1`, with Codex
-  (`openai-codex`/`gpt-5.6-sol`, via linked ChatGPT Plus) as fallback. Docker + Dokploy
-  installed (Dokploy's own Traefik disabled to avoid conflicting with
-  Caddy's existing 80/443; Dokploy panel on :3000, localhost-only). A real
-  firewall now exists (previously none at all).
+- **`hermes-vps`** (Hostinger KVM 2, Phoenix US): `srv2051520.hstgr.cloud`,
+  `31.220.53.141`, 2 vCPU/8GB/100GB NVMe, plain Ubuntu 24.04 (not a vendor
+  app template). **The prior Vultr box (207.148.2.224) was destroyed
+  2026-10-10** — Vultr is gone both as the VPS host and as an LLM provider.
+  Runs hermes-agent v0.21.6 via the official install.sh (not a marketplace
+  image). Main model is local Qwen (`provider: custom`, ik_llama.cpp on
+  `w_workstation:8090`); fallback is `deepseek/deepseek-v4.1-flash` via
+  **Nous Portal** (`provider: nous`) — Codex is not configured as a fallback
+  on this box. `hermes-gateway.service` and `hermes-dashboard.service` are
+  systemd `--user` services under the `hermes` user (not system-level units).
+  **Public dashboard (added 2026-10-11):** Caddy (native apt install, not
+  Docker) reverse-proxies `https://theguylab.duckdns.org` → the dashboard
+  (loopback `127.0.0.1:9119`), HTTP Basic Auth, auto-TLS via Let's Encrypt.
+  Note `theguylab.duckdns.org` was **repointed from the home public IP to
+  this VPS** — home's previously-public WordPress/NPM services are no longer
+  reachable at that domain from the internet (deliberate tradeoff, decided
+  2026-10-11, not an accident). Hostinger has its own hPanel-level firewall
+  *in addition to* ufw — both must allow a port, and hPanel changes need an
+  explicit "Synchronize" click to actually apply. No Dokploy on this box
+  (that was a Vultr-only install, not recreated).
 - **`w_workstation`** (192.168.40.100, Windows 11, Georgia Pacific-managed
   via `BPNET` domain, Zscaler) has the actual GPU: an NVIDIA RTX A4000,
   16GB VRAM and catalog-verified 64GB system RAM. The live model API on
@@ -67,40 +86,61 @@ something Claude Code wired up once by hand.
 
 ## Network Topology & Subnet Tunnel
 
-**Live as of 2026-09-30** (verified end-to-end: ping + Ollama API reachable
-from hermes-vps over the tunnel, through the new path). Tunnel subnet is
-`10.60.0.0/24` (hermes-vps `10.60.0.1`, home side `10.60.0.2` — moved from
-`server` to `fileserver` on 2026-09-30, same keypair, so hermes-vps's own
-config needed no changes). The VPS connects to the real `fileserver` via a
-site-to-site WireGuard tunnel, enabling subnet routing so Hermes can
-address any LAN IP directly:
+Tunnel subnet is `10.60.0.0/24`. **Re-established 2026-10-10** against the new
+Hostinger VPS after the Vultr box was destroyed (fileserver's side kept its
+identity — same container, same keypair, re-peered to the new VPS public key).
+`fileserver`'s WireGuard runs as a Docker container (`linuxserver/wireguard`,
+`--net=host`), native `wg-quick` on the VPS side. The VPS has a stable public
+IP and listens; fileserver (behind home NAT, no router port-forward) dials
+out to it — this direction, not the reverse, is why no home port-forwarding
+is needed for the VPS↔fileserver leg.
 
 ```
-[VPS: Hermes + Dokploy] (Vultr Dallas)
+[hermes-vps: 10.60.0.1] (Hostinger, 31.220.53.141 — stable public IP, listens)
          │
-         │  Encrypted WireGuard Subnet Tunnel
+         │  Encrypted WireGuard tunnel (fileserver dials out, no home port-forward)
          ▼
-[fileserver: 192.168.40.2] (Docker container, moved from server 2026-09-30)
+[fileserver: 10.60.0.2 / 192.168.40.2] (Docker container)
    ├── net.ipv4.ip_forward = 1
    └── iptables NAT + explicit FORWARD ACCEPT (wg0<->enp4s0)
          │
-         ├──► 192.168.40.100:8090 (w_workstation / ik_llama.cpp; updated 2026-10-07)
+         ├──► 192.168.40.100:8090 (w_workstation / ik_llama.cpp)
          ├──► 192.168.40.x         (Salt / Storage / Home Services)
          └──► Entire 192.168.40.0/24 Home Subnet
 ```
+
+**Third peer added 2026-10-11: laptop (`10.60.0.3`).** Same VPS-as-relay
+pattern — the laptop dials the VPS (which already has a stable public IP and
+open port), the VPS forwards into the already-working fileserver tunnel. This
+lets the laptop reach the full home LAN from anywhere (e.g. work, behind a
+different NAT) with **no home router changes** — the alternative of the
+laptop dialing fileserver's real public IP (`66.170.221.155`) directly would
+have required port-forwarding on the home router, deliberately avoided.
+Required on the VPS: the laptop added as a `[Peer]` in `/etc/wireguard/wg0.conf`
+(`AllowedIPs = 10.60.0.3/32`), `net.ipv4.ip_forward=1`, and a
+`ufw route allow in on wg0 out on wg0` rule (ufw's routed-traffic default is
+deny, which silently blocks exactly this kind of peer-to-peer forwarding).
+Required on fileserver's WireGuard container: the VPS peer's `AllowedIPs` had
+to be widened from `10.60.0.1/32` (only the VPS itself) to `10.60.0.0/24`,
+otherwise fileserver's own cryptokey routing drops anything relayed from the
+new laptop IP as untrusted. **Not auto-started** — bring up manually with
+`sudo wg-quick up wg0` on the laptop when away from home (config already
+installed at `/etc/wireguard/wg0.conf`); bring down with `wg-quick down` when
+physically on the home LAN, since otherwise `AllowedIPs` routes all LAN
+traffic through the VPS relay instead of the direct connection.
 
 Torrents, heavy media, and storage stay 100% on the home network via console/scripts,
 ensuring zero bandwidth penalties on the VPS.
 
 ## Execution & Routing Tiers
 
-1. **Always-On Hub (VPS - Vultr High Performance AMD):** Runs `hermes serve`,
-   Dokploy (for managing web services and Docker containers via MCP), and CLI/chat interfaces.
+1. **Always-On Hub (VPS - Hostinger KVM 2):** Runs `hermes serve` and
+   CLI/chat interfaces. No Dokploy on this box (Vultr-only, not recreated).
 2. **Local Inference (Home LAN):** Qwen3.6-35B-A3B Q4_K_M via ik_llama.cpp;
    no per-token API charge, with electricity and shared-compute costs.
-3. **External Models:** Live configuration still falls back to linked Codex,
-   but the user requests capability-based selection without Codex as the
-   automatic destination. Subscription quota and API dollars are separate.
+3. **External Models:** Fallback is `deepseek/deepseek-v4.1-flash` via Nous
+   Portal, not Codex — Vultr/Codex-as-fallback is retired. The user wants
+   capability-based selection, not an automatic single destination.
 4. **Tool Execution:** Docker is the configured terminal backend. Modal
    credentials are staged according to the catalog, but it is not the active
    terminal backend. Execution location is independent of inference location.

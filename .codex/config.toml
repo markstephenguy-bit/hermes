@@ -1,0 +1,3 @@
+[mcp_servers.vault]
+command = "/home/mark/.claude/mcp_servers/vault/venv/bin/python"
+args = ["/home/mark/.claude/mcp_servers/vault/vault_mcp.py"]
