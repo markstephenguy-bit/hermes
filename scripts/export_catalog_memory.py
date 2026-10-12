@@ -31,7 +31,7 @@ def main():
 
     out = {
         "exported_at": datetime.now(timezone.utc).isoformat(),
-        "source": f"{CATALOG} (Postgres+PostgREST on `server`, live copy is authoritative)",
+        "source": f"{CATALOG} (Postgres+PostgREST on `fileserver`, live copy is authoritative)",
         "entities": entities,
         "relations": relations,
     }

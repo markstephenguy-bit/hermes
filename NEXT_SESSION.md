@@ -171,9 +171,11 @@ as evidence of successful memory operations.
   inside `/workspace` or `/output` may fail as Telegram attachments. Sandbox
   isolation itself is intentional; resolve media delivery with a narrow
   output path rather than mounting the whole Hermes home.
-- `hermes doctor --live` reports Playwright missing, but a real Hermes browser
-  tool call opened example.com and returned its title. Treat that probe as a
-  false alarm, not a reason to reinstall the browser.
+- `hermes doctor --live` reports Playwright missing, but that probe does not
+  diagnose the active browser runtime. A fresh direct launch on 2026-10-12
+  found missing Chromium libraries (installed) and then Ubuntu AppArmor's
+  user-namespace restriction. The managed browser remains unavailable; see
+  the selected-plugin audit below.
 - No MCP servers or Hermes cron jobs are configured. This is inventory, not a
   defect by itself: the catalog tool is available through Hermes's toolset,
   and the separate doctor systemd timer already runs.
@@ -185,6 +187,33 @@ as evidence of successful memory operations.
   model path. Skills Hub is uninitialized and `GITHUB_TOKEN` is unset, which
   matters only if Hermes should use that hub heavily (60 requests/hour
   unauthenticated GitHub limit).
+
+## Selected-plugin live audit — 2026-10-12
+
+- Verified actual tool calls, not just plugin badges: `web_search`,
+  `web_extract`, Krea image generation, and Nous text-to-speech returned usable
+  results. The TTS default Edge route failed with HTTP 403; live
+  `~/.hermes/config.yaml` now has `tts.provider: nous`, and a test generated a
+  valid MP3. Telegram bot identity and gateway polling, Hindsight health,
+  local-model chat, a direct request to the configured Nous fallback model,
+  and the dashboard's authentication challenge also passed.
+- Vision described a generated image correctly on one `vision_analyze` call,
+  but a repeat call reached the text-only local Qwen endpoint and failed with
+  `image input is not supported` (HTTP 500). `auxiliary.vision.provider: nous`
+  is configured; routing remains intermittent and needs a targeted fix.
+- The local browser is still blocked. The managed Chromium binary was found
+  and its missing Ubuntu runtime libraries installed, but its normal sandbox
+  cannot start under the VPS's AppArmor user-namespace restriction. A proposed
+  unconfined AppArmor profile was rejected by automatic approval review for
+  weakening a host security boundary; no policy bypass was applied.
+- `computer_use` is enabled in the tool list, but `hermes computer-use status`
+  reports `cua-driver: not installed` on this headless VPS. No MCP servers or
+  Hermes cron jobs are configured. These are inventory, not failures of the
+  selected Telegram/web/memory workflow.
+- Fallback endpoint availability was tested directly; automatic failover
+  during a local-model outage remains untested. TTS output exists on the host,
+  but Telegram audio attachment delivery was not tested. The separate tool
+  sandbox cannot read `~/.hermes/cache/audio`, as expected from its isolation.
 
 ## Carried over, untouched tonight (from 2026-10-10/11 sessions)
 

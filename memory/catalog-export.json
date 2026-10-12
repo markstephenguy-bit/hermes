@@ -8597,9 +8597,133 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-12T15:14:46.583139+00:00"
+    },
+    {
+      "attributes": {
+        "blocked": [
+          "browser-apparmor",
+          "computer-use-driver-missing"
+        ],
+        "host": "hermes-vps",
+        "partial": [
+          "vision-intermittent",
+          "telegram-media-delivery-unverified",
+          "fallback-switch-unverified"
+        ],
+        "passed": [
+          "local-model",
+          "nous-model-direct",
+          "telegram-getme",
+          "hindsight-health",
+          "web_search",
+          "web_extract",
+          "image_generate",
+          "tts-nous",
+          "dashboard-auth-challenge"
+        ]
+      },
+      "body": "Live Hermes plugin audit verified selected inference, Telegram, Hindsight, web, image generation, and dashboard paths; browser and desktop control remain unavailable on the VPS.",
+      "created_at": "2026-10-12T15:47:30.671722+00:00",
+      "id": "29472e83-ebc3-4f58-b92d-3767db2c72b8",
+      "key": "hermes-plugin-audit-current-setup-2026-10-12",
+      "name": "Hermes selected-plugin audit",
+      "tags": [
+        "hermes",
+        "audit",
+        "plugins"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-12T15:47:30.671722+00:00"
+    },
+    {
+      "attributes": {
+        "bytes": 30720,
+        "config": "tts.provider: nous",
+        "edge_error": "HTTP 403",
+        "host": "hermes-vps",
+        "output": "/home/hermes/.hermes/cache/audio/tts_20261012_153621_245643.mp3",
+        "telegram_delivery": "unverified"
+      },
+      "body": "The default Edge speech route returned HTTP 403, so Hermes TTS was switched to Nous and produced a valid MP3 in a live agent tool call.",
+      "created_at": "2026-10-12T15:47:30.746186+00:00",
+      "id": "2c46db77-b0c9-484e-b1b0-d5796fe2ffa3",
+      "key": "hermes-tts-nous-route-2026-10-12",
+      "name": "Hermes TTS Nous route",
+      "tags": [
+        "hermes",
+        "plugins",
+        "tts",
+        "repair"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-12T15:47:30.746186+00:00"
+    },
+    {
+      "attributes": {
+        "browser": "managed Chromium 1208",
+        "host": "hermes-vps",
+        "previous_doctor_result": "Playwright-missing probe did not capture runtime failure",
+        "restriction": "apparmor_restrict_unprivileged_userns=1",
+        "status": "requires approved host security policy change"
+      },
+      "body": "The managed Chromium binary has its required libraries but cannot launch because Ubuntu AppArmor blocks its user-namespace sandbox on the VPS.",
+      "created_at": "2026-10-12T15:47:30.812583+00:00",
+      "id": "35a5d059-fb3a-42c8-9a82-c89af03e4f65",
+      "key": "hermes-browser-apparmor-block-2026-10-12",
+      "name": "Hermes browser AppArmor block",
+      "tags": [
+        "hermes",
+        "plugins",
+        "browser",
+        "blocked"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-12T15:47:30.812583+00:00"
+    },
+    {
+      "attributes": {
+        "auxiliary_provider": "nous",
+        "first_call": "success",
+        "host": "hermes-vps",
+        "second_call": "image input is not supported; mmproj hint",
+        "status": "intermittent routing issue"
+      },
+      "body": "Hermes vision_analyze described a generated image correctly, then repeated the same image call through a text-only local model and received an image-input 500.",
+      "created_at": "2026-10-12T15:47:30.880258+00:00",
+      "id": "e551a15a-4baf-43f8-858d-4f2fbbee7187",
+      "key": "hermes-vision-intermittent-2026-10-12",
+      "name": "Hermes vision routing",
+      "tags": [
+        "hermes",
+        "plugins",
+        "vision",
+        "audit"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-12T15:47:30.880258+00:00"
+    },
+    {
+      "attributes": {
+        "cli_status": "cua-driver: not installed",
+        "headless": true,
+        "host": "hermes-vps"
+      },
+      "body": "Computer use is enabled in Hermes tool settings but cua-driver is not installed on the headless VPS.",
+      "created_at": "2026-10-12T15:47:30.947046+00:00",
+      "id": "7c4e2048-193d-42c2-b983-318c99e3af75",
+      "key": "hermes-computer-use-unavailable-2026-10-12",
+      "name": "Hermes computer use on VPS",
+      "tags": [
+        "hermes",
+        "plugins",
+        "computer-use",
+        "audit"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-12T15:47:30.947046+00:00"
     }
   ],
-  "exported_at": "2026-10-12T15:14:48.008846+00:00",
+  "exported_at": "2026-10-12T15:48:30.676733+00:00",
   "relations": [
     {
       "attributes": {},
@@ -12191,7 +12315,57 @@
       "predicate": "refines",
       "subject_key": "hermes-hindsight-nothink-sync-recall-fix-2026-10-12",
       "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T15:47:54.82093+00:00",
+      "id": "d502c9d8-6feb-4e92-83db-7489a47cf673",
+      "object_key": "hermes-config-audit-2026-10-12",
+      "object_type": "entity",
+      "predicate": "supersedes",
+      "subject_key": "hermes-plugin-audit-current-setup-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T15:47:54.890707+00:00",
+      "id": "661a5ea6-38bc-4908-9268-846462c9a30e",
+      "object_key": "hermes-plugin-audit-current-setup-2026-10-12",
+      "object_type": "entity",
+      "predicate": "informs",
+      "subject_key": "hermes-tts-nous-route-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T15:47:54.949254+00:00",
+      "id": "55e736c0-245d-4ed7-bf3a-dff03a8033c1",
+      "object_key": "hermes-plugin-audit-current-setup-2026-10-12",
+      "object_type": "entity",
+      "predicate": "informs",
+      "subject_key": "hermes-browser-apparmor-block-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T15:47:55.025535+00:00",
+      "id": "0aaba395-86f3-4b59-b9df-463e3f9113e5",
+      "object_key": "hermes-plugin-audit-current-setup-2026-10-12",
+      "object_type": "entity",
+      "predicate": "informs",
+      "subject_key": "hermes-vision-intermittent-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T15:47:55.083259+00:00",
+      "id": "8a68dc30-a398-40c3-9ef1-ef7bed5adb55",
+      "object_key": "hermes-plugin-audit-current-setup-2026-10-12",
+      "object_type": "entity",
+      "predicate": "informs",
+      "subject_key": "hermes-computer-use-unavailable-2026-10-12",
+      "subject_type": "entity"
     }
   ],
-  "source": "http://192.168.40.2:3003 (Postgres+PostgREST on `server`, live copy is authoritative)"
+  "source": "http://192.168.40.2:3003 (Postgres+PostgREST on `fileserver`, live copy is authoritative)"
 }
