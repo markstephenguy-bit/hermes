@@ -92,7 +92,7 @@ regardless.
   **If they go missing a third time, that's a real pattern worth root-causing
   properly instead of just rewriting again.**
 
-## Long-term memory provider: Hindsight — verified working 2026-10-12
+## Long-term memory provider: Hindsight — explicit tools work; automatic saves need tuning
 
 Direct VPS repair and verification completed around 14:35 UTC. The plugin's
 `ready` dashboard badge only checks configuration/client imports; do not use it
@@ -129,11 +129,49 @@ as evidence of successful memory operations.
 - **Latency:** initial single-fact extraction took 98 seconds on the current
   local model; consolidation took another 15 seconds. Default recall is
   observation-only, so newly retained facts are not visible until background
-  consolidation finishes. This is working but writes are slow; the current
-  plugin request timeout is 120 seconds. Larger inputs remain unbenchmarked.
+  consolidation finishes. The plugin request timeout is 120 seconds.
+- **Unresolved, discovered in follow-up audit:** an ordinary `hermes -z`
+  conversation queued an automatic Hindsight save that timed out on all four
+  120-second local-model attempts, then retried the whole job. It never
+  persisted that conversation. The diagnostic job was cancelled after
+  confirming its payload; a second diagnostic browser conversation generated
+  another automatic save, which was also cancelled to free the single local
+  inference slot. Hindsight's `ready` status and the successful explicit
+  retain/recall test do not prove automatic chat retention works. Tune the
+  extraction workload/deadline/retry policy, then verify a normal chat save
+  reaches `completed` in the operations API and can be recalled in a later
+  session. Do not silently count a queued save as durable memory.
 - **Built-in memory remains complementary:** MEMORY.md and USER.md still
   exist and were not reset. The dashboard deliberately displays them
   alongside Hindsight.
+
+## Configuration audit — 2026-10-12
+
+- Local model endpoint, Nous login/fallback pointer, Telegram polling,
+  gateway, dashboard, and public Caddy authentication challenge all check out.
+  The doctor timer is enabled. The public dashboard's two-auth browser flow
+  has not been verified end to end; the new inner password is still not in
+  the vault (see dashboard note above).
+- Fallback has no dedicated circuit breaker or deliberate failure test. This
+  matters most before trusting automatic paid failover under local outages.
+- Gateway warns that Docker has no host-visible output mount, so files created
+  inside `/workspace` or `/output` may fail as Telegram attachments. Sandbox
+  isolation itself is intentional; resolve media delivery with a narrow
+  output path rather than mounting the whole Hermes home.
+- `hermes doctor --live` reports Playwright missing, but a real Hermes browser
+  tool call opened example.com and returned its title. Treat that probe as a
+  false alarm, not a reason to reinstall the browser.
+- No MCP servers or Hermes cron jobs are configured. This is inventory, not a
+  defect by itself: the catalog tool is available through Hermes's toolset,
+  and the separate doctor systemd timer already runs.
+- The doctor's three reported npm dependency advisories (browser runtime,
+  web build workspace, TUI build workspace) are upstream lockfile issues; a
+  local `npm audit fix` would be overwritten by the next Hermes update.
+- Optional OpenRouter, Codex, xAI, MiniMax, Discord and similar integrations
+  are unset. They are not required for the currently selected local + Nous
+  model path. Skills Hub is uninitialized and `GITHUB_TOKEN` is unset, which
+  matters only if Hermes should use that hub heavily (60 requests/hour
+  unauthenticated GitHub limit).
 
 ## Carried over, untouched tonight (from 2026-10-10/11 sessions)
 

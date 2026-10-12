@@ -5613,6 +5613,27 @@
     },
     {
       "attributes": {
+        "diagnostic_jobs_cancelled": 2,
+        "effect": "can occupy single local inference slot for minutes",
+        "model": "Qwen3.5-9B",
+        "provider": "local_embedded",
+        "status": "unresolved"
+      },
+      "body": "A normal Hermes conversation triggered four 120-second local-model extraction timeouts and a whole-job retry; automatic retention is not yet dependable.",
+      "created_at": "2026-10-12T14:48:53.222002+00:00",
+      "id": "f36b3727-58b5-4860-978c-1db012235de5",
+      "key": "hermes-hindsight-auto-retain-timeout-2026-10-12",
+      "name": "Hindsight automatic chat saves time out",
+      "tags": [
+        "hermes",
+        "hindsight",
+        "gap"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-12T14:48:53.222002+00:00"
+    },
+    {
+      "attributes": {
         "anti_runaway_mechanisms": [
           "in_flight_tool_loop_lock",
           "spend_velocity_throttling_1usd_per_5min",
@@ -7617,6 +7638,28 @@
     },
     {
       "attributes": {
+        "browser_live_probe": "false positive; real browser tool worked",
+        "dashboard_inner_password_vault": "missing",
+        "doctor_npm_advisories": 3,
+        "doctor_timer": "enabled",
+        "hermes_cron_jobs": 0,
+        "mcp_servers": 0,
+        "public_browser_login": "unverified"
+      },
+      "body": "Live audit confirmed local inference, Nous login, Telegram, dashboard auth challenge, and gateway are configured; remaining gaps are Hindsight automatic retention, untested fallback/circuit breaker, and host-visible media output.",
+      "created_at": "2026-10-12T14:48:53.287247+00:00",
+      "id": "74403886-5785-4e7a-a2cc-d5d8b8653c5e",
+      "key": "hermes-config-audit-2026-10-12",
+      "name": "Hermes configuration audit",
+      "tags": [
+        "hermes",
+        "audit"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-12T14:48:53.287247+00:00"
+    },
+    {
+      "attributes": {
         "gateway": "systemd --user service, enabled+running, linger on",
         "host": "srv2051520.hstgr.cloud",
         "install_method": "official curl install.sh from hermes-agent.nousresearch.com, not replicated from prior Vultr session notes",
@@ -8494,31 +8537,19 @@
     },
     {
       "attributes": {
-        "caveats": [
-          "plugin updates may overwrite local patch",
-          "observation-only recall waits for consolidation",
-          "larger writes unbenchmarked"
-        ],
+        "automatic_chat_save": "timed_out",
         "consolidation_seconds": 15.419,
         "daemon_log": "/home/hermes/.hindsight/profiles/hermes.log",
-        "evidence": [
-          "plugin retain confirmed in database",
-          "consolidation completed",
-          "fresh hermes -z recalled marker after gateway/dashboard restart",
-          "server recall log: 1 observation, 0.306s"
-        ],
-        "health": "healthy; database connected",
+        "explicit_retain_recall": "passed",
         "host": "hermes-vps",
-        "marker": "amber-lighthouse-7429",
         "mode": "local_embedded",
         "patch": "patches/hindsight-profile-restart.patch",
         "placeholder": "local-no-auth",
         "recall_seconds": 0.306,
         "request_timeout_seconds": 120,
-        "retain_seconds": 98.105,
-        "verification": "passed"
+        "retain_seconds": 98.105
       },
-      "body": "Hindsight now retains and recalls through Hermes after adding the required local-model placeholder and repairing a daemon-port metadata comparison that restarted the service during writes.",
+      "body": "Hindsight explicitly retains and recalls through Hermes after the startup and port-comparison repairs; automatic conversation retention remains unreliable because local extraction repeatedly exceeds 120 seconds.",
       "created_at": "2026-10-12T14:32:55.346838+00:00",
       "id": "5443df42-43bd-45f3-922a-0e8cf8994765",
       "key": "hermes-hindsight-startup-repair-2026-10-12",
@@ -8532,7 +8563,7 @@
       "updated_at": "2026-10-12T14:32:55.346838+00:00"
     }
   ],
-  "exported_at": "2026-10-12T14:36:17.069899+00:00",
+  "exported_at": "2026-10-12T14:49:05.684844+00:00",
   "relations": [
     {
       "attributes": {},
@@ -12073,6 +12104,36 @@
       "object_type": "entity",
       "predicate": "supersedes",
       "subject_key": "hermes-hindsight-startup-repair-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T14:48:53.354967+00:00",
+      "id": "0d4a9a9f-221e-4472-aa7b-49be0e1af02d",
+      "object_key": "hermes-hindsight-startup-repair-2026-10-12",
+      "object_type": "entity",
+      "predicate": "qualifies",
+      "subject_key": "hermes-hindsight-auto-retain-timeout-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T14:48:53.42201+00:00",
+      "id": "e9111fc0-959a-432c-a432-05c850cfdb68",
+      "object_key": "hermes-hindsight-auto-retain-timeout-2026-10-12",
+      "object_type": "entity",
+      "predicate": "observed",
+      "subject_key": "hermes-config-audit-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-12T14:48:53.490975+00:00",
+      "id": "cd32b866-0b24-4e40-9032-4ad45dfae1c5",
+      "object_key": "hermes-hindsight-startup-repair-2026-10-12",
+      "object_type": "entity",
+      "predicate": "governs",
+      "subject_key": "hermes-config-audit-2026-10-12",
       "subject_type": "entity"
     }
   ],
