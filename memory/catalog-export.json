@@ -9048,9 +9048,33 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-10-13T04:10:01.98392+00:00"
+    },
+    {
+      "attributes": {
+        "bug_found": "First test run (hermes cron run) completed the agent turn successfully (web search + 3567-char briefing generated) but delivery silently failed: 'no delivery target resolved for deliver=telegram'. Root cause: bare 'telegram' deliver target resolves through a persisted gateway 'home channel' (set via /sethome in Telegram chat, or TELEGRAM_HOME_CHANNEL env var) which was never registered -- Mark has a real Telegram DM session on record (chat_id 8772762199, source=telegram, chat_type=dm) but never ran /sethome. Fixed by pointing the job explicitly at telegram:8772762199 via 'hermes cron edit --deliver'; second test run delivered successfully (confirmed in agent.log: 'delivered to telegram:8772762199').",
+        "deliver": "telegram:8772762199 (explicit chat_id, not bare 'telegram')",
+        "dst_caveat": "Hermes cron has no timezone-aware scheduling (checked cron/scheduler source -- UTC-anchored only, no --timezone flag). Must manually edit schedule to '0 13 * * *' on/after 2026-11-01 when America/Chicago exits DST (CDT UTC-5 -> CST UTC-6), or it'll fire at 6am instead of 7am.",
+        "follow_up_available": "Any future bare '--deliver telegram' cron job will hit the same silent-failure bug until Mark runs /sethome once in his Telegram chat with the bot to register a persisted home channel. Not done yet -- this job works via explicit chat_id regardless.",
+        "job_id": "5647e011d56c",
+        "job_name": "Morning News Briefing",
+        "schedule": "0 12 * * * (UTC) = 7:00am America/Chicago during CDT"
+      },
+      "body": "Set up a daily 7am-Central news briefing cron job delivered via Telegram; discovered and fixed a silent delivery failure where the bare 'telegram' target requires a /sethome-registered home channel that was never configured, so explicit chat_id delivery was used instead.",
+      "created_at": "2026-10-13T04:21:52.570388+00:00",
+      "id": "ad7be037-c5ca-4389-9f18-fd0ec0f12e66",
+      "key": "hermes-morning-news-cron-2026-10-13",
+      "name": "Created 7am Central morning news briefing cron job, fixed bare telegram delivery target bug along the way",
+      "tags": [
+        "hermes",
+        "cron",
+        "telegram",
+        "bugfix"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-13T04:21:52.570388+00:00"
     }
   ],
-  "exported_at": "2026-10-13T04:10:02.252110+00:00",
+  "exported_at": "2026-10-13T04:21:52.734917+00:00",
   "relations": [
     {
       "attributes": {},
