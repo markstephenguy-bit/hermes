@@ -8911,9 +8911,42 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-13T02:10:39.429957+00:00"
+    },
+    {
+      "attributes": {
+        "custom_providers_extra_body": {
+          "dry_multiplier": 0.8,
+          "n_predict": 4096,
+          "presence_penalty": 0.4,
+          "repeat_penalty": 1.05
+        },
+        "host": "hermes-vps (31.220.53.141)",
+        "root_cause_of_using_hang": {
+          "symptom": "Hermes Desktop stuck on 'Using' badge at 02:12 UTC while Slot 2 on w_workstation:8090 generated 14,158 chunks (622 KB) over 425.5s without closing </tool_call>.",
+          "trigger": "Agent checked /home/hermes/.hermes/MEMORY.md via SSH (got file not found because actual path is /home/hermes/.hermes/memories/MEMORY.md), mistook <hindsight-memories> prefetch entries for MEMORY.md entries, failed memory(remove) match, and fell into a token repetition loop inside tool_calls[0].function.arguments with n_predict=-1 and zero repetition penalties."
+        },
+        "symlinks_created": [
+          "/home/hermes/.hermes/MEMORY.md -> /home/hermes/.hermes/memories/MEMORY.md",
+          "/home/hermes/.hermes/USER.md -> /home/hermes/.hermes/memories/USER.md"
+        ]
+      },
+      "body": "Added custom_providers extra_body (n_predict=4096, repeat_penalty=1.05, presence_penalty=0.4, dry_multiplier=0.8) for w_workstation:8090 to prevent infinite tool-call argument loops on Qwen3.5-9B-Q4_K_M, and symlinked ~/.hermes/MEMORY.md and USER.md to ~/.hermes/memories/ while cleaning stale canary entries.",
+      "created_at": "2026-10-13T02:20:20.423729+00:00",
+      "id": "f91172dc-9601-45ec-90cd-f174db87f756",
+      "key": "hermes-vps-tool-loop-and-memory-path-fix-2026-10-12",
+      "name": "Fix Qwen3.5-9B runaway tool-call repetition loop ('Using' hang) and MEMORY.md path symlink",
+      "tags": [
+        "hermes",
+        "vps",
+        "qwen3.5",
+        "bugfix",
+        "memory"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-13T02:20:20.423729+00:00"
     }
   ],
-  "exported_at": "2026-10-13T02:11:21.252470+00:00",
+  "exported_at": "2026-10-13T02:20:20.610371+00:00",
   "relations": [
     {
       "attributes": {},
@@ -12640,6 +12673,16 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-vps-compression-fast-lane-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-13T02:20:20.446686+00:00",
+      "id": "a1d5345a-8d17-4e78-b20e-c03b85f25ef0",
+      "object_key": "hermes-vps-compression-fast-lane-2026-10-12",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-vps-tool-loop-and-memory-path-fix-2026-10-12",
       "subject_type": "entity"
     }
   ],
