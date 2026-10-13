@@ -8998,9 +8998,32 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-10-13T03:36:37.543336+00:00"
+    },
+    {
+      "attributes": {
+        "durability_caveat": "/usr/local/bin inside the container is not bind-mounted (only /root, /workspace, and specific .hermes/cache|attachments subdirs are) -- this fix lives only in the running container's own writable layer and will be lost if the container is ever recreated (tools/environments/docker.py _recreate_container/_docker_run have no post-create provisioning hook that reapplies uv/uvx/node/npm/ssh-wrapper/hermes). A copy of the wrapper is saved at ~/.hermes/sandbox-provision/hermes-wrapper.sh on the host for quick reapplication; the durable fix would be a provisioning hook in docker.py, not attempted here (touches container security-arg code, needs review).",
+        "fix": "Added /usr/local/bin/hermes inside both running sandbox containers: a thin wrapper that shell-quotes argv and proxies to the real host over the already-provisioned passwordless SSH tunnel (ssh 31.220.53.141 \"hermes ...\"), matching the existing /usr/local/bin/ssh host-alias wrapper's own pattern. Verified live: hermes --version, hermes doctor, and hermes -z all work now from inside the sandbox.",
+        "host": "hermes-vps (31.220.53.141)",
+        "root_cause": "The nousresearch/hermes-sandbox:desktop container (ids seen: 10f41f28fc4f, 5f7c6dcfa6bf) has zero bind mount of ~/.hermes/ by design (2026-10-08 CAP_DAC_OVERRIDE ownership-corruption incident -- see docker_mount_cwd_to_workspace:false in config.yaml). The real hermes shim at ~/.local/bin/hermes execs /home/hermes/.hermes/hermes-agent/.hermes/bin/hermes, a path that only exists on the host filesystem, never inside the container. uv/uvx/node/npm and an ssh host-alias wrapper were previously hand-placed in /usr/local/bin inside these same containers (prior sessions) but hermes itself was never added -- a gap, not a deliberate omission.",
+        "symptom": "agent.tool_executor repeatedly hit exit 127 \"bash: line 5: hermes: command not found\" (2026-10-12 16:22, 12x in one burst) and \"hermes-doctor: command not found\" (2026-10-13 01:45-01:46) when the agent tried to run its own CLI inside its code_execution/terminal sandbox."
+      },
+      "body": "The hermes CLI was never installed inside the code_execution Docker sandbox (no bind mount of its real install path by design), causing repeated command-not-found failures; fixed with an SSH-proxy wrapper in /usr/local/bin matching the existing ssh-wrapper pattern, though it will not survive container recreation.",
+      "created_at": "2026-10-13T03:46:24.976165+00:00",
+      "id": "46c5440a-e7cf-473d-9b26-cb7b0346d19d",
+      "key": "hermes-sandbox-cli-path-fix-2026-10-13",
+      "name": "Fixed hermes CLI unreachable inside code_execution Docker sandbox (command not found)",
+      "tags": [
+        "hermes",
+        "sandbox",
+        "docker",
+        "bugfix",
+        "cli"
+      ],
+      "type": "bugfix",
+      "updated_at": "2026-10-13T03:46:24.976165+00:00"
     }
   ],
-  "exported_at": "2026-10-13T03:36:51.821998+00:00",
+  "exported_at": "2026-10-13T03:46:25.208872+00:00",
   "relations": [
     {
       "attributes": {},
@@ -12767,6 +12790,16 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-qwen-llamacpp-wire-verification-2026-10-13",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-13T03:46:25.040727+00:00",
+      "id": "711d53b3-34bc-48ea-8efe-304b273916c1",
+      "object_key": "hermes-vps-tool-loop-and-memory-path-fix-2026-10-12",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-sandbox-cli-path-fix-2026-10-13",
       "subject_type": "entity"
     }
   ],
