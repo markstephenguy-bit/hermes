@@ -8877,9 +8877,43 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-12T23:05:00.008455+00:00"
+    },
+    {
+      "attributes": {
+        "auxiliary_compression": {
+          "certified_non_reasoning": true,
+          "model": "deepseek/deepseek-v4.1-flash",
+          "provider": "nous",
+          "reasoning_effort": "none"
+        },
+        "config_path": "/home/hermes/.hermes/config.yaml",
+        "host": "hermes-vps (31.220.53.141)",
+        "root_cause_of_191s_stall": "Local w_workstation:8090 compression had 0% KV-cache overlap (7,143 uncached prompt tokens) and contended with Hindsight 22-batch consolidation on the single RTX 5060 Ti, stalling after 36.5s (+60s watchdog = 96.5s) before falling back to Nous deepseek/deepseek-v4.1-flash without reasoning_effort=none (+94s reasoning = 191.5s total).",
+        "user_optimize_sweep_preserved": true,
+        "verified_latency_ms": {
+          "after_ms": 2655,
+          "before_ms": 190814,
+          "prompt_chars_tested": 26637
+        }
+      },
+      "body": "Routed auxiliary.compression to Nous deepseek/deepseek-v4.1-flash with reasoning_effort=none (certified CompressionFastLane), cutting 27k-char context summarization latency from 191s to 2.7-3.5s while preserving all user optimize-sweep settings in config.yaml.",
+      "created_at": "2026-10-13T02:10:39.429957+00:00",
+      "id": "1f9e2f88-1f9e-4a57-b2c6-4f8188101228",
+      "key": "hermes-vps-compression-fast-lane-2026-10-12",
+      "name": "Route auxiliary.compression to Nous deepseek-v4.1-flash non-reasoning fast lane",
+      "tags": [
+        "hermes",
+        "vps",
+        "performance",
+        "compression",
+        "nous",
+        "qwen3.5"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-13T02:10:39.429957+00:00"
     }
   ],
-  "exported_at": "2026-10-12T23:06:01.404619+00:00",
+  "exported_at": "2026-10-13T02:11:21.252470+00:00",
   "relations": [
     {
       "attributes": {},
@@ -12596,6 +12630,16 @@
       "object_type": "entity",
       "predicate": "informed_by",
       "subject_key": "hermes-resource-and-compression-tuning-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-13T02:11:21.083374+00:00",
+      "id": "1366eca0-9570-4a17-84d0-87503a5f0b18",
+      "object_key": "hermes-resource-and-compression-tuning-2026-10-12",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-vps-compression-fast-lane-2026-10-12",
       "subject_type": "entity"
     }
   ],
