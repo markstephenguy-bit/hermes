@@ -27,6 +27,13 @@ regardless.
 
 ## Current state — re-verified live 2026-10-12, not assumed
 
+### Model route correction (verified 2026-10-13)
+
+- `w_workstation:8090` currently serves Qwen3.5-9B Q4_K_M through **mainline llama.cpp**, not ik_llama.cpp. Its `/v1/models` ID is the Windows GGUF path `E:\ik_llama_models\Qwen_Qwen3.5-9B-Q4_K_M.gguf`; that path is the API model identifier, not a file path the VPS needs to open. A direct completion returned `OK` with that exact ID, and `hermes -z` returned `OK` through the custom provider.
+- The dashboard's older `#1` Qwen3.6 entry is historical. `#3` is the currently served Qwen3.5 model. Mark chose Qwen3.5 as the main model; live `config.yaml` now has that exact ID with `provider: custom:local-qwen` and `base_url: http://192.168.40.100:8090/v1`.
+- A Desktop session (`20261013_020445_867bf1`) had mistakenly stored the endpoint URL as its **model**. Its `sessions.model` and `model_config.model` were repaired to the Qwen3.5 ID, with a live SQLite backup saved at `~/.hermes/state-before-model-route-repair-20261013.db`; the dashboard service was restarted and is active.
+- llama.cpp advertises `n_ctx: 64000`, but Hermes's context resolver returned **131072** before an explicit per-model limit was added to `custom_providers.models[Qwen3.5].context_length`. It now returns **64000**. The custom provider's existing `extra_body` loop guards were verified to apply. Config backup: `~/.hermes/config-before-model-context-fix-20261013.yaml`.
+
 ### Responsiveness & compression fast-lane tuning (deployed 2026-10-13 02:10 UTC)
 
 Mark ran an optimize sweep on `/home/hermes/.hermes/config.yaml` (`compression.threshold: 0.45`, `target_ratio: 0.25`, `protect_last_n: 12`, `protect_first_n: 2`, `proactive_prune_min_result_chars: 10000`, `session_cleanup`, `agent.cache`, `delegation`, `curator`) and reported that the context-summarize (`compression`) thread still took ~191 seconds (`01:48:29`–`01:51:41` UTC).
@@ -47,7 +54,7 @@ Deployed fixes (all user optimize-sweep settings preserved intact):
 - **Self-sufficiency rule (hard)**: hermes-vps must work fully even if
   fileserver/WireGuard/home-network is unreachable. The *only* sanctioned
   local-network dependency is the LLM tier itself — `w_workstation`
-  (192.168.40.100:8090, `ik_llama.cpp`, OpenAI-compatible, no auth) as
+  (192.168.40.100:8090, mainline `llama.cpp`, OpenAI-compatible, no auth) as
   primary, Nous Portal (`deepseek-v4.1-flash`) as cloud fallback, auto-
   engaging only on technical failure, never on preference. This is NOT just
   "avoid depending on home network for convenience" — Mark was explicit that
@@ -133,7 +140,7 @@ as evidence of successful memory operations.
   `~/.hermes/plugins/hindsight` with `patch -p1`). Original backups remain with
   `.before-20261012-repair` suffixes.
 - **Root cause 3 (`Qwen3.5-9B` `<think>` mode causing 120s extraction timeouts):**
-  `ik_llama.cpp` on `w_workstation:8090` defaults Qwen3.5's chat template to
+  `llama.cpp` on `w_workstation:8090` defaults Qwen3.5's chat template to
   `<|im_start|>assistant\n<think>\n` with `max_tokens: 64000`. On Hindsight's
   ~3.5k-token `retain_extract_facts` prompt, Qwen3.5-9B generated 4,000–5,000+
   `<think>` tokens before emitting JSON — making single-fact retains take 98s and

@@ -26,12 +26,14 @@ something Claude Code wired up once by hand.
 
 ## What's real right now
 
+**Inference update (2026-10-13):** `w_workstation:8090` now runs Qwen3.5-9B Q4_K_M on mainline llama.cpp with a 64,000-token serving window. Hermes uses `custom:local-qwen`; its model ID is the Windows GGUF path advertised by `/v1/models`. The older Qwen3.6/ik_llama.cpp descriptions in the research recipe below are historical.
+
 - **`hermes-vps`** (Hostinger KVM 2, Phoenix US): `srv2051520.hstgr.cloud`,
   `31.220.53.141`, 2 vCPU/8GB/100GB NVMe, plain Ubuntu 24.04 (not a vendor
   app template). **The prior Vultr box (207.148.2.224) was destroyed
   2026-10-10** — Vultr is gone both as the VPS host and as an LLM provider.
   Runs hermes-agent v0.21.6 via the official install.sh (not a marketplace
-  image). Main model is local Qwen (`provider: custom`, ik_llama.cpp on
+  image). Main model is local Qwen3.5-9B (`provider: custom:local-qwen`, mainline llama.cpp on
   `w_workstation:8090`); fallback is `deepseek/deepseek-v4.1-flash` via
   **Nous Portal** (`provider: nous`) — Codex is not configured as a fallback
   on this box. `hermes-gateway.service` and `hermes-dashboard.service` are
@@ -47,13 +49,10 @@ something Claude Code wired up once by hand.
   explicit "Synchronize" click to actually apply. No Dokploy on this box
   (that was a Vultr-only install, not recreated).
 - **`w_workstation`** (192.168.40.100, Windows 11, Georgia Pacific-managed
-  via `BPNET` domain, Zscaler) has the actual GPU: an NVIDIA RTX A4000,
-  16GB VRAM and catalog-verified 64GB system RAM. The live model API on
-  2026-10-07 exposes `E:\ik_llama_models\Qwen3.6-35B-A3B-Q4_K_M.gguf`
-  through ik_llama.cpp on port 8090, with a 65,536-token serving limit and
-  text-only advertised input. The catalog records WDDM, Q8 KV cache,
-  FlashAttention, and roughly 16–17 decode tokens/s. Windows SSH timed out
-  during this review; launch flags were not independently re-read.
+  via `BPNET` domain, Zscaler) currently serves Qwen3.5-9B Q4_K_M
+  through mainline llama.cpp on port 8090. Its `/v1/models` response
+  advertises the Windows GGUF path as the model ID and `n_ctx: 64000`.
+  Hermes pins that exact ID and per-model context limit in its custom provider.
 - **`server`** (192.168.40.250, Ubuntu 24.04) is the Docker host for
   persistent home services unrelated to the automation/networking backbone
   — Nginx Proxy Manager, AdGuard (LAN DNS), Portainer, WordPress, Plex,
@@ -104,7 +103,7 @@ is needed for the VPS↔fileserver leg.
    ├── net.ipv4.ip_forward = 1
    └── iptables NAT + explicit FORWARD ACCEPT (wg0<->enp4s0)
          │
-         ├──► 192.168.40.100:8090 (w_workstation / ik_llama.cpp)
+         ├──► 192.168.40.100:8090 (w_workstation / llama.cpp)
          ├──► 192.168.40.x         (Salt / Storage / Home Services)
          └──► Entire 192.168.40.0/24 Home Subnet
 ```
@@ -136,7 +135,7 @@ ensuring zero bandwidth penalties on the VPS.
 
 1. **Always-On Hub (VPS - Hostinger KVM 2):** Runs `hermes serve` and
    CLI/chat interfaces. No Dokploy on this box (Vultr-only, not recreated).
-2. **Local Inference (Home LAN):** Qwen3.6-35B-A3B Q4_K_M via ik_llama.cpp;
+2. **Local Inference (Home LAN):** Qwen3.5-9B Q4_K_M via mainline llama.cpp;
    no per-token API charge, with electricity and shared-compute costs.
 3. **External Models:** Fallback is `deepseek/deepseek-v4.1-flash` via Nous
    Portal, not Codex — Vultr/Codex-as-fallback is retired. The user wants

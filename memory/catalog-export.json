@@ -8944,9 +8944,34 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-13T02:20:20.423729+00:00"
+    },
+    {
+      "attributes": {
+        "endpoint": "http://192.168.40.100:8090/v1",
+        "host": "hermes-vps",
+        "model_id": "E:\\ik_llama_models\\Qwen_Qwen3.5-9B-Q4_K_M.gguf",
+        "previous_hermes_context_tokens": 131072,
+        "repair": "Changed session model and model_config from endpoint URL to exact model ID; set custom_providers.models[model_id].context_length=64000; restarted dashboard.",
+        "server_context_tokens": 64000,
+        "session_id": "20261013_020445_867bf1",
+        "validation": "llama.cpp /v1/models matched; direct completion returned OK; Hermes -z returned OK; Hermes context resolver returned 64000; custom extra_body applied"
+      },
+      "body": "Hermes uses the Qwen3.5-9B GGUF path as llama.cpp\u2019s advertised model ID; a Desktop session had the endpoint URL stored as its model and Hermes overestimated the served context until both were corrected.",
+      "created_at": "2026-10-13T02:51:32.638406+00:00",
+      "id": "5e500540-ae7c-4c0b-afc2-7493dfab4fbd",
+      "key": "hermes-custom-qwen-route-corrected-2026-10-13",
+      "name": "Hermes Desktop Qwen route and context corrected",
+      "tags": [
+        "hermes",
+        "model-routing",
+        "qwen3.5",
+        "gateway"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-13T02:51:32.638406+00:00"
     }
   ],
-  "exported_at": "2026-10-13T02:20:20.610371+00:00",
+  "exported_at": "2026-10-13T02:52:49.186747+00:00",
   "relations": [
     {
       "attributes": {},
@@ -12683,6 +12708,26 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-vps-tool-loop-and-memory-path-fix-2026-10-12",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-13T02:51:32.722698+00:00",
+      "id": "06a8221a-0999-4825-ba6a-820bc42b377e",
+      "object_key": "hermes-qwen35-9b-deployed-2026-10-12",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-custom-qwen-route-corrected-2026-10-13",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-13T02:51:32.78899+00:00",
+      "id": "2183432f-10bd-4306-8b8f-9db2613f867b",
+      "object_key": "hermes-vps-tool-loop-and-memory-path-fix-2026-10-12",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-custom-qwen-route-corrected-2026-10-13",
       "subject_type": "entity"
     }
   ],
