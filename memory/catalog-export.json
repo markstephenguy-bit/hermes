@@ -9021,9 +9021,36 @@
       ],
       "type": "bugfix",
       "updated_at": "2026-10-13T03:46:24.976165+00:00"
+    },
+    {
+      "attributes": {
+        "false_claims": [
+          "Claimed the Qwen3.5-9B model path (E:\\ik_llama_models\\Qwen_Qwen3.5-9B-Q4_K_M.gguf) is invalid for Docker/Linux -- false, it is only a model-ID string passed to llama.cpp /v1/models on a separate Windows host, never opened as a file by Hermes (verified exhaustively earlier this session, see hermes-custom-qwen-route-corrected-2026-10-13 and hermes-qwen-llamacpp-wire-verification-2026-10-13)",
+          "Flagged unset external API keys and Telegram-only messaging as issues -- both are the deliberate self-sufficiency architecture (local model + Nous Portal fallback only), not defects"
+        ],
+        "host": "hermes-vps sandbox",
+        "real_doctor_output_for_comparison": "A direct `hermes doctor` run in the same sandbox the same night returned clean: no active security advisories, no suspicious MCP stdio commands",
+        "significance": "Concrete negative data point for the Hermes-self-repair-via-local-Qwen direction: the model both picked the wrong diagnostic command and fabricated a plausible but false failure analysis on top of it. If the user had approved the offered fix, it would have broken a verified-working model route based on a hallucinated problem.",
+        "trigger": "Mark typed \"hermes doctor\" as a chat prompt (not the literal CLI subcommand)",
+        "what_happened": "Agent guessed python -m hermes.cli status twice (failed both), poked with execute_code, then ran hermes status --full (not hermes doctor) and synthesized a status summary not grounded in real doctor advisory output"
+      },
+      "body": "Qwen3.5-9B, when asked in chat to run hermes doctor, ran the wrong command and then fabricated a false model-path/Docker incompatibility diagnosis contradicting already-verified ground truth -- evidence against relying on it for unsupervised self-repair.",
+      "created_at": "2026-10-13T04:10:01.98392+00:00",
+      "id": "ef6a627c-cd9e-4919-b45f-3c1376b409ce",
+      "key": "hermes-qwen-self-diagnosis-hallucination-2026-10-13",
+      "name": "Qwen3.5-9B hallucinated a false doctor diagnosis when asked to self-check via chat",
+      "tags": [
+        "hermes",
+        "qwen3.5",
+        "self-repair",
+        "hallucination",
+        "reliability"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-13T04:10:01.98392+00:00"
     }
   ],
-  "exported_at": "2026-10-13T03:46:25.208872+00:00",
+  "exported_at": "2026-10-13T04:10:02.252110+00:00",
   "relations": [
     {
       "attributes": {},
@@ -12800,6 +12827,16 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-sandbox-cli-path-fix-2026-10-13",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-13T04:10:02.024296+00:00",
+      "id": "ff2679b8-0181-4a10-8710-6466941140c9",
+      "object_key": "hermes-qwen-llamacpp-wire-verification-2026-10-13",
+      "object_type": "entity",
+      "predicate": "informed_by",
+      "subject_key": "hermes-qwen-self-diagnosis-hallucination-2026-10-13",
       "subject_type": "entity"
     }
   ],
