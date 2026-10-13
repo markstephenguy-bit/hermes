@@ -8969,9 +8969,38 @@
       ],
       "type": "log-entry",
       "updated_at": "2026-10-13T02:51:32.638406+00:00"
+    },
+    {
+      "attributes": {
+        "errors_log_check": "grepped errors.log for tool_call/400/malformed/local-qwen -- only prior already-fixed incidents (repetition loop, compression timeout), nothing new",
+        "host": "hermes-vps",
+        "profile_class": "plugins/model-providers/custom/__init__.py CustomProfile",
+        "route": "provider: custom:local-qwen, base_url: http://192.168.40.100:8090/v1",
+        "tests_run": [
+          "4-call parallel tool_calls round trip via direct curl to llama.cpp: correct tool_call ids, JSON arguments, finish_reason=tool_calls, correct final synthesis after matching tool_call_id results",
+          "live hermes -z oneshot forcing a real tool call: 2 API calls, 0% reasoning share, correct result, cache hit 100%",
+          "reasoning_effort=none (what CustomProfile sends for off) vs chat_template_kwargs.enable_thinking=false: both equally suppress Qwen3.5 thinking on this llama.cpp build -- confirms the top-level reasoning_effort field alone is sufficient, no gap despite CustomProfile only setting extra_body.think=False on Ollama-only endpoints (port 11434), which this route is not",
+          "medium vs high reasoning_effort: both enable thinking with no meaningfully distinct token-budget behavior -- Qwen3.5 template only exposes on/off, confirmed model/template limitation not a Hermes defect"
+        ],
+        "verdict": "no defect found; tool-call JSON, id matching, and reasoning gating all correct end-to-end"
+      },
+      "body": "Verified live (direct curl + real hermes -z run) that Hermes correctly round-trips parallel tool calls and reasoning-effort gating through the custom:local-qwen route to llama.cpp/Qwen3.5; found no wire-format or JSON defect.",
+      "created_at": "2026-10-13T03:36:37.543336+00:00",
+      "id": "e57b659b-13d6-4ec4-865f-0abf9a82fca4",
+      "key": "hermes-qwen-llamacpp-wire-verification-2026-10-13",
+      "name": "Hermes-to-Qwen/llama.cpp tool-call and reasoning wire format verified correct, no defect found",
+      "tags": [
+        "hermes",
+        "qwen3.5",
+        "model-routing",
+        "gateway",
+        "verification"
+      ],
+      "type": "log-entry",
+      "updated_at": "2026-10-13T03:36:37.543336+00:00"
     }
   ],
-  "exported_at": "2026-10-13T02:52:49.186747+00:00",
+  "exported_at": "2026-10-13T03:36:51.821998+00:00",
   "relations": [
     {
       "attributes": {},
@@ -12728,6 +12757,16 @@
       "object_type": "entity",
       "predicate": "refines",
       "subject_key": "hermes-custom-qwen-route-corrected-2026-10-13",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-13T03:36:51.672025+00:00",
+      "id": "111fdbc8-bc2c-4e54-8078-b69247af5724",
+      "object_key": "hermes-custom-qwen-route-corrected-2026-10-13",
+      "object_type": "entity",
+      "predicate": "refines",
+      "subject_key": "hermes-qwen-llamacpp-wire-verification-2026-10-13",
       "subject_type": "entity"
     }
   ],

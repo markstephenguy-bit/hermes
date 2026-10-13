@@ -34,6 +34,18 @@ regardless.
 - A Desktop session (`20261013_020445_867bf1`) had mistakenly stored the endpoint URL as its **model**. Its `sessions.model` and `model_config.model` were repaired to the Qwen3.5 ID, with a live SQLite backup saved at `~/.hermes/state-before-model-route-repair-20261013.db`; the dashboard service was restarted and is active.
 - llama.cpp advertises `n_ctx: 64000`, but Hermes's context resolver returned **131072** before an explicit per-model limit was added to `custom_providers.models[Qwen3.5].context_length`. It now returns **64000**. The custom provider's existing `extra_body` loop guards were verified to apply. Config backup: `~/.hermes/config-before-model-context-fix-20261013.yaml`.
 
+### Tool-call & reasoning wire format re-verified (2026-10-13, no defect found)
+
+Picked back up the one unfinished check from the prior Qwen-route audit: whether Hermes's custom llama.cpp connection sends/receives correct JSON for multi-tool-call turns and correctly gates reasoning. Verified live (direct curl to `192.168.40.100:8090` AND a real `hermes -z` run through the deployed agent, not just code reading):
+
+- A 4-call parallel tool-call turn round-tripped correctly end-to-end: correct `tool_call` ids, JSON `arguments`, `finish_reason: tool_calls`, and the model synthesized all 4 tool results correctly after matching `tool_call_id`.
+- A real `hermes -z` prompt forcing a tool call completed in 2 API calls with 0% reasoning share and the correct answer — confirms the deployed pipeline (not just a hand-built test request) works.
+- Hermes's `custom` provider profile (`plugins/model-providers/custom/__init__.py`) sends reasoning as a **top-level `reasoning_effort` field**, not `chat_template_kwargs.enable_thinking` — its `extra_body.think=False` branch only fires for Ollama-style endpoints (port 11434 or an `ollama` host label), which this route is not. Initially looked like a gap; direct A/B curl testing proved this llama.cpp build honors bare `reasoning_effort: "none"` just as well as the explicit `chat_template_kwargs` form, so there is no actual gap.
+- `medium` vs `high` reasoning effort produce no reliably distinct behavior (Qwen3.5's chat template only exposes thinking on/off) — a model/template limitation, not something Hermes can fix on its side.
+- `errors.log` has no new tool-call/400/malformed-JSON incidents against `local-qwen` beyond the already-fixed repetition-loop and compression-timeout issues above.
+
+**Verdict: no defect found.** Catalog entity `hermes-qwen-llamacpp-wire-verification-2026-10-13` (`refines` the route-correction entity above) has full detail.
+
 ### Responsiveness & compression fast-lane tuning (deployed 2026-10-13 02:10 UTC)
 
 Mark ran an optimize sweep on `/home/hermes/.hermes/config.yaml` (`compression.threshold: 0.45`, `target_ratio: 0.25`, `protect_last_n: 12`, `protect_first_n: 2`, `proactive_prune_min_result_chars: 10000`, `session_cleanup`, `agent.cache`, `delegation`, `curator`) and reported that the context-summarize (`compression`) thread still took ~191 seconds (`01:48:29`–`01:51:41` UTC).
