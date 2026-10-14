@@ -9295,9 +9295,64 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-14T02:43:09.223015+00:00"
+    },
+    {
+      "attributes": {
+        "diagnostic_trap": "do not capture bw unlock --raw output with 2>&1 - stderr noise (including the panic trace) gets merged into the captured session token, silently corrupting it in a way that looks like a valid-length string",
+        "fix": "installed Node 20.20.2 via NodeSource (deb.nodesource.com/setup_20.x) on this laptop, replacing the apt-default 18.19.1; bw CLI works cleanly without any NODE_OPTIONS flag afterward",
+        "root_cause": "Node 18's --experimental-global-webcrypto implementation is not reliable enough for this WASM crypto library; it is not just an engine-version warning",
+        "symptom": "bw unlock/login sometimes panics with \"could not retrieve random bytes for uuid\" inside bitwarden-crypto WASM, or silently returns a session token that then fails on every use (bw falls back to interactive master-password prompt)",
+        "verification": "confirmed fixed via actual tools/call status (unlocked) and list (real decrypted items returned), not just an MCP initialize handshake"
+      },
+      "body": "Also removed the now-redundant fileserver-catalog vault MCP server from Hermes/.mcp.json, leaving bitwarden as the only secrets MCP connector on this laptop, now that migration to Vaultwarden is complete and verified.",
+      "created_at": "2026-10-14T03:51:53.801644+00:00",
+      "id": "9abc3f36-aa8e-4959-93ef-993c6b6faccd",
+      "key": "bw-cli-node18-webcrypto-flaky-2026-10-14",
+      "name": "bw CLI 2026.9.1 intermittently fails on Node 18 even with --experimental-global-webcrypto; Node 20 fixes it",
+      "tags": [
+        "hermes",
+        "infrastructure",
+        "vaultwarden",
+        "mcp",
+        "bitwarden-cli"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-14T03:51:53.801644+00:00"
+    },
+    {
+      "attributes": {
+        "account": "mark.stephen.guy@gmail.com",
+        "client_configs": [
+          "/home/mark/projects/Hermes/.mcp.json",
+          "/home/mark/.codex/config.toml"
+        ],
+        "master_password_stored": false,
+        "mcp_server_version": "2026.7.0",
+        "node_version": "20.20.2",
+        "server_url": "https://theguylab.duckdns.org/vault",
+        "session_file": "/home/mark/.claude/mcp_servers/bitwarden/bw_session.env",
+        "session_file_mode": "0600",
+        "verification": "fresh bw login via BW_PASSWORD env; unlocked status; raw MCP initialize; create/list/get/delete temporary secure note; no token in client configs",
+        "wrapper": "/home/mark/.claude/mcp_servers/bitwarden/run.sh"
+      },
+      "body": "Codex and the Hermes Claude Code project can access the self-hosted Vaultwarden through the official local Bitwarden MCP server.",
+      "created_at": "2026-10-14T03:54:25.070244+00:00",
+      "id": "fbe45311-4c1f-45e3-81ab-ed672d26f2c7",
+      "key": "bitwarden-mcp-codex-and-claude-verified-2026-10-14",
+      "name": "Bitwarden MCP verified for Codex and Claude Code on laptop",
+      "tags": [
+        "hermes",
+        "vaultwarden",
+        "bitwarden",
+        "mcp",
+        "codex",
+        "verified"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-14T03:54:25.070244+00:00"
     }
   ],
-  "exported_at": "2026-10-14T02:58:46.982348+00:00",
+  "exported_at": "2026-10-14T03:54:41.168522+00:00",
   "relations": [
     {
       "attributes": {},
@@ -13124,6 +13179,26 @@
       "object_type": "entity",
       "predicate": "hosted_on",
       "subject_key": "hermes-obsidian-vault-access-verified-2026-10-14",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-14T03:54:25.124199+00:00",
+      "id": "a83e213d-8a1a-442a-87c8-048d97250398",
+      "object_key": "bitwarden-mcp-server-wired-laptop-2026-10-14",
+      "object_type": "entity",
+      "predicate": "verifies",
+      "subject_key": "bitwarden-mcp-codex-and-claude-verified-2026-10-14",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-14T03:54:25.20028+00:00",
+      "id": "4bf78ce5-fdb0-45b3-947b-b31e9f70a5d9",
+      "object_key": "vaultwarden-deployed-vps-2026-10-13",
+      "object_type": "entity",
+      "predicate": "connects_to",
+      "subject_key": "bitwarden-mcp-codex-and-claude-verified-2026-10-14",
       "subject_type": "entity"
     }
   ],

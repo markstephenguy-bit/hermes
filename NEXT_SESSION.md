@@ -27,6 +27,12 @@ regardless.
 
 ## Current state — re-verified live 2026-10-12, not assumed
 
+### Local Bitwarden MCP access to VPS Vaultwarden (verified 2026-10-14 UTC)
+
+- The official `@bitwarden/cli` 2026.9.1 and `@bitwarden/mcp-server` 2026.7.0 are installed on Mark's laptop. The CLI points to the full `https://theguylab.duckdns.org/vault` subpath; the laptop now runs Node 20.20.2.
+- The tracked project `.mcp.json` (Claude Code) and the laptop's `~/.codex/config.toml` both launch `/home/mark/.claude/mcp_servers/bitwarden/run.sh`. Its `BW_SESSION` comes from `/home/mark/.claude/mcp_servers/bitwarden/bw_session.env` outside Git, mode 0600; neither client config contains the token. The wrapper handles the Node 18 WebCrypto flag only if the machine runs an older Node again.
+- Refreshed the CLI login using `BW_PASSWORD` as an environment variable and saved only the returned session token. Verified unlocked status, the raw MCP `initialize` response naming `Bitwarden MCP Server`, and actual `create_item` / `list` / `get` / `delete` of a temporary secure note through MCP. The temporary item was permanently removed. No master password was saved in repo or wrapper. Catalog entity: `bitwarden-mcp-codex-and-claude-verified-2026-10-14`.
+
 ### Obsidian-compatible knowledge vault on the VPS (verified 2026-10-14 UTC)
 
 - Mark chose a VPS folder for curated subject knowledge, separate from Hindsight's conversational memory. The folder `/home/hermes/knowledge-vault` exists, is owned by `hermes` (UID/GID 1000), and is currently empty; no chats or project content have been imported.
