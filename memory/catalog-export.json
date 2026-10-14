@@ -9271,9 +9271,33 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-14T02:40:20.748077+00:00"
+    },
+    {
+      "attributes": {
+        "caveat": "BW_SESSION in bw_session.env will go stale if the vault is explicitly locked or the account session is invalidated server-side; needs manual bw unlock --raw refresh when that happens, no auto-refresh set up",
+        "install": "npm install -g @bitwarden/cli and @bitwarden/mcp-server (required Node 18->needed --experimental-global-webcrypto NODE_OPTIONS workaround since bw CLI/mcp-server want Node 20+/22+ WebCrypto, apt-installed node is 18.19.1)",
+        "login": "bw CLI logged in as mark.stephen.guy@gmail.com against https://theguylab.duckdns.org/vault on this laptop",
+        "mcp_config": "Hermes/.mcp.json now has a bitwarden entry pointing at the wrapper script",
+        "secret_handling": "BW_SESSION NOT committed to tracked .mcp.json (that file is pushed to GitHub) - stored instead in untracked /home/mark/.claude/mcp_servers/bitwarden/bw_session.env (chmod 600), loaded by a run.sh wrapper, same pattern as the existing vault MCP entry",
+        "verified": "handshake tested directly, returns Bitwarden MCP Server v2026.7.0 over stdio"
+      },
+      "body": "Completed the multi-agent secrets access goal for this laptop: Claude Code can now call Bitwarden MCP tools against the self-hosted Vaultwarden instance. Kept the session token out of the git-tracked .mcp.json by following the existing vault-server pattern of an external script + untracked env file.",
+      "created_at": "2026-10-14T02:43:09.223015+00:00",
+      "id": "28dac1d0-4def-4914-93c2-3b515dc27287",
+      "key": "bitwarden-mcp-server-wired-laptop-2026-10-14",
+      "name": "Official bitwarden/mcp-server installed and wired into Claude Code for this laptop",
+      "tags": [
+        "hermes",
+        "infrastructure",
+        "secrets",
+        "vaultwarden",
+        "mcp"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-14T02:43:09.223015+00:00"
     }
   ],
-  "exported_at": "2026-10-14T02:40:40.448794+00:00",
+  "exported_at": "2026-10-14T02:58:46.982348+00:00",
   "relations": [
     {
       "attributes": {},
