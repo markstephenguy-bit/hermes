@@ -48,6 +48,13 @@ something Claude Code wired up once by hand.
   *in addition to* ufw — both must allow a port, and hPanel changes need an
   explicit "Synchronize" click to actually apply. No Dokploy on this box
   (that was a Vultr-only install, not recreated).
+- **Curated knowledge vault** (added 2026-10-14):
+  `/home/hermes/knowledge-vault` is a VPS-local Markdown folder, mounted
+  read-write into the Hermes Docker sandbox at `/vault`. The bundled Obsidian
+  skill uses `OBSIDIAN_VAULT_PATH=/vault` with file tools. This is separate
+  from Hindsight's conversational memory. The mount is intentionally limited
+  to the vault; the sandbox does not mount the whole Hermes home directory.
+  Sync, backup, and automated curation are not configured yet.
 - **`w_workstation`** (192.168.40.100, Windows 11, Georgia Pacific-managed
   via `BPNET` domain, Zscaler) currently serves Qwen3.5-9B Q4_K_M
   through mainline llama.cpp on port 8090. Its `/v1/models` response

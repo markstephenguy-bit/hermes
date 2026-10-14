@@ -2144,6 +2144,26 @@
     },
     {
       "attributes": {
+        "chat_migration": false,
+        "host_path": "/home/hermes/knowledge-vault",
+        "storage": "VPS filesystem directory"
+      },
+      "body": "Curated subject knowledge belongs in a VPS-local Obsidian-compatible vault, separate from Hindsight conversational memory.",
+      "created_at": "2026-10-14T02:40:20.718783+00:00",
+      "id": "8d3b728a-ce7f-40d1-8b9c-2bd65f70439c",
+      "key": "hermes-obsidian-vault-location-2026-10-14",
+      "name": "VPS folder chosen for curated Hermes knowledge vault",
+      "tags": [
+        "hermes",
+        "decision",
+        "obsidian",
+        "knowledge-vault"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-14T02:40:20.718783+00:00"
+    },
+    {
+      "attributes": {
         "host": "hermes-vps + w_workstation",
         "test_1": "hermes chat --provider ollama --model qwen3-vl:8b-hermes -q, correct answer, 23s",
         "test_2": "hermes chat -q (default path, no flag), correct answer, 16s",
@@ -9072,9 +9092,188 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-13T04:21:52.570388+00:00"
+    },
+    {
+      "attributes": {
+        "added_forward_rule": "iptables -I FORWARD -i enp4s0 -o wg0 -s 192.168.40.0/24 -d 10.60.0.0/24 -j ACCEPT",
+        "added_nat_rule": "iptables -t nat -A POSTROUTING -s 192.168.40.0/24 -o wg0 -j MASQUERADE",
+        "backup_file": "wg0.conf.bak-20261013",
+        "lan_host_route_example": "sudo ip route add 10.60.0.0/24 via 192.168.40.2 (tested on laptop)",
+        "persisted_in": "/home/mark/wireguard/wg_confs/wg0.conf PostUp/PostDown (docker container linuxserver/wireguard)"
+      },
+      "body": "Added FORWARD+MASQUERADE rules on fileserver so any LAN host can reach the VPS WireGuard subnet by adding a route via fileserver; verified tunnel-level connectivity (ping) works but port 3003 (catalog) and 8090 (Qwen) both now time out on the VPS side, and the VPS SSH host key has changed since last connection - needs follow-up on the VPS firewall and host key.",
+      "created_at": "2026-10-14T01:42:12.769554+00:00",
+      "id": "8ab0dab7-4e2d-46f1-a054-3d1c9b9f379e",
+      "key": "fileserver-lan-to-vps-wg-routing-2026-10-13",
+      "name": "fileserver now routes LAN (192.168.40.0/24) into VPS WireGuard network (10.60.0.0/24)",
+      "tags": [
+        "hermes",
+        "infrastructure",
+        "wireguard",
+        "network"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-14T01:42:12.769554+00:00"
+    },
+    {
+      "attributes": {
+        "also_found": "docker_mount_cwd_to_workspace is back to false on the rebuilt Hostinger box (was fixed to true on the old Vultr box per CR-08 2026-10-06) - the fix didn't survive the 2026-10-10 Vultr-to-Hostinger migration",
+        "blast_radius": "full read/write as the hermes host user: hermes-agent source, config.yaml (model routing, API base URLs), memory/hindsight DB, systemd --user services (dashboard/gateway), all other sandbox homes",
+        "mechanism": "~/.ssh/id_ed25519 (hermes-sandbox@hermes-vps) baked into sandbox home bind-mount (/home/hermes/.hermes/sandboxes/docker/default/home -> container /root), authorized_keys on host accepts it, StrictHostKeyChecking=accept-new",
+        "mitigating_factor": "sudo -n -l from that session fails (password required), so it's host-user-level access, not root",
+        "not_a_problem": "container is non-privileged, CapDrop=ALL with only chown/dac_override/fowner/setgid/setuid added, resource-limited (5GB/1CPU/2048 pids); gateway port 8644 binds 0.0.0.0 but ufw default-deny blocks it externally (verified live, not reachable)",
+        "verified": "docker exec hermes-0833b5ce ssh hermes@31.220.53.141 'whoami' succeeded live, returned hermes/srv2051520"
+      },
+      "body": "Audited the live Hostinger hermes-vps (31.220.53.141): the Docker sandbox meant to isolate untrusted agent code has a live passwordless SSH credential back to the host hermes account, confirmed working by exec'ing into the sandbox and SSH'ing out to the host; this is a sandbox-escape path that undermines the stated purpose of terminal.backend=docker, and the workspace-persistence fix from CR-08 has regressed after the VPS rebuild.",
+      "created_at": "2026-10-14T02:09:51.872811+00:00",
+      "id": "85f33f4a-47be-465b-9ff7-7d35145b9a2f",
+      "key": "hermes-sandbox-escape-ssh-to-host-2026-10-14",
+      "name": "Docker sandbox can SSH out to the host as the hermes user, passwordless - defeats isolation purpose",
+      "tags": [
+        "hermes",
+        "security",
+        "sandbox",
+        "high-priority",
+        "regression"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-14T02:09:51.872811+00:00"
+    },
+    {
+      "attributes": {
+        "admin_token_secret": "vaultwarden-admin-token (catalog secrets table)",
+        "data_volume": "/home/mark/vaultwarden/data",
+        "host": "fileserver (192.168.40.2)",
+        "image": "vaultwarden/server:latest",
+        "port": "8098->80",
+        "reachability": "confirmed 200 on /alive from LAN (laptop); VPS/hermes-agent should already reach it via existing wg0->enp4s0 FORWARD ACCEPT rule on fileserver, not yet explicitly tested",
+        "signups_allowed": false,
+        "tls": "none yet - plain HTTP, fine for bw CLI/MCP use, browser extension/mobile clients will need TLS added later (e.g. via NPM on server host) before they can use it",
+        "websocket_enabled": true
+      },
+      "body": "Chose Vaultwarden (open-source Bitwarden-API-compatible server) as the one shared secrets store multiple AI agents can hit via MCP (official bitwarden/mcp-server or community alternatives), replacing the ad-hoc catalog secrets tables; deployed on fileserver rather than the VPS specifically so it stays reachable from the general LAN over WireGuard without fighting the VPS's ufw/hPanel dual firewall.",
+      "created_at": "2026-10-14T02:11:58.813458+00:00",
+      "id": "c99e2768-81f3-4e8b-a784-4b80e9f33a03",
+      "key": "vaultwarden-deployed-fileserver-2026-10-13",
+      "name": "Vaultwarden deployed on fileserver as the shared multi-agent secrets store",
+      "tags": [
+        "hermes",
+        "infrastructure",
+        "secrets",
+        "vaultwarden"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-14T02:11:58.813458+00:00"
+    },
+    {
+      "attributes": {
+        "admin_token_secret": "vaultwarden-admin-token (catalog secrets table, value rotated for this redeploy)",
+        "caddy_backup": "/etc/caddy/Caddyfile.bak-20261013 on hermes-vps",
+        "caddy_config": "/etc/caddy/Caddyfile, path matcher @vault excludes basic_auth so Bitwarden clients can log in; dashboard root path keeps its existing basic_auth",
+        "container_bind": "127.0.0.1:8098 (localhost only, not exposed to internet directly)",
+        "domain_env": "DOMAIN=https://theguylab.duckdns.org/vault set in container so asset/API URLs resolve correctly under the subpath",
+        "host": "hermes-vps (31.220.53.141)",
+        "public_url": "https://theguylab.duckdns.org/vault/",
+        "signups_allowed": false,
+        "superseded": "fileserver deployment from earlier same day - container stopped/removed, data dir left at fileserver:/home/mark/vaultwarden/data unused"
+      },
+      "body": "User corrected the earlier fileserver placement: wanted Vaultwarden on the VPS specifically so it is reachable by any computer, not just the home LAN. Reused the existing Caddy TLS/cert setup via a /vault path route rather than fighting the VPS ufw+hPanel dual firewall or waiting on a new DuckDNS subdomain (the DuckDNS update token is currently lost per server-duckdns-token). Verified /vault/alive returns 200 publicly while the dashboard root still returns 401 (basic auth unaffected).",
+      "created_at": "2026-10-14T02:15:05.812743+00:00",
+      "id": "1194f186-3556-405b-8c59-fa3dbd839063",
+      "key": "vaultwarden-deployed-vps-2026-10-13",
+      "name": "Vaultwarden redeployed on hermes-vps (not fileserver), exposed publicly via existing Caddy at /vault path",
+      "tags": [
+        "hermes",
+        "infrastructure",
+        "secrets",
+        "vaultwarden"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-14T02:15:05.812743+00:00"
+    },
+    {
+      "attributes": {
+        "fix": "set terminal.docker.docker_run_as_host_user: true in /home/hermes/.hermes/config.yaml (was unset/false default); backed up prior config to config.yaml.backup-pre-docker_run_as_host_user-20261014",
+        "recreated": "removed old persistent containers hermes-0833b5ce and hermes-5837689d; restarted hermes-gateway.service and hermes-dashboard.service (systemd --user) so new containers spawn under the corrected mapping",
+        "root_cause": "sandbox image (nousresearch/hermes-sandbox:desktop) starts as root and drops to hermes only in its own entrypoint via s6-setuidgid; every real command goes through `docker exec`, which attaches as root directly and bypasses that drop - hence the tilde bug, the root:root ownership corruption that needed an SSH-wrapper hack, and repeated AI-tool confusion about root vs hermes/$HOME",
+        "side_effect": "CAP_SETUID/CAP_SETGID are now omitted from sandbox containers (net security improvement, not just ergonomics)",
+        "verified": "live tool-call through the real agent (hermes -z ... --cli -t terminal --yolo) + direct docker exec both show uid=1000(pn) gid=1000(pn) matching host hermes (1000:1000); a file written via /workspace landed on host owned by hermes:hermes, not root:root"
+      },
+      "body": "Fixed the long-standing sandbox root/hermes UID mismatch (source of the tilde bug and repeated AI-tool confusion) by enabling the vendor-documented docker_run_as_host_user flag and recreating the sandbox containers; verified live that new containers and files now consistently map to the host hermes UID.",
+      "created_at": "2026-10-14T02:16:02.477771+00:00",
+      "id": "16f72ec6-dead-433e-9c71-f4a38c2e4ab5",
+      "key": "hermes-docker-run-as-host-user-fix-2026-10-14",
+      "name": "Enabled terminal.docker.docker_run_as_host_user to kill the root-vs-hermes sandbox mismatch",
+      "tags": [
+        "hermes",
+        "security",
+        "sandbox",
+        "fix"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-14T02:16:02.477771+00:00"
+    },
+    {
+      "attributes": {
+        "correct_integration": "community plugin hermes-vaultwarden (hansipie), installed+enabled on hermes-vps, reads env vars from one vault item's custom fields (not Secrets Manager)",
+        "env_item": "hermes-agent-env vault item holds TELEGRAM_BOT_TOKEN as a custom field (only secret currently live in hermes .env; HINDSIGHT_LLM_API_KEY unset)",
+        "hermes_user_bw_login": "hermes OS user now has its own bw CLI login/session, separate from root's",
+        "master_password_reuse_warning": "Vaultwarden master password == hermes-vps-root-password, needs rotation to be meaningfully separate",
+        "migrated_items": 15,
+        "migration_failed": "hermes-vps-caddy-basic-auth (wrong passphrase/corrupt in catalog, not migrated - needs manual recovery or reset)",
+        "not_yet_done": "bitwarden/mcp-server MCP connector for Claude Code and other agents - needs bw CLI + session on each client machine, not yet wired",
+        "plugin_status": "hermes vaultwarden status confirms enabled, session present, 1 secret applied",
+        "secrets_manager_finding": "hermes built-in `hermes secrets bitwarden` targets Bitwarden Secrets Manager (closed-source enterprise product) which Vaultwarden deliberately does not implement - that native command cannot work here"
+      },
+      "body": "Migrated 15 of 16 fileserver catalog secrets into the VPS Vaultwarden as individual login items (via bw CLI, base64-encoded JSON over stdin - note: bw create item does not accept a trailing \"-\" stdin marker despite some docs implying it, plain pipe works). Discovered hermes-agent's bundled Secrets Manager integration cannot work with self-hosted Vaultwarden at all (different Bitwarden product); installed the correct community plugin instead and configured it against a dedicated custom-fields item.",
+      "created_at": "2026-10-14T02:39:08.264537+00:00",
+      "id": "ccd32395-1476-4808-95ef-69d6cce6e1b7",
+      "key": "vaultwarden-secrets-migrated-and-hermes-plugin-wired-2026-10-14",
+      "name": "Fileserver catalog secrets migrated into Vaultwarden; hermes-agent native vaultwarden plugin wired up",
+      "tags": [
+        "hermes",
+        "infrastructure",
+        "secrets",
+        "vaultwarden"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-14T02:39:08.264537+00:00"
+    },
+    {
+      "attributes": {
+        "backup_configured": false,
+        "container_user": "1000:1000",
+        "docker_env": {
+          "OBSIDIAN_VAULT_PATH": "/vault"
+        },
+        "docker_volume": "/home/hermes/knowledge-vault:/vault",
+        "host_path": "/home/hermes/knowledge-vault",
+        "sandbox_path": "/vault",
+        "services": [
+          "hermes-gateway",
+          "hermes-dashboard"
+        ],
+        "skill": "obsidian",
+        "sync_configured": false,
+        "verification": "real Hermes CLI turn wrote and read note; separate turn discovered it; host content and ownership checked; test note removed"
+      },
+      "body": "Hermes can read, write, and discover notes in the VPS knowledge vault through its Docker sandbox.",
+      "created_at": "2026-10-14T02:40:20.748077+00:00",
+      "id": "7e1a7fb2-fdfc-437c-8e7a-df830cc39593",
+      "key": "hermes-obsidian-vault-access-verified-2026-10-14",
+      "name": "Hermes Obsidian vault access configured and verified",
+      "tags": [
+        "hermes",
+        "obsidian",
+        "knowledge-vault",
+        "deployment",
+        "verified"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-14T02:40:20.748077+00:00"
     }
   ],
-  "exported_at": "2026-10-13T04:21:52.734917+00:00",
+  "exported_at": "2026-10-14T02:40:40.448794+00:00",
   "relations": [
     {
       "attributes": {},
@@ -12861,6 +13060,46 @@
       "object_type": "entity",
       "predicate": "informed_by",
       "subject_key": "hermes-qwen-self-diagnosis-hallucination-2026-10-13",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-14T02:16:09.470819+00:00",
+      "id": "34383097-2f99-4a5e-b6ab-7e044a9c81be",
+      "object_key": "hermes-tilde-bug-is-container-mismatch-2026-10-07",
+      "object_type": "entity",
+      "predicate": "resolves",
+      "subject_key": "hermes-docker-run-as-host-user-fix-2026-10-14",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-14T02:40:20.77141+00:00",
+      "id": "0a02ffc4-587c-4d78-86e4-e0f1f63a99bc",
+      "object_key": "hermes-obsidian-vault-access-verified-2026-10-14",
+      "object_type": "entity",
+      "predicate": "governs",
+      "subject_key": "hermes-obsidian-vault-location-2026-10-14",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-14T02:40:20.787335+00:00",
+      "id": "826aec94-e11f-49b8-b4f5-197d6e6c7da8",
+      "object_key": "hermes-memory-provider-locked-hindsight-2026-10-04",
+      "object_type": "entity",
+      "predicate": "complements",
+      "subject_key": "hermes-obsidian-vault-location-2026-10-14",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-14T02:40:20.803576+00:00",
+      "id": "d15a08f5-62f7-45d0-8e03-b974795db4a3",
+      "object_key": "hermes-vps-hostinger-live-2026-10-10",
+      "object_type": "entity",
+      "predicate": "hosted_on",
+      "subject_key": "hermes-obsidian-vault-access-verified-2026-10-14",
       "subject_type": "entity"
     }
   ],

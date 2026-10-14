@@ -27,6 +27,13 @@ regardless.
 
 ## Current state — re-verified live 2026-10-12, not assumed
 
+### Obsidian-compatible knowledge vault on the VPS (verified 2026-10-14 UTC)
+
+- Mark chose a VPS folder for curated subject knowledge, separate from Hindsight's conversational memory. The folder `/home/hermes/knowledge-vault` exists, is owned by `hermes` (UID/GID 1000), and is currently empty; no chats or project content have been imported.
+- The bundled `obsidian` skill is installed and enabled. Live `~/.hermes/config.yaml` retains `terminal.backend: docker`, `docker_mount_cwd_to_workspace: false`, and `docker_run_as_host_user: true`; it now adds `terminal.docker_volumes: [/home/hermes/knowledge-vault:/vault]` and `terminal.docker_env.OBSIDIAN_VAULT_PATH: /vault`. The pre-change config is backed up as `~/.hermes/config-before-obsidian-20261014T023502Z.yaml`.
+- Restarted `hermes-gateway` and `hermes-dashboard`; both were active afterward. A real `hermes -z` turn used the skill/file tools to write and read `/vault/_hermes-vault-check.md`, and a second turn found it. Independently checked the host file content and UID/GID 1000, then removed the test note. The new sandbox (`hermes-b7975178` at test time) had the read-write vault bind mount and `OBSIDIAN_VAULT_PATH=/vault`; the older mountless sandbox was still running and should not be used as evidence of current config.
+- This enables Hermes file access to the vault. Obsidian Desktop/Headless Sync, device synchronization, backups of future notes, automatic session-to-vault curation, and any chat migration have not been set up. Changing Docker mounts creates a new sandbox identity; helper commands installed only into a container writable layer are not durable (see sandbox-provision note below).
+
 ### Model route correction (verified 2026-10-13)
 
 - `w_workstation:8090` currently serves Qwen3.5-9B Q4_K_M through **mainline llama.cpp**, not ik_llama.cpp. Its `/v1/models` ID is the Windows GGUF path `E:\ik_llama_models\Qwen_Qwen3.5-9B-Q4_K_M.gguf`; that path is the API model identifier, not a file path the VPS needs to open. A direct completion returned `OK` with that exact ID, and `hermes -z` returned `OK` through the custom provider.

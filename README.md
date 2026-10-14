@@ -32,6 +32,16 @@ The user intends to move that setup role to Codex and retire Claude Code
 later; no immediate removal is planned. This setup role is separate from
 Codex's model role inside Hermes.
 
+## Knowledge vault
+
+Hermes has an empty Obsidian-compatible Markdown vault at
+`/home/hermes/knowledge-vault` on the VPS. Its Docker sandbox sees the folder
+at `/vault` through a dedicated bind mount, and the bundled Obsidian skill can
+read, search, and write notes there. This is curated subject knowledge,
+separate from Hindsight's conversational memory. Device sync, vault backups,
+automatic curation, and migration of existing chats are future work. See
+[NEXT_SESSION.md](NEXT_SESSION.md) for the verified live configuration.
+
 ## Source of truth
 
 This repo describes Hermes-specific design and code. It does **not**
