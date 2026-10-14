@@ -1,5 +1,9 @@
 {
   "mcpServers": {
+    "vault": {
+      "command": "uv",
+      "args": ["run", "/home/mark/.claude/mcp_servers/vault/vault_mcp.py"]
+    },
     "bitwarden": {
       "command": "/home/mark/.claude/mcp_servers/bitwarden/run.sh"
     }
