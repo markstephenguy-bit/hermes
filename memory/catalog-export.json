@@ -9350,9 +9350,39 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-14T03:54:25.070244+00:00"
+    },
+    {
+      "attributes": {
+        "bitwarden_retained_in": [
+          "/home/mark/projects/Hermes/.mcp.json",
+          "/home/mark/.codex/config.toml",
+          "/home/mark/.config/Claude/claude_desktop_config.json"
+        ],
+        "old_vault_process_running": false,
+        "removed_from": [
+          "/home/mark/projects/Hermes/.mcp.json",
+          "/home/mark/.codex/config.toml"
+        ],
+        "vps_hermes_legacy_vault_mcp_configured": false
+      },
+      "body": "Local AI clients use the Bitwarden MCP for secrets; the fileserver vault MCP registration was removed.",
+      "created_at": "2026-10-14T04:00:32.270954+00:00",
+      "id": "9f9aa736-1de8-48f8-84be-85b2c1249a87",
+      "key": "hermes-bitwarden-only-local-secrets-mcp-2026-10-14",
+      "name": "Use Bitwarden as the only local secrets MCP",
+      "tags": [
+        "hermes",
+        "decision",
+        "vaultwarden",
+        "bitwarden",
+        "mcp",
+        "secrets"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-14T04:00:32.270954+00:00"
     }
   ],
-  "exported_at": "2026-10-14T03:54:41.168522+00:00",
+  "exported_at": "2026-10-14T04:00:44.161355+00:00",
   "relations": [
     {
       "attributes": {},
@@ -13199,6 +13229,26 @@
       "object_type": "entity",
       "predicate": "connects_to",
       "subject_key": "bitwarden-mcp-codex-and-claude-verified-2026-10-14",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-14T04:00:32.311076+00:00",
+      "id": "752a68e1-6d5d-4ca6-bdd2-574afe584190",
+      "object_key": "vault-mcp-deployed-2026-10-01",
+      "object_type": "entity",
+      "predicate": "supersedes",
+      "subject_key": "hermes-bitwarden-only-local-secrets-mcp-2026-10-14",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {},
+      "created_at": "2026-10-14T04:00:32.328836+00:00",
+      "id": "2ad994cf-cdb7-427e-9261-9b05b585e104",
+      "object_key": "bitwarden-mcp-codex-and-claude-verified-2026-10-14",
+      "object_type": "entity",
+      "predicate": "governs",
+      "subject_key": "hermes-bitwarden-only-local-secrets-mcp-2026-10-14",
       "subject_type": "entity"
     }
   ],
