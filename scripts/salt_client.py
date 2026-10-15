@@ -8,27 +8,30 @@ import sys
 import json
 import httpx
 
-CATALOG_URL = "http://192.168.40.2:3003"
 SALT_URL = "http://192.168.40.2:8000"
+VAULT_ITEM_NAME = "salt-hermes-infra"
 
 
 def get_salt_password() -> str:
-    """Retrieve salt-hermes-infra password from catalog vault.
+    """Retrieve the salt-hermes-infra password from Vaultwarden.
 
-    The vault passphrase is never hardcoded or persisted - it must be
-    supplied fresh per the documented vault design (see Home Claude/CLAUDE.md).
+    Vaultwarden (via the bw CLI or the bitwarden MCP connector) is the sole
+    secrets source - see Hermes's CLAUDE.md. This script never fetches or
+    stores the plaintext itself; the caller must supply it fresh for this
+    invocation only, e.g.:
+
+        export SALT_HERMES_INFRA_PASSWORD="$(bw get password salt-hermes-infra)"
     """
-    passphrase = os.environ.get("VAULT_PASSCODE")
-    if not passphrase:
-        print("VAULT_PASSCODE not set - export it for this invocation only, never as a standing default.", file=sys.stderr)
+    password = os.environ.get("SALT_HERMES_INFRA_PASSWORD")
+    if not password:
+        print(
+            f"SALT_HERMES_INFRA_PASSWORD not set - export it for this invocation only "
+            f"(e.g. via `bw get password {VAULT_ITEM_NAME}` or the bitwarden MCP connector), "
+            f"never as a standing default.",
+            file=sys.stderr,
+        )
         sys.exit(1)
-    resp = httpx.post(
-        f"{CATALOG_URL}/rpc/secret_get",
-        json={"p_name": "salt-hermes-infra", "p_passphrase": passphrase},
-        timeout=10,
-    )
-    resp.raise_for_status()
-    return resp.json()
+    return password
 
 
 def get_salt_token(password: str) -> str:
