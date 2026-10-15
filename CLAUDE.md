@@ -25,6 +25,18 @@ fileserver catalog's old `secrets` table is retired as of 2026-10-14; all 16
 entries were migrated to Vaultwarden and it must not be used or queried for
 secrets going forward, even as a fallback. One secrets source, full stop.
 
+**Onboarding a new AI system onto Vaultwarden** (a new laptop, a Claude Code
+install at the law office, etc.): run `scripts/onboard_bitwarden_mcp.sh` on
+that machine. It logs into Vaultwarden, unlocks the vault (master password
+typed locally on that machine, never passed through an agent), saves a CLI
+session token under `~/.claude/mcp_servers/bitwarden/`, and registers the
+`bitwarden` MCP server for that machine's local AI tools. After that one
+run, that machine's agents can call Vaultwarden live via MCP with no further
+password entry, until the saved session goes stale — re-run the script to
+refresh it. Scripts that need a secret outside of MCP (e.g.
+`scripts/salt_client.py`) read the same saved session and shell out to
+`bw get ...` directly, so there's no per-call password handling either.
+
 ## Logging progress — this project's actual memory
 
 Hermes-specific memory (decisions, live inventory snapshots, progress) lives

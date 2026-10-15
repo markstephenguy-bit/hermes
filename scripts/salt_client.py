@@ -4,34 +4,46 @@ Executes commands against the Salt Master REST API at http://192.168.40.2:8000
 using vaulted hermes-infra credentials over direct HTTP (zero SSH involvement).
 """
 import os
+import subprocess
 import sys
 import json
 import httpx
 
 SALT_URL = "http://192.168.40.2:8000"
 VAULT_ITEM_NAME = "salt-hermes-infra"
+BW_SESSION_ENV_FILE = os.path.expanduser("~/.claude/mcp_servers/bitwarden/bw_session.env")
 
 
 def get_salt_password() -> str:
-    """Retrieve the salt-hermes-infra password from Vaultwarden.
+    """Retrieve the salt-hermes-infra password from Vaultwarden via the bw CLI.
 
-    Vaultwarden (via the bw CLI or the bitwarden MCP connector) is the sole
-    secrets source - see Hermes's CLAUDE.md. This script never fetches or
-    stores the plaintext itself; the caller must supply it fresh for this
-    invocation only, e.g.:
-
-        export SALT_HERMES_INFRA_PASSWORD="$(bw get password salt-hermes-infra)"
+    Vaultwarden is the sole secrets source (see Hermes's CLAUDE.md). This
+    reuses the session token set up by scripts/onboard_bitwarden_mcp.sh
+    (BW_SESSION_ENV_FILE) so no password/session handling happens here - if
+    that session has gone stale, re-run the onboarding script.
     """
-    password = os.environ.get("SALT_HERMES_INFRA_PASSWORD")
-    if not password:
+    env = os.environ.copy()
+    if "BW_SESSION" not in env and os.path.exists(BW_SESSION_ENV_FILE):
+        with open(BW_SESSION_ENV_FILE) as f:
+            for line in f:
+                if line.startswith("export BW_SESSION="):
+                    env["BW_SESSION"] = line.split("=", 1)[1].strip()
+                    break
+
+    result = subprocess.run(
+        ["bw", "get", "password", VAULT_ITEM_NAME],
+        env=env,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
         print(
-            f"SALT_HERMES_INFRA_PASSWORD not set - export it for this invocation only "
-            f"(e.g. via `bw get password {VAULT_ITEM_NAME}` or the bitwarden MCP connector), "
-            f"never as a standing default.",
+            f"Failed to fetch '{VAULT_ITEM_NAME}' from Vaultwarden: {result.stderr.strip()}\n"
+            f"Run scripts/onboard_bitwarden_mcp.sh to (re)establish a session.",
             file=sys.stderr,
         )
         sys.exit(1)
-    return password
+    return result.stdout.strip()
 
 
 def get_salt_token(password: str) -> str:
