@@ -1,3 +1,10 @@
 [mcp_servers.vault]
 command = "/home/mark/.claude/mcp_servers/vault/venv/bin/python"
 args = ["/home/mark/.claude/mcp_servers/vault/vault_mcp.py"]
+
+[mcp_servers.bitwarden]
+command = "/home/mark/.claude/mcp_servers/bitwarden/run.sh"
+
+[mcp_servers.hindsight]
+command = "ssh"
+args = ["-o", "BatchMode=yes", "hermes@10.60.0.1", "uv", "run", "--script", "/home/hermes/.hermes/mcp_servers/hindsight/hindsight_mcp.py"]

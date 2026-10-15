@@ -28,55 +28,45 @@ secrets going forward, even as a fallback. One secrets source, full stop.
 ## Logging progress — this project's actual memory
 
 Hermes-specific memory (decisions, live inventory snapshots, progress) lives
-in the catalog as `entities` tagged `hermes`, not as new markdown files in
-this repo or as prose dumped into a chat session. This is deliberate: an
-edge-based store you query on demand costs far less session context than a
-growing pile of markdown, and it survives across every future session/tool
-(Claude Code, Antigravity) without re-explaining itself.
+in **Hindsight**, the memory system already running on `hermes-vps` (bank
+`hermes`), not the old fileserver catalog and not new markdown files in this
+repo or prose dumped into a chat session. Hindsight binds to `127.0.0.1:9177`
+on the VPS only, so it's reached through the `hindsight` MCP server
+(`scripts/hindsight_mcp.py`, deployed to `hermes@10.60.0.1:~/.hermes/mcp_servers/hindsight/`
+and invoked over SSH as the `hermes` user — registered in this repo's
+`.mcp.json` and `.codex/config.toml`, and in Antigravity's
+`~/.gemini/config/mcp_config.json`) rather than a raw `curl` to a Postgres
+endpoint. This survives across every future session/tool (Claude Code,
+Codex, Antigravity) without re-explaining itself.
 
-- Query everything tagged for this project:
-  `curl "http://192.168.40.2:3003/entities?tags=cs.%7Bhermes%7D"`
-- Add new context the same way any home-lab entity gets added (see shared
-  `CLAUDE.md`'s "How to log new context"), always including `"tags": ["hermes", ...]`.
-- Link related entities via the `relations` table (subject/predicate/object)
-  as they come up — e.g. `hermes` entities relating to `host` w_workstation,
-  or to `entity` LocalForge decisions — so `graph_recall` gets more useful
-  as the project grows instead of staying a pile of disconnected rows.
-- Use `search_similar` (semantic) when you don't have an exact keyword, `fts`
-  tag search when you do.
+- `retain(content, context, document_id, metadata)` — write a new fact/
+  decision/progress note. One sentence or two in `content`, specifics
+  (numbers, paths, config) in `metadata` as string values, not prose.
+- `recall(query, tags, budget)` — semantic search over stored memory.
+- `reflect(query)` — ask a question and get a synthesized answer instead of
+  raw matches.
+- `list_memories` / `get_entities` / `list_banks` — inspect what's stored.
 
-### Format: atomic entities, not narrative paragraphs (set 2026-09-23)
+Migrated 2026-10-15: the fileserver Postgres/PostgREST catalog (previously
+`entities` tagged `hermes`) is retired as Hermes's memory store — do not
+read or write `hermes`-tagged entities there going forward. `hosts`/
+`services` tables on that catalog are a separate, non-Hermes concern and
+are out of scope for this migration (don't touch them as part of Hermes
+work without asking first).
 
-Earlier entities in this project were written as full prose paragraphs
-(~200-300 tokens each) — human-readable, but expensive: pulling back a
-handful via `graph_recall` costs real context. Going forward, write entities
-atomically instead:
-
-- `body`: **one sentence, maybe two.** The fact/decision itself, not the
-  reasoning narrative around it.
-- `attributes`: structured JSON key-values for the specifics (numbers,
-  names, paths, config) — not prose.
-- `relations`: do the work of connecting facts to each other and to
-  why/context (`informed_by`, `refines`, `supersedes`, `governs`, etc.)
-  instead of restating that context inline in the body.
-- Tags stay as-is for categorical retrieval.
-
-Existing pre-2026-09-23 entities are left as prose (not worth the churn to
-convert retroactively) — this format applies from here forward.
 Keep this repo's own docs (README/ARCHITECTURE/BACKLOG) as a *current-state
 summary* a human can read at a glance — update them in place, don't let them
-drift from the catalog, but don't treat them as the memory store either.
+drift from Hindsight, but don't treat them as the memory store either.
 
-### Backup: catalog memory is a single point of failure
+### Backup: Hindsight is a single point of failure
 
-The catalog only exists on `server` (Postgres) — nothing else backs it up.
-`scripts/export_catalog_memory.py` dumps all `hermes`-tagged entities and
-their relations to `memory/catalog-export.json`, which gets committed and
-pushed like any other change. Run it (`python3 scripts/export_catalog_memory.py`)
-and commit the result whenever new `hermes`-tagged entities/relations are
-added to the catalog — treat it as part of the same "log this to the
-catalog" step, not a separate chore. This file is a dead backup only, never
-read *from* it while the catalog is reachable.
+Hindsight's data only exists on `hermes-vps` — nothing else backs it up yet.
+The old `scripts/export_catalog_memory.py` / `memory/catalog-export.json`
+pair backed up the retired fileserver catalog and is now historical only
+(dead backup of a dead store — do not treat it as current). An equivalent
+periodic export of the Hindsight `hermes` bank (it has its own
+`GET .../banks/{bank_id}/export` endpoint) has not been built yet — this is
+a known gap, not a solved one.
 
 ## Standing rules inherited from the home lab
 
@@ -92,9 +82,9 @@ listed below, *for this project*:
 
 - **Memory upkeep is Claude's job, not the user's.** Never wait to be told
   to save something. Every decision, correction, or fact that comes up in
-  conversation gets written to the catalog (tagged `hermes`) as it happens,
-  including `relations` edges linking it to what it's related to — not just
-  isolated entities. The user should never have to say "remember this."
+  conversation gets written to Hindsight (bank `hermes`, via the `hindsight`
+  MCP server) as it happens. The user should never have to say "remember
+  this."
 - **Git upkeep is Claude's job, not the user's.** Commit as work lands and
   push too, no need to ask first. SSH access was set up 2026-09-23 (key
   registered with GitHub, remote `git@github.com:markstephenguy-bit/hermes.git`)
