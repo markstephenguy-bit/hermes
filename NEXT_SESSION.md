@@ -27,10 +27,10 @@ regardless.
 
 ## Current state — re-verified live 2026-10-12, not assumed
 
-### Direction: Hermes migrating to Docker on w_workstation (2026-10-18)
+### Direction: Hermes migrating to Docker on server (2026-10-18)
 
-- **User decision (2026-10-18):** Mark is installing Hermes into Docker on `w_workstation` (192.168.40.100) and repurposing the Hostinger VPS (`srv2051520.hstgr.cloud`, 31.220.53.141) for something other than Hermes.
-- **Architecture benefits:** Running Hermes directly on `w_workstation` puts the agent on the same machine as the primary local LLM server (`llama.cpp` on port 8090 / `host.docker.internal:8090`), eliminating WAN/WireGuard network hops, latency, and VPN dependency for inference turns.
+- **User decision (2026-10-18):** Mark is installing Hermes into Docker on `server` (192.168.40.250, Ubuntu Desktop) under `/Dockers/hermes`, and repurposing the Hostinger VPS (`srv2051520.hstgr.cloud`, 31.220.53.141) for something other than Hermes.
+- **Architecture benefits:** Running Hermes on `server` integrates cleanly with existing containers under `/Dockers`, keeps Hermes on a native Linux filesystem (unaffected by Windows 9p/drvfs SQLite WAL caveats), and routes directly over LAN to `llama.cpp` on `w_workstation:8090` (192.168.40.100), eliminating WAN and WireGuard tunnel dependencies.
 - **VPS teardown / repurposing preservation checklist:**
   1. **Vaultwarden container (`vaultwarden/server:latest`):** Currently running on the VPS (port 8098, Caddy reverse-proxy). Vaultwarden is currently the single secrets source for local AI clients. Ensure Vaultwarden either remains on the VPS or its data volume (`/vw-data` / host mount) is migrated before repurposing.
   2. **Salt Master container (`docker-salt-master`):** Currently running on the VPS (ports 4505-4506, 8000).

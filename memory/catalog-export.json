@@ -4383,28 +4383,6 @@
     },
     {
       "attributes": {
-        "decided_date": "2026-10-18",
-        "deployment_type": "docker",
-        "target_host": "w_workstation",
-        "vps_status": "repurposing"
-      },
-      "body": "Mark is installing Hermes into Docker on w_workstation and repurposing the Hostinger VPS for non-Hermes workloads.",
-      "created_at": "2026-10-19T01:39:28.490873+00:00",
-      "id": "e51fc7c6-a392-4281-bce4-ab6763e6ca1a",
-      "key": "hermes-migration-to-w-workstation-docker-2026-10-18",
-      "name": "Hermes migrating from Hostinger VPS to Docker on w_workstation",
-      "tags": [
-        "hermes",
-        "architecture",
-        "w_workstation",
-        "docker",
-        "vps"
-      ],
-      "type": "decision",
-      "updated_at": "2026-10-19T01:39:28.490873+00:00"
-    },
-    {
-      "attributes": {
         "fix": "moved to .env (chmod 600), config.yaml now uses ${SALT_USER}/${SALT_PASS} interpolation",
         "found": "mcp_servers.infra.env.SALT_PASS and SALT_USER hardcoded in /home/hermes/.hermes/config.yaml",
         "verification": "confirmed real values present in infra_mcp.py subprocess /proc/<pid>/environ after gateway restart"
@@ -9480,9 +9458,34 @@
       ],
       "type": "fact",
       "updated_at": "2026-10-14T23:54:52.075812+00:00"
+    },
+    {
+      "attributes": {
+        "decided_date": "2026-10-18",
+        "deployment_path": "/Dockers/hermes",
+        "deployment_type": "docker",
+        "os": "Ubuntu 24.04",
+        "target_host": "server",
+        "target_ip": "192.168.40.250",
+        "vps_status": "repurposing"
+      },
+      "body": "Mark decided to deploy Hermes into Docker on server (192.168.40.250, Ubuntu Desktop) rather than w_workstation, keeping it adjacent to w_workstation local llama.cpp on the LAN and repurposing the VPS.",
+      "created_at": "2026-10-19T01:39:28.490873+00:00",
+      "id": "e51fc7c6-a392-4281-bce4-ab6763e6ca1a",
+      "key": "hermes-migration-to-server-docker-2026-10-18",
+      "name": "Hermes migrating from Hostinger VPS to Docker on server (Ubuntu)",
+      "tags": [
+        "hermes",
+        "architecture",
+        "w_workstation",
+        "docker",
+        "vps"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-19T01:39:28.490873+00:00"
     }
   ],
-  "exported_at": "2026-10-19T01:40:35.784302+00:00",
+  "exported_at": "2026-10-19T03:23:37.779326+00:00",
   "relations": [
     {
       "attributes": {},
@@ -13353,14 +13356,15 @@
     },
     {
       "attributes": {
+        "path": "/Dockers/hermes",
         "target": "docker"
       },
-      "created_at": "2026-10-19T01:39:56.686402+00:00",
-      "id": "3ca16adb-ea3f-49e4-a087-fbb6eabdcf6d",
-      "object_key": "w_workstation",
+      "created_at": "2026-10-19T03:23:34.662916+00:00",
+      "id": "7dbfd30f-001c-4846-b7b1-0e0962793491",
+      "object_key": "server",
       "object_type": "host",
       "predicate": "deploys_to",
-      "subject_key": "hermes-migration-to-w-workstation-docker-2026-10-18",
+      "subject_key": "hermes-migration-to-server-docker-2026-10-18",
       "subject_type": "entity"
     }
   ],
