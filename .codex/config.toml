@@ -7,4 +7,4 @@ command = "/home/mark/.claude/mcp_servers/bitwarden/run.sh"
 
 [mcp_servers.hindsight]
 command = "ssh"
-args = ["-o", "BatchMode=yes", "hermes@10.60.0.1", "uv", "run", "--script", "/home/hermes/.hermes/mcp_servers/hindsight/hindsight_mcp.py"]
+args = ["-o", "BatchMode=yes", "hermes@srv2051520.hstgr.cloud", "uv", "run", "--script", "/home/hermes/.hermes/mcp_servers/hindsight/hindsight_mcp.py"]

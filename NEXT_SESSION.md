@@ -27,6 +27,18 @@ regardless.
 
 ## Current state — re-verified live 2026-10-12, not assumed
 
+### Direction: Hermes migrating to Docker on w_workstation (2026-10-18)
+
+- **User decision (2026-10-18):** Mark is installing Hermes into Docker on `w_workstation` (192.168.40.100) and repurposing the Hostinger VPS (`srv2051520.hstgr.cloud`, 31.220.53.141) for something other than Hermes.
+- **Architecture benefits:** Running Hermes directly on `w_workstation` puts the agent on the same machine as the primary local LLM server (`llama.cpp` on port 8090 / `host.docker.internal:8090`), eliminating WAN/WireGuard network hops, latency, and VPN dependency for inference turns.
+- **VPS teardown / repurposing preservation checklist:**
+  1. **Vaultwarden container (`vaultwarden/server:latest`):** Currently running on the VPS (port 8098, Caddy reverse-proxy). Vaultwarden is currently the single secrets source for local AI clients. Ensure Vaultwarden either remains on the VPS or its data volume (`/vw-data` / host mount) is migrated before repurposing.
+  2. **Salt Master container (`docker-salt-master`):** Currently running on the VPS (ports 4505-4506, 8000).
+  3. **Hindsight memory:** 1,294+ extracted facts in the `hermes` bank under `~/.pg0/instances/hindsight-embed-hermes` and `~/.hindsight/`.
+  4. **Knowledge vault:** `/home/hermes/knowledge-vault` (mounted into `/vault`).
+  5. **Hermes local config & secrets:** `~/.hermes/config.yaml`, `~/.hermes/.env`, `~/.hermes/vault/` (encrypted credentials), and `~/.hermes/state.db`.
+  6. **Ingress & Domain:** `theguylab.duckdns.org` currently routes to the VPS public IP. Determine whether the domain stays with the VPS or repoints to the home network.
+
 ### Local Bitwarden MCP access to VPS Vaultwarden (verified 2026-10-14 UTC)
 
 - **User decision (2026-10-14): Bitwarden is the only secrets MCP for local AI clients.** Removed the legacy fileserver `vault` MCP registration from the tracked Hermes `.mcp.json` (Claude Code) and from the laptop's `~/.codex/config.toml`; Claude Desktop already listed only `bitwarden`. Verified no `vault_mcp.py` process was running. The VPS Hermes `mcp_servers` config also has no `vault` or `bitwarden` entry; its Vaultwarden access is through a separate plugin. Do not restore the fileserver MCP registration.

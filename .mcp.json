@@ -7,7 +7,7 @@
       "command": "ssh",
       "args": [
         "-o", "BatchMode=yes",
-        "hermes@10.60.0.1",
+        "hermes@srv2051520.hstgr.cloud",
         "uv", "run", "--script", "/home/hermes/.hermes/mcp_servers/hindsight/hindsight_mcp.py"
       ]
     }

@@ -4383,6 +4383,28 @@
     },
     {
       "attributes": {
+        "decided_date": "2026-10-18",
+        "deployment_type": "docker",
+        "target_host": "w_workstation",
+        "vps_status": "repurposing"
+      },
+      "body": "Mark is installing Hermes into Docker on w_workstation and repurposing the Hostinger VPS for non-Hermes workloads.",
+      "created_at": "2026-10-19T01:39:28.490873+00:00",
+      "id": "e51fc7c6-a392-4281-bce4-ab6763e6ca1a",
+      "key": "hermes-migration-to-w-workstation-docker-2026-10-18",
+      "name": "Hermes migrating from Hostinger VPS to Docker on w_workstation",
+      "tags": [
+        "hermes",
+        "architecture",
+        "w_workstation",
+        "docker",
+        "vps"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-19T01:39:28.490873+00:00"
+    },
+    {
+      "attributes": {
         "fix": "moved to .env (chmod 600), config.yaml now uses ${SALT_USER}/${SALT_PASS} interpolation",
         "found": "mcp_servers.infra.env.SALT_PASS and SALT_USER hardcoded in /home/hermes/.hermes/config.yaml",
         "verification": "confirmed real values present in infra_mcp.py subprocess /proc/<pid>/environ after gateway restart"
@@ -9380,9 +9402,87 @@
       ],
       "type": "decision",
       "updated_at": "2026-10-14T04:00:32.270954+00:00"
+    },
+    {
+      "attributes": {
+        "host": "w_workstation (192.168.40.100:8090)",
+        "stated_by": "Mark, 2026-10-14",
+        "supersedes": "hermes-vps-hostinger-wireguard-live-2026-10-10 and hermes-live-performance-audit-2026-10-12 entities both mislabel this endpoint as ik_llama.cpp"
+      },
+      "body": "Mark corrected a live assumption: the local model serving stack on w_workstation is now plain llama.cpp, not ik_llama.cpp. Future performance/concurrency investigations into local inference (e.g. Hindsight rerank slowness) should check llama.cpp server flags (--parallel, -np, etc.), not ik_llama.cpp-specific config.",
+      "created_at": "2026-10-14T22:45:41.31021+00:00",
+      "id": "c981956e-1355-45a9-bdeb-d6e03132a718",
+      "key": "w-workstation-local-model-server-is-llamacpp-2026-10-14",
+      "name": "w_workstation local model server is llama.cpp, not ik_llama.cpp",
+      "tags": [
+        "hermes",
+        "infrastructure",
+        "local-model"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-14T22:45:41.31021+00:00"
+    },
+    {
+      "attributes": {
+        "not_yet_decided": "whether the old fileserver secrets table rows should be deleted outright, vs just no longer read/written - Mark has not confirmed deletion",
+        "reason": "Mark explicitly rejected a mixed-environment secrets setup after Claude kept reaching for fileserver secret_get/secret_set RPCs mid-session despite the completed Vaultwarden migration",
+        "scope": "applies to secrets only - the catalog entities table (project memory/decisions) is unaffected and still in use"
+      },
+      "body": "CLAUDE.md updated in the Hermes repo to say Vaultwarden is the one and only secrets source going forward; fileserver secret_get/secret_set must not be used even as a fallback.",
+      "created_at": "2026-10-14T22:48:57.590147+00:00",
+      "id": "297f9396-9071-47e1-beac-d5d1b90da79c",
+      "key": "fileserver-secrets-table-retired-2026-10-14",
+      "name": "Fileserver catalog secrets table retired - Vaultwarden on hermes-vps is now the sole secrets source",
+      "tags": [
+        "hermes",
+        "infrastructure",
+        "secrets",
+        "vaultwarden",
+        "decision"
+      ],
+      "type": "decision",
+      "updated_at": "2026-10-14T22:48:57.590147+00:00"
+    },
+    {
+      "attributes": {
+        "deleted_count": 16,
+        "kept": "vaultwarden-master-password (does not exist in Vaultwarden itself, by design - storing the vault's own master password inside the vault would be circular)"
+      },
+      "body": "Completed the Vaultwarden-only secrets policy from fileserver-secrets-table-retired-2026-10-14: every row that had a confirmed Vaultwarden counterpart was deleted outright, not just left unused.",
+      "created_at": "2026-10-14T23:50:01.213139+00:00",
+      "id": "b57f6539-c78a-421b-8f2b-7fd26a55d8dd",
+      "key": "fileserver-secrets-table-purged-2026-10-14",
+      "name": "Fileserver catalog secrets table purged - 16 rows deleted, matching their Vaultwarden counterparts",
+      "tags": [
+        "hermes",
+        "infrastructure",
+        "secrets",
+        "vaultwarden"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-14T23:50:01.213139+00:00"
+    },
+    {
+      "attributes": {
+        "last_row_deleted": "vaultwarden-master-password",
+        "reason": "Mark confirmed he has the password memorized/written down himself; validated live via a fresh bw login before deleting"
+      },
+      "body": "Completes the Vaultwarden-only secrets migration - the fileserver secrets table now has no rows at all. Vaultwarden on hermes-vps is the single, exclusive secrets store.",
+      "created_at": "2026-10-14T23:54:52.075812+00:00",
+      "id": "1d6f160a-a3f0-4bd0-91ca-b246cefeccd8",
+      "key": "fileserver-secrets-table-emptied-2026-10-14",
+      "name": "Fileserver catalog secrets table is now fully empty - zero rows",
+      "tags": [
+        "hermes",
+        "infrastructure",
+        "secrets",
+        "vaultwarden"
+      ],
+      "type": "fact",
+      "updated_at": "2026-10-14T23:54:52.075812+00:00"
     }
   ],
-  "exported_at": "2026-10-14T04:00:44.161355+00:00",
+  "exported_at": "2026-10-19T01:40:35.784302+00:00",
   "relations": [
     {
       "attributes": {},
@@ -13249,6 +13349,18 @@
       "object_type": "entity",
       "predicate": "governs",
       "subject_key": "hermes-bitwarden-only-local-secrets-mcp-2026-10-14",
+      "subject_type": "entity"
+    },
+    {
+      "attributes": {
+        "target": "docker"
+      },
+      "created_at": "2026-10-19T01:39:56.686402+00:00",
+      "id": "3ca16adb-ea3f-49e4-a087-fbb6eabdcf6d",
+      "object_key": "w_workstation",
+      "object_type": "host",
+      "predicate": "deploys_to",
+      "subject_key": "hermes-migration-to-w-workstation-docker-2026-10-18",
       "subject_type": "entity"
     }
   ],
