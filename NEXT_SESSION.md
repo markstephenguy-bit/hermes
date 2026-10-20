@@ -7,6 +7,80 @@ favor of w_workstation). If you're an agent picking this up cold, read this
 whole file before touching anything. If you're Mark pasting this into a new
 chat, paste the whole file as your opening message.
 
+## 2026-10-20 update — read this first, it supersedes several items below
+
+A follow-on session picked this up. Mark redirected scope away from the
+account-dependent env-var pass (LLM providers, messaging, voice/search APIs —
+"those can be put in after hermes comes up") toward what's actually required
+for Hermes to function at all, in Docker or anywhere else. Progress:
+
+- **Port-8090 discrepancy resolved, for real this time.** The server was
+  never LM Studio's bundled llama.cpp (that's leftover from before Mark
+  thought he'd uninstalled it) — it's a standalone build at
+  `C:\llama.cpp\llama-server.exe`, serving
+  `E:\ik_llama_models\Qwen_Qwen3.5-9B-Q4_K_M.gguf`. It had **crashed on
+  2026-10-07** (confirmed via `C:\Users\llm\AppData\Local\CrashDumps\llama-server.exe.24856.dmp`)
+  and nobody had restarted it since. Restarted directly via
+  `C:\llama.cpp\llama-server.exe -m E:\ik_llama_models\Qwen_Qwen3.5-9B-Q4_K_M.gguf --port 8090 --host 127.0.0.1 --alias Qwen_Qwen3.5_9B -ngl 99 -c 8192`.
+  **Important:** launching it via PowerShell `Start-Process -WindowStyle
+  Hidden` (detached, redirected to log files) made it die silently within
+  ~5s every time, with no crash dump and no error in the log — cause not
+  understood. Running it as a normal foreground command over the SSH session
+  worked and it kept running independently of the SSH connection
+  afterward (session type showed as "Services", not tied to the ssh
+  session). If this needs restarting again, start there before assuming
+  it's a GPU/model/CUDA problem.
+- **Found and fixed a real, separate bug, independent of whether llama-server
+  was running:** `config.yaml`'s `providers.local-qwen.base_url` was
+  `http://localhost:8090/v1`. That can **never** work once Hermes runs
+  inside the Docker container — `localhost` inside a container means the
+  container itself, not the Windows host. Confirmed via
+  `docker exec hermes curl http://localhost:8090/v1/models` (connection
+  refused) vs `docker exec hermes curl http://host.docker.internal:8090/v1/models`
+  (succeeds). Fixed to `http://host.docker.internal:8090/v1` in
+  `E:\hermes-data\config.yaml`. This means the local-qwen model path was
+  broken from the moment Hermes moved into Docker today, regardless of the
+  llama-server crash — two separate problems that both needed fixing.
+- **Agent Behavior decisions Mark made directly (asked via clarifying
+  questions, not assumed):**
+  - `HERMES_EXEC_ASK`: left unset/false — **no approval prompts**, despite
+    no sandbox isolating Hermes from this host. Mark's call, matches the
+    project's turnkey-over-hardening bias; revisit if this bites him.
+  - `HERMES_ALLOW_PRIVATE_URLS=true` — Hermes's tools can reach LAN/localhost
+    URLs (needed for home-lab integration). This is normally an SSRF-shaped
+    surface blocked by default; deliberately opened here.
+  - `HERMES_TIMEZONE=America/Chicago` — was unset before (running in
+    UTC/system default).
+  - Container was recreated (stop/rm/run) with these two new env vars added
+    on top of every previously-confirmed env var, same resource limits,
+    health check, restart policy, port mappings, and bind mount as before.
+- **New, unresolved problem found while testing end-to-end:** after the
+  recreate, the container is **crash-looping** — `docker inspect hermes`
+  showed `RestartCount=7` within a few minutes of the fresh start.
+  `/opt/data/logs/agent.log` shows a repeating ~15s cycle: full plugin
+  discovery (55 plugins) → dashboard registration → `agent.credential_pool:
+  credential pool: no available entries (all exhausted or empty)` → process
+  dies before any chat turn completes. A real end-to-end test (`curl` against
+  `API_SERVER` at `192.168.40.100:8642/v1/chat/completions`) got an empty
+  reply every time — not because the model is unreachable (confirmed
+  reachable separately), but because the whole process keeps dying mid-session.
+  **Not yet root-caused.** This directly matches the open question already
+  in this file about whether Docker Desktop's all-users/WSL2 setup actually
+  survives real-world operation — now there's a concrete data point: it's
+  currently not stable even without a logout/reboot in the mix. Pick this up
+  first in the next session; nothing else matters if the container can't
+  stay up.
+- Hindsight (`retain`) returned a 500 mid-session when trying to log this —
+  worth a quick health check on `hermes-vps`'s Hindsight instance; per this
+  repo's own `CLAUDE.md` it's the sole memory store with no backup yet, so a
+  write failure there is itself notable, not just an inconvenience.
+- Categories deferred per Mark's explicit redirect, not forgotten: LLM cloud
+  providers (he mentioned Nous Portal as the eventual target but said it can
+  wait), search/voice/tool APIs, all ~17 messaging platforms, Hindsight as
+  Hermes's own memory-provider plugin, skill-specific keys, Langfuse
+  observability, Nous Tool Gateway. Revisit these only after the container
+  stops crash-looping and a chat turn actually completes end-to-end.
+
 ## The one job this session exists to do
 
 **Go through every environment variable in Hermes's canonical reference
