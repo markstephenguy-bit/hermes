@@ -115,6 +115,71 @@ for Hermes to function at all, in Docker or anywhere else. Progress:
     bind-mount directory (new `E:\hermes-data-test`) to rule out anything
     specific to this one, heavily-reused data volume after ~30+ rapid
     recreate cycles today.
+
+## RESOLVED — root cause found and fixed (same session, continued)
+
+Mark's instinct to test a completely unconfigured, bare container
+(`docker run -d --name hermes-bare nousresearch/hermes-agent:latest`, no env,
+no volume, no healthcheck, no restart policy) found it in under two minutes —
+it died with the exact same signature (clean exit, ~20s in) as every other
+variant, which meant the cause was baked into the image's own default
+behavior, not anything either of us had configured.
+
+**The actual bug: every `docker run` all session had left `CMD` empty.**
+Reading `/opt/hermes/docker/main-wrapper.sh` directly (`docker run --rm
+--entrypoint sh nousresearch/hermes-agent:latest -c "cat
+/opt/hermes/docker/main-wrapper.sh"`) shows the routing logic in plain text:
+
+```sh
+if [ $# -eq 0 ]; then
+    drop hermes
+fi
+```
+
+With no CMD args, the container's main process is the **interactive `hermes`
+chat REPL**, not the gateway daemon. A detached container (`docker run -d`)
+has no TTY, so the REPL immediately logs `Warning: Input is not a terminal
+(fd=0)`, prints "Shutting down… Goodbye!", and exits cleanly (`ExitCode=0`)
+once it finishes its startup banner — which is also exactly why the "crash"
+was always ~15-20s in (however long plugin/skill loading + banner rendering
+takes) and totally indifferent to env vars, healthcheck config, or
+`gateway_state.json`: none of those affect which code path `main-wrapper.sh`
+picks. Docker's `--restart unless-stopped` then dutifully relaunched a
+process that was never designed to stay open, forever.
+
+**Fix:** pass `gateway run` as the explicit CMD —
+`docker run -d --name hermes ... nousresearch/hermes-agent:latest gateway
+run`. Confirmed stable for 80+ seconds, `RestartCount=0`, Docker health
+status `healthy`, dashboard reachable externally (`curl
+192.168.40.100:9119/` → 302).
+
+**Second, smaller bug found immediately after, via the first real end-to-end
+test:** a `POST /v1/chat/completions` through `API_SERVER` returned a clean
+500 — Hermes enforces a **minimum 64K context window**, but llama-server had
+been started with `-c 8192`. Restarted `llama-server.exe` with `-c 65536`
+(confirmed via `/v1/models`: `n_ctx: 65536`, ~8.7GB/16GB VRAM, comfortable
+headroom), then `docker restart hermes` so it re-probed the model (it had
+cached the old 8192 figure from its first boot). **End-to-end chat
+completion now succeeds**: `{"content": "pong", ...}`, HTTP 200,
+`usage.prompt_tokens: 13441` (full tool/skill system prompt).
+
+This is the first fully working request of the entire session — model
+reachable, context adequate, container stable. Current live state to verify
+fresh next time, don't assume it survived untouched:
+- `hermes` container CMD is `gateway run` (not empty) — if it's ever
+  recreated, this is not optional.
+- `llama-server.exe` running with `-m E:\ik_llama_models\Qwen_Qwen3.5-9B-Q4_K_M.gguf
+  --port 8090 --host 127.0.0.1 --alias Qwen_Qwen3.5_9B -ngl 99 -c 65536`,
+  started directly (not via LM Studio), in the foreground over an SSH
+  session which then gets backgrounded — this has proven to survive
+  independent of the SSH connection (shows up under Windows session type
+  "Services"). Has no restart-on-crash wrapper of its own yet; if `w_workstation`
+  reboots or the process dies, it needs to be started by hand again until
+  that's turned into something more durable (a scheduled task, a Windows
+  service, NSSM, etc. — not done this session, worth doing before relying on
+  this for real).
+- `config.yaml`'s `local-qwen.base_url` is `http://host.docker.internal:8090/v1`
+  (not `localhost`) — load-bearing, don't revert.
 - Categories deferred per Mark's explicit redirect, not forgotten: LLM cloud
   providers (he mentioned Nous Portal as the eventual target but said it can
   wait), search/voice/tool APIs, all ~17 messaging platforms, Hindsight as
