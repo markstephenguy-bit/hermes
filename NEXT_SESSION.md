@@ -205,6 +205,63 @@ correct final answer for those, not a placeholder. **Current state is as
 complete as it can get without new input from Mark.** Next session should
 check in on whether any of the above (Telegram token, Hindsight tunnel) has
 become actionable, rather than re-deriving this list from scratch.
+
+## Target clarified: "install complete, ready to configure" — not "fully configured"
+
+Mark reframed the goal: match the state a **non-Docker** Hermes install
+leaves behind right after `scripts/install.sh` finishes, before anyone runs
+`hermes setup`. Checked `install.sh` directly (fetched fresh from
+`github.com/NousResearch/hermes-agent`) to find out what that actually is:
+
+- Stages are `prerequisites repository venv python-deps config products setup
+  gateway complete`. Only `setup` ("Configure API keys and settings") and
+  `gateway` ("Configure gateway service") are interactive — and both are
+  **skipped entirely** when there's no TTY (`has_terminal()` probes
+  `/dev/tty`), which is exactly a Docker build's situation. Non-interactively,
+  install.sh itself prints "setup skipped (no terminal); run 'hermes setup'
+  after install" and "gateway setup skipped... run 'hermes gateway install'
+  after install" — i.e. a headless/non-interactive install is *supposed* to
+  land short of API keys and a persistent service, by design, not by gap.
+- The one stage that always runs regardless of interactivity is
+  `stage_config`: creates `cron/ sessions/ logs/ pairing/ hooks/ image_cache/
+  audio_cache/ memories/ skills/` under `$HERMES_HOME`, copies
+  `.env.example` → `.env` if absent (`chmod 600`), and copies
+  `cli-config.yaml.example` → `config.yaml` if absent.
+- Checked the running container's `/opt/data` against that list: **the
+  Docker image's own cont-init bootstrap already does the equivalent of
+  `stage_config`, and more** — every one of those directories exists, plus
+  `.env` already exists as the verbatim 477-line `.env.example` template
+  (only 11 non-secret default lines active, nothing we set via `docker -e`
+  leaked into it — those stay as process env, which Hermes reads directly,
+  matching the doc's own stated precedence). So on directories/`.env`, Docker
+  was already at parity with a real install — this had already been handled
+  automatically and didn't need anything added.
+- **The one real gap: `config.yaml` was a 4-line file I'd hand-written mid-session,
+  not derived from `cli-config.yaml.example` the way a real install's
+  `stage_config` does it.** Fetched the actual template (2,361 lines, fully
+  commented, every section documented) from the repo and replaced the
+  minimal file with it, keeping only the deliberate overrides:
+  `database.journal_mode: "wal" → "delete"`, `model.default →
+  "Qwen_Qwen3.5_9B"`, `model.provider: "auto" → "custom"`, `model.base_url →
+  http://host.docker.internal:8090/v1`. `terminal.backend` was already
+  `"local"` by the template's own default, so that line didn't need
+  touching. Also switched off the undocumented `providers.local-qwen.{base_url,model}`
+  block the config had been using — it worked, but isn't the pattern shown
+  anywhere in the template; `model.provider: "custom"` + `model.base_url` is
+  the actual documented way to point at a local OpenAI-compatible server
+  (aliases `ollama`/`vllm`/`llamacpp` all map to the same `"custom"` value).
+  Old minimal file kept as `E:\hermes-data\config.yaml.bak-minimal` in case
+  of a diff later.
+- Re-verified end-to-end after the swap: container stable (`RestartCount=0`,
+  `health: healthy`), chat completion through `API_SERVER` still succeeds
+  (`content: "pong"`, HTTP 200).
+
+**Net result: the Docker deployment is now at (and in several ways past —
+gateway running persistently, model actually wired and working) the
+canonical "install complete, ready for `hermes`-based configuration" state
+that a non-Docker install would leave behind.** Nothing identified as
+missing from the install side itself; everything remaining is genuinely
+post-install configuration (accounts/credentials), already covered above.
 - Categories deferred per Mark's explicit redirect, not forgotten: LLM cloud
   providers (he mentioned Nous Portal as the eventual target but said it can
   wait), search/voice/tool APIs, all ~17 messaging platforms, Hindsight as
