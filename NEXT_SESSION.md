@@ -1,330 +1,203 @@
-# Session Seed — Hostinger VPS, Hindsight Memory, Self-Monitoring
+# Session Seed — Hermes Docker on w_workstation: Full Env-Var Configuration Pass
 
-This is the single most current record of infrastructure state for this
-project — more current than ARCHITECTURE.md/BACKLOG.md. If you're an agent
-(Claude Code, Codex, Antigravity, or otherwise) picking this project up cold,
-read this file in full before touching anything. If you're a human in a chat
-UI, paste this whole file as your opening message instead. Full detail and
-reasoning for everything below is in the catalog (`curl
-"http://192.168.40.2:3003/entities?tags=cs.%7Bhermes%7D"` — search broadly,
-not just by the word you expect) — this file is a pointer, not the archive.
+This replaces the previous seed in full — everything below it was from the
+VPS/server era and is now stale (Hermes is no longer on the VPS, and the
+server-hosted attempt was built, validated, then deliberately torn down in
+favor of w_workstation). If you're an agent picking this up cold, read this
+whole file before touching anything. If you're Mark pasting this into a new
+chat, paste the whole file as your opening message.
 
-## The one rule that mattered most this session
+## The one job this session exists to do
 
-**The chat agent will claim success even when the underlying tool call
-failed.** Caught twice tonight:
-1. Asked to benchmark tokens/sec — wrote a placeholder script instead of
-   running a real test, presented it as a deliverable.
-2. Asked to retain a memory via Hindsight — replied "Stored in memory" while
-   the server logs showed `RuntimeError: Failed to start the Hindsight
-   daemon` underneath.
+**Go through every environment variable in Hermes's canonical reference
+(`website/docs/reference/environment-variables.md` in
+`github.com/NousResearch/hermes-agent`) and make a deliberate, recorded
+decision on each one.**
 
-**Never trust the chat response alone for anything that touches a real
-system.** Check the actual log/process/file state. Both of tonight's
-failures were real, fixable infra gaps (missing env vars, missing `PATH`
-entry) — not reasoning failures — but the agent reported them as done
-regardless.
+The default posture Mark wants, explicitly stated: **treat every variable as
+something that should be set, unless there's a provable reason it doesn't
+apply.** "We don't currently use X" is a valid reason to skip a variable —
+but it has to be stated, not silently assumed. Don't do a pass that only
+touches the ones that feel obviously relevant (dashboard, API server, model
+routing) and call it done — that's the mistake the previous session was
+explicitly asked not to repeat. Go category by category. For each variable,
+record: set / not applicable (why) / deferred (why, and what would change
+that). This file is the running checklist — update it in place as you go
+rather than starting a parallel doc.
 
-## Current state — re-verified live 2026-10-12, not assumed
+## Current live state — built this session (2026-10-19), verify fresh, don't assume
 
-### Direction: Hermes migrating to Docker on server (2026-10-18)
+- **Host:** `w_workstation`, `192.168.40.100` — a Georgia-Pacific/Koch
+  **corporate domain-joined Windows 11 laptop** (`bpnet.gapac.com`), not a
+  personal box. SSH as `llm` (key `~/.ssh/workstation_llm_ed25519` on Mark's
+  laptop), which is a local admin. This machine runs **CrowdStrike Falcon**
+  (confirmed, including a container-sensor component,
+  `CSFalconContainer.exe`) and **Zscaler**. Mark has explicitly refused twice
+  this session to configure anything to evade either — don't suggest it
+  again, and don't frame anything as "working around" them.
+- **Docker: Docker Desktop**, install mode **all-users**, backend **WSL2**.
+  Hyper-V backend was attempted and errored out at install time — not
+  diagnosed further, possibly corporate policy blocking it. Don't silently
+  retry Hyper-V; if revisiting it, check *why* it errored first.
+  - Earlier in this same session, a *raw* `docker.io` engine installed
+    directly inside a WSL2 Debian distro (no Docker Desktop) was tried first
+    and fully removed — it hit WSL2's "VM tears down shortly after the last
+    attached `wsl.exe` client disconnects" behavior, which no amount of
+    `vmIdleTimeout` config or scheduled-task keep-alive hackery reliably
+    fixed. That's *why* Docker Desktop (all-users/WSL2) is being used instead
+    — its own service wrapper manages the VM attachment itself rather than
+    relying on an external client process. Per-user install mode was also
+    tried first and rejected: it's scoped to whichever Windows account ran
+    the installer, and `llm` (the SSH account) couldn't reach its Docker API
+    at all. All-users mode fixed that.
+- **Container:** name `hermes`, image `nousresearch/hermes-agent:latest`.
+  Gateway-only — **no sandbox container**. `terminal.backend: local` in
+  `config.yaml`, deliberately, not `docker` — an earlier attempt at the
+  Docker-sandboxed terminal backend on this same machine caused enough
+  instability ("grief") that gateway-only was chosen instead. Don't
+  reintroduce `terminal.backend: docker` / `nousresearch/hermes-sandbox`
+  without discussing it first.
+- **Data:** bind-mounted at `E:\hermes-data` → `/opt/data` (E: has ~3.78TB
+  free vs. C:'s ~64GB; chosen deliberately for space). `config.yaml` has
+  `database.journal_mode: "delete"`, not the bundled default `"wal"` — this
+  matters specifically because Windows bind mounts into a WSL2-backed
+  container cross a virtiofs/9p boundary, which Hermes's own docs say can
+  silently corrupt SQLite WAL files. Do not revert this without replacing the
+  bind mount with a native Docker volume instead (which would avoid the
+  cross-boundary issue a different way, but means relocating Docker Desktop's
+  own disk image off C: first — see open item below).
+- **Model routing:** `config.yaml` → `model.provider: local-qwen`,
+  `providers.local-qwen.base_url: http://localhost:8090/v1` (same machine
+  now — Hermes moved to w_workstation, so this is `localhost`, not a remote
+  IP). **Discrepancy to resolve first, not assume either way:** every live
+  check this session (`netstat`, direct `curl`) found nothing listening on
+  port 8090, but Mark's own last message says llama.cpp is running Qwen and
+  *is* being used, and that "it should be started." Don't trust either claim
+  blindly — check live (`netstat -an | findstr :8090` on the host, plus an
+  actual `curl http://localhost:8090/v1/models`) before doing anything else
+  model-related, and reconcile what you find against what Mark said.
+- **Resource limits applied:** `--memory=8g --cpus=4 --shm-size=1g` (host has
+  8 logical cores / ~64GB RAM). Previously had *no* limits at all — Hermes's
+  own Docker docs call `--memory`/`--cpus` a minimum-recommended setting
+  (stated minimum 4g/2 cpu) specifically to stop runaway browser automation
+  from consuming the whole host, and `--shm-size=1g` specifically for
+  Playwright/Chromium stability.
+- **Health check, restart policy, log rotation:** `--health-cmd="curl -f
+  http://localhost:9119/ || exit 1"` (30s interval/start-period, 5s timeout, 3
+  retries), `--restart unless-stopped`, `--log-opt max-size=10m --log-opt
+  max-file=3`. All confirmed applied via `docker inspect`.
+- **Credentials exist already** — don't regenerate them, don't ask Mark for
+  them again, pull current values straight from the running container:
+  `docker inspect hermes --format '{{.Config.Env}}'` over SSH. Set this
+  session: `HERMES_DASHBOARD_BASIC_AUTH_USERNAME`/`_PASSWORD`/`_SECRET`,
+  `API_SERVER_KEY`, `SUDO_PASSWORD`. Per Mark's instruction, the same
+  password is used for `SUDO_PASSWORD` (the "root" account) and the
+  dashboard's `hermes` account; the dashboard secret and API key are
+  independently generated (different purpose — cryptographic secrets, not
+  login credentials).
+- **Ports:** `8642` (API) / `9119` (dashboard), both published and confirmed
+  LAN-reachable (`http://192.168.40.100:9119` → `302`). Not yet tested
+  for genuine external/internet reachability on this host specifically (that
+  whole investigation happened while Hermes was briefly on `server`, see
+  below — it doesn't carry over automatically to w_workstation, router
+  forwards would need to be re-pointed if internet access here is wanted).
 
-- **User decision (2026-10-18):** Mark is installing Hermes into Docker on `server` (192.168.40.250, Ubuntu Desktop) under `/Dockers/hermes`, and repurposing the Hostinger VPS (`srv2051520.hstgr.cloud`, 31.220.53.141) for something other than Hermes.
-- **Architecture benefits:** Running Hermes on `server` integrates cleanly with existing containers under `/Dockers`, keeps Hermes on a native Linux filesystem (unaffected by Windows 9p/drvfs SQLite WAL caveats), and routes directly over LAN to `llama.cpp` on `w_workstation:8090` (192.168.40.100), eliminating WAN and WireGuard tunnel dependencies.
-- **VPS teardown / repurposing preservation checklist:**
-  1. **Vaultwarden container (`vaultwarden/server:latest`):** Currently running on the VPS (port 8098, Caddy reverse-proxy). Vaultwarden is currently the single secrets source for local AI clients. Ensure Vaultwarden either remains on the VPS or its data volume (`/vw-data` / host mount) is migrated before repurposing.
-  2. **Salt Master container (`docker-salt-master`):** Currently running on the VPS (ports 4505-4506, 8000).
-  3. **Hindsight memory:** 1,294+ extracted facts in the `hermes` bank under `~/.pg0/instances/hindsight-embed-hermes` and `~/.hindsight/`.
-  4. **Knowledge vault:** `/home/hermes/knowledge-vault` (mounted into `/vault`).
-  5. **Hermes local config & secrets:** `~/.hermes/config.yaml`, `~/.hermes/.env`, `~/.hermes/vault/` (encrypted credentials), and `~/.hermes/state.db`.
-  6. **Ingress & Domain:** `theguylab.duckdns.org` currently routes to the VPS public IP. Determine whether the domain stays with the VPS or repoints to the home network.
+## Decisions from earlier today that should NOT be re-opened without a real reason
 
-### Local Bitwarden MCP access to VPS Vaultwarden (verified 2026-10-14 UTC)
+- **w_workstation over `server` (192.168.40.250).** Hermes was fully built,
+  validated, and working on `server` earlier this same session (clean
+  Ubuntu host, no corporate EDR, no WSL2 lifecycle issues) — then Mark
+  explicitly tore it down and moved to w_workstation instead once Docker
+  Desktop's all-users/WSL2 combination looked like it might solve the
+  reliability problem. `server` currently has **zero containers** running
+  (verified) and is sitting idle. If w_workstation's reliability doesn't
+  actually pan out (worth watching — Docker Desktop's service wrapper is
+  *likely* more robust than the raw WSL2 approach was, but this hasn't been
+  stress-tested across a real logout/reboot cycle yet), `server` is the
+  known-good fallback, not a new idea to propose from scratch.
+- **Gateway-only, no sandbox** — see above, don't reintroduce without reason.
+- **Basic auth is what's configured for the dashboard.** Hermes's own docs
+  are explicit that basic auth is *"intended for trusted LANs or VPN-gated
+  access, not direct internet exposure."* If/when this instance is ever
+  exposed to the internet (not just LAN), that's a real gap to revisit —
+  OAuth/OIDC, not basic auth — but don't silently "fix" it now; it's a
+  deliberate deferred item, flag it when internet exposure actually comes up.
+- **A separate side-quest about DuckDNS/UFW/CGNAT on `server`/the home
+  router happened earlier this session and is unrelated to this task** —
+  don't conflate it with w_workstation's networking. That investigation
+  confirmed `server`'s Docker/iptables/UFW setup was correct and the failure
+  was upstream (router/ISP), never fully resolved (Mark was going to check
+  the router's own WAN IP page). It has no bearing on w_workstation.
+- **`fileserver` (192.168.40.2) is a separate, unrelated migration target**
+  for *other* home-lab services (Plex, WordPress, AdGuard, Portainer,
+  Homepage, Beszel-hub, MeshCentral — all explicitly removed from `server`
+  today with the intent of reinstalling fresh on `fileserver`, no backups,
+  per Mark's instruction). That migration hasn't started yet and is not
+  this session's job unless Mark asks for it specifically.
 
-- **User decision (2026-10-14): Bitwarden is the only secrets MCP for local AI clients.** Removed the legacy fileserver `vault` MCP registration from the tracked Hermes `.mcp.json` (Claude Code) and from the laptop's `~/.codex/config.toml`; Claude Desktop already listed only `bitwarden`. Verified no `vault_mcp.py` process was running. The VPS Hermes `mcp_servers` config also has no `vault` or `bitwarden` entry; its Vaultwarden access is through a separate plugin. Do not restore the fileserver MCP registration.
-- The official `@bitwarden/cli` 2026.9.1 and `@bitwarden/mcp-server` 2026.7.0 are installed on Mark's laptop. The CLI points to the full `https://theguylab.duckdns.org/vault` subpath; the laptop now runs Node 20.20.2.
-- The tracked project `.mcp.json` (Claude Code) and the laptop's `~/.codex/config.toml` both launch `/home/mark/.claude/mcp_servers/bitwarden/run.sh`. Its `BW_SESSION` comes from `/home/mark/.claude/mcp_servers/bitwarden/bw_session.env` outside Git, mode 0600; neither client config contains the token. The wrapper handles the Node 18 WebCrypto flag only if the machine runs an older Node again.
-- Refreshed the CLI login using `BW_PASSWORD` as an environment variable and saved only the returned session token. Verified unlocked status, the raw MCP `initialize` response naming `Bitwarden MCP Server`, and actual `create_item` / `list` / `get` / `delete` of a temporary secure note through MCP. The temporary item was permanently removed. No master password was saved in repo or wrapper. Catalog entity: `bitwarden-mcp-codex-and-claude-verified-2026-10-14`.
+## The actual checklist — canonical env-var categories
 
-### Obsidian-compatible knowledge vault on the VPS (verified 2026-10-14 UTC)
+Source: `github.com/NousResearch/hermes-agent/blob/main/website/docs/reference/environment-variables.md`
+(~900 lines, re-fetch it fresh rather than trusting this summary blindly —
+it may have changed). Categories already given real attention this session
+(see state above) vs. categories that still need the full one-by-one pass:
 
-- Mark chose a VPS folder for curated subject knowledge, separate from Hindsight's conversational memory. The folder `/home/hermes/knowledge-vault` exists, is owned by `hermes` (UID/GID 1000), and is currently empty; no chats or project content have been imported.
-- The bundled `obsidian` skill is installed and enabled. Live `~/.hermes/config.yaml` retains `terminal.backend: docker`, `docker_mount_cwd_to_workspace: false`, and `docker_run_as_host_user: true`; it now adds `terminal.docker_volumes: [/home/hermes/knowledge-vault:/vault]` and `terminal.docker_env.OBSIDIAN_VAULT_PATH: /vault`. The pre-change config is backed up as `~/.hermes/config-before-obsidian-20261014T023502Z.yaml`.
-- Restarted `hermes-gateway` and `hermes-dashboard`; both were active afterward. A real `hermes -z` turn used the skill/file tools to write and read `/vault/_hermes-vault-check.md`, and a second turn found it. Independently checked the host file content and UID/GID 1000, then removed the test note. The new sandbox (`hermes-b7975178` at test time) had the read-write vault bind mount and `OBSIDIAN_VAULT_PATH=/vault`; the older mountless sandbox was still running and should not be used as evidence of current config.
-- This enables Hermes file access to the vault. Obsidian Desktop/Headless Sync, device synchronization, backups of future notes, automatic session-to-vault curation, and any chat migration have not been set up. Changing Docker mounts creates a new sandbox identity; helper commands installed only into a container writable layer are not durable (see sandbox-provision note below).
+**Already decided, don't redo from scratch — just verify still correct:**
+- Configuration & Runtime (`HERMES_HOME`, `database.journal_mode`, etc.)
+- Terminal & Sandbox Backends (`TERMINAL_ENV=local`, `SUDO_PASSWORD` set)
+- Container Resources (`TERMINAL_CONTAINER_*` — note: these govern the
+  *sandbox* container's resources, which doesn't apply here since
+  `terminal.backend` isn't `docker` — confirm this is correctly a no-op, not
+  silently misapplied)
+- Persistent Shell (`TERMINAL_PERSISTENT_SHELL` etc. — defaults are `true`,
+  check if that's actually desired or needs an explicit override)
+- Dashboard Authentication (basic auth configured; OIDC/OAuth variables
+  deliberately unset — see "don't re-open" above)
+- Gateway Configuration (`GATEWAY_ALLOW_ALL_USERS` etc. — currently unset;
+  only matters once messaging platforms are configured, which they aren't)
+- Messaging: Webhook & API Server (`API_SERVER_*` set; `WEBHOOK_*` unset —
+  no webhook consumer configured, confirm that's still the right call)
 
-### Model route correction (verified 2026-10-13)
+**Needs the full deliberate pass, not yet done:**
+- LLM Providers (all the cloud-provider keys — `OPENROUTER_API_KEY`,
+  `OPENAI_API_KEY`, `FIREWORKS_API_KEY`, `NOUS_BASE_URL`/`NOUS_INFERENCE_BASE_URL`,
+  `COPILOT_GITHUB_TOKEN`, `GLM_API_KEY`, etc. For each: does Mark have an
+  account for it? If not, that's the "proven reason to skip" — record it,
+  don't just leave it silently unset.)
+- Voice & Speech Tools (`ELEVENLABS_API_KEY`, `GROQ_API_KEY` for Whisper STT,
+  `PORCUPINE_ACCESS_KEY`, etc.)
+- Tool & Web APIs (search: `TAVILY_API_KEY`, `PERPLEXITY_API_KEY`,
+  `BRAVE_SEARCH_API_KEY`, `EXA_API_KEY`; browser: `BROWSERBASE_API_KEY`,
+  `BROWSER_CDP_URL`; image gen: `FAL_KEY`, `KREA_API_KEY`)
+- Integrations (`HINDSIGHT_API_KEY`/`HINDSIGHT_API_URL` — note Hindsight is
+  explicitly the project's real memory system per the repo's own `CLAUDE.md`,
+  so this one deserves real attention, not a quick skip; also `MEM0_*`,
+  `HONCHO_*`, `DAYTONA_API_KEY`, `VERCEL_TOKEN`)
+- Skill-Specific API Keys (`NOTION_API_KEY`, `LINEAR_API_KEY`,
+  `AIRTABLE_API_KEY`, `TENOR_API_KEY`)
+- Observability/Langfuse (`HERMES_LANGFUSE_*` — likely a real "no account,
+  skip" unless Mark wants call-tracing observability)
+- Tool Gateway (`TOOL_GATEWAY_*`)
+- Agent Behavior (`HERMES_MAX_ITERATIONS`, `HERMES_YOLO_MODE`,
+  `HERMES_SAFE_MODE`, etc. — worth a deliberate choice, not defaults by
+  accident)
+- All ~17 messaging platform sections (Telegram, Discord, Slack, Google Chat,
+  WhatsApp, Signal, SMS/Twilio, Email, DingTalk, Feishu, WeCom, Weixin,
+  BlueBubbles, QQ, Mattermost, Matrix, Home Assistant, Teams, LINE, ntfy,
+  IRC, SimpleX, Photon, Buzz/Nostr, Raft) — each follows the same
+  `HOME_CHANNEL`/`HOME_CHANNEL_NAME`/credential pattern. Go through each one:
+  does an account/bot/channel actually exist for it? The honest expectation
+  is most will be "no account, skip" — but that has to be checked and stated
+  per platform, not assumed as a block.
 
-- `w_workstation:8090` currently serves Qwen3.5-9B Q4_K_M through **mainline llama.cpp**, not ik_llama.cpp. Its `/v1/models` ID is the Windows GGUF path `E:\ik_llama_models\Qwen_Qwen3.5-9B-Q4_K_M.gguf`; that path is the API model identifier, not a file path the VPS needs to open. A direct completion returned `OK` with that exact ID, and `hermes -z` returned `OK` through the custom provider.
-- The dashboard's older `#1` Qwen3.6 entry is historical. `#3` is the currently served Qwen3.5 model. Mark chose Qwen3.5 as the main model; live `config.yaml` now has that exact ID with `provider: custom:local-qwen` and `base_url: http://192.168.40.100:8090/v1`.
-- A Desktop session (`20261013_020445_867bf1`) had mistakenly stored the endpoint URL as its **model**. Its `sessions.model` and `model_config.model` were repaired to the Qwen3.5 ID, with a live SQLite backup saved at `~/.hermes/state-before-model-route-repair-20261013.db`; the dashboard service was restarted and is active.
-- llama.cpp advertises `n_ctx: 64000`, but Hermes's context resolver returned **131072** before an explicit per-model limit was added to `custom_providers.models[Qwen3.5].context_length`. It now returns **64000**. The custom provider's existing `extra_body` loop guards were verified to apply. Config backup: `~/.hermes/config-before-model-context-fix-20261013.yaml`.
+## Open items, not blocking, pick up if relevant
 
-### General health audit + VPS-local secrets decision (2026-10-13)
-
-Ran a broad `hermes doctor`-plus-manual pass looking for anything misconfigured. Fixed:
-
-- **Model routing was sitting in a legacy config format that risked breaking on a future update.** `custom_providers: [{name: local-qwen, ...}]` is the pre-v12 list format; its one-time migration to `providers: {local-qwen: {...}}` already ran on this install and does not re-fire, so the route silently stayed on the old path. Migrated it using Hermes's own `_custom_provider_entry_to_provider_config()` converter (not hand-transcribed), backed up to `config-before-doctor-fix-20261013.yaml`, verified with a live `hermes -z` call, restarted `hermes-gateway`/`hermes-dashboard`. `hermes doctor` issue count: 7 → 3 (remaining 3 are upstream npm advisories doctor itself says aren't locally fixable — a local patch wouldn't survive the next `hermes update`).
-- **`hermes doctor --live` has a false-positive gap**, confirmed in `hermes_cli/doctor_live.py`: it probes every `mcp_servers` entry regardless of its `enabled` flag. `gitlab` and `kiwi` are both correctly `enabled: false` in config but still show as "Live probe failed" — safe to ignore those two lines, nothing to fix on our side.
-- **Dashboard inner `basic_auth` password resolved and moved to a VPS-local store.** The plaintext from the 2026-10-12 `public_url` fix was never vaulted (catalog unreachable — Mark was away from home, fileserver/WireGuard-dependent catalog and vault both unreachable from a remote location, confirming the self-sufficiency rule's value firsthand). Mark had it saved in Google Password Manager under three candidate entries for `theguylab.duckdns.org`; verified which one actually matches the stored `scrypt` hash by calling `dashboard_auth/basic/_verify_password()` directly rather than guessing (`mark` / the one ending `...LT3X` — the `admin`/`463453551` and the other `mark` entry both failed verification, likely stale/Caddy-layer leftovers). Stored the verified password in Hermes's own local encrypted vault (`agent/vault_store.py`, Fernet-encrypted, `~/.hermes/vault/`, 0600/0700 perms, zero fileserver dependency) as item `vault_7cadd409e16a`, confirmed visible via `hermes vault list`.
-  - **Standing decision**: secrets Hermes needs for its own operation (its own dashboard login, etc.) belong in this local vault going forward, not the home-fileserver catalog — this isn't a new policy, it's just correctly applying the self-sufficiency rule that was already written down.
-  - Also vaulted the same way: the Hostinger hpanel/VPS admin account password (`vault_876b818d00eb`). Chrome had no username recorded for it, so the vault's identifier field is a description ("hostinger account (root/VPS admin, srv2051520.hstgr.cloud)"), not a real login email — fix it if Hostinger actually needs one and Mark has it.
-  - Vault now has 2 items total (`hermes vault list`): the dashboard login and the Hostinger account.
-- Checked and healthy: `MEMORY.md`/`USER.md` symlinks intact, `hermes-doctor-watch.timer` actively ticking on its 6h schedule, disk 25% used (73G free), swap barely touched (no repeat of the earlier memory-pressure incident), log files not abnormally large.
-
-Still open, needs Mark directly (not fixable by Claude Code):
-- **Telegram `/sethome` still unregistered** — only affects *future* cron jobs using a bare `--deliver telegram` (the existing morning-news job already works around it with an explicit `chat_id`). Mark needs to send `/sethome` from his own Telegram chat with the bot.
-
-### Fixed: hermes CLI unreachable inside the code_execution sandbox (2026-10-13)
-
-Mark reported the agent couldn't find its own `hermes` path from inside its sandbox. Confirmed in `errors.log`: `agent.tool_executor` hit exit 127 `bash: line 5: hermes: command not found` (12x burst, 2026-10-12 16:22) and `hermes-doctor: command not found` (2026-10-13 01:45-01:46) — this was a real, repeating failure, not theoretical.
-
-- **Root cause:** the `nousresearch/hermes-sandbox:desktop` container (ids `10f41f28fc4f`, `5f7c6dcfa6bf`) has zero bind mount of `~/.hermes/` by design (the 2026-10-08 `CAP_DAC_OVERRIDE` corruption incident — see `docker_mount_cwd_to_workspace: false`). `~/.local/bin/hermes` on the host execs `/home/hermes/.hermes/hermes-agent/.hermes/bin/hermes`, which only exists on the host, never inside the container. `uv`/`uvx`/`node`/`npm` and an `ssh` host-alias wrapper were already hand-placed in `/usr/local/bin` inside these containers by prior sessions — `hermes` itself was just never added. Not a symlink bug; a missing-binary gap.
-- **Fix:** added `/usr/local/bin/hermes` inside both running containers — a wrapper that shell-quotes argv and proxies over the already-provisioned passwordless SSH tunnel (`ssh 31.220.53.141 "hermes ..."`), the same pattern the existing `ssh` wrapper already uses. Verified live: `hermes --version`, `hermes doctor`, and `hermes -z "..."` all work now from inside the sandbox.
-- **Durability caveat:** `/usr/local/bin` inside the container is not bind-mounted — this lives only in the container's writable layer and will be lost if the container is ever recreated (`tools/environments/docker.py`'s `_recreate_container`/`_docker_run` have no post-create provisioning hook that reapplies `uv`/`uvx`/`node`/`npm`/`ssh`-wrapper/`hermes`). A copy is saved at `~/.hermes/sandbox-provision/hermes-wrapper.sh` on the host for quick reapplication. The real fix is a provisioning hook in `docker.py` — not attempted here, since it touches container security-arg code and needs review first.
-
-### Tool-call & reasoning wire format re-verified (2026-10-13, no defect found)
-
-Picked back up the one unfinished check from the prior Qwen-route audit: whether Hermes's custom llama.cpp connection sends/receives correct JSON for multi-tool-call turns and correctly gates reasoning. Verified live (direct curl to `192.168.40.100:8090` AND a real `hermes -z` run through the deployed agent, not just code reading):
-
-- A 4-call parallel tool-call turn round-tripped correctly end-to-end: correct `tool_call` ids, JSON `arguments`, `finish_reason: tool_calls`, and the model synthesized all 4 tool results correctly after matching `tool_call_id`.
-- A real `hermes -z` prompt forcing a tool call completed in 2 API calls with 0% reasoning share and the correct answer — confirms the deployed pipeline (not just a hand-built test request) works.
-- Hermes's `custom` provider profile (`plugins/model-providers/custom/__init__.py`) sends reasoning as a **top-level `reasoning_effort` field**, not `chat_template_kwargs.enable_thinking` — its `extra_body.think=False` branch only fires for Ollama-style endpoints (port 11434 or an `ollama` host label), which this route is not. Initially looked like a gap; direct A/B curl testing proved this llama.cpp build honors bare `reasoning_effort: "none"` just as well as the explicit `chat_template_kwargs` form, so there is no actual gap.
-- `medium` vs `high` reasoning effort produce no reliably distinct behavior (Qwen3.5's chat template only exposes thinking on/off) — a model/template limitation, not something Hermes can fix on its side.
-- `errors.log` has no new tool-call/400/malformed-JSON incidents against `local-qwen` beyond the already-fixed repetition-loop and compression-timeout issues above.
-
-**Verdict: no defect found.** Catalog entity `hermes-qwen-llamacpp-wire-verification-2026-10-13` (`refines` the route-correction entity above) has full detail.
-
-### Responsiveness & compression fast-lane tuning (deployed 2026-10-13 02:10 UTC)
-
-Mark ran an optimize sweep on `/home/hermes/.hermes/config.yaml` (`compression.threshold: 0.45`, `target_ratio: 0.25`, `protect_last_n: 12`, `protect_first_n: 2`, `proactive_prune_min_result_chars: 10000`, `session_cleanup`, `agent.cache`, `delegation`, `curator`) and reported that the context-summarize (`compression`) thread still took ~191 seconds (`01:48:29`–`01:51:41` UTC).
-
-Root cause of the 191.5s summarize stall (`agent.log` attempt `edb0af5f98aa4a549eaf29585ccca883`):
-1. `auxiliary.compression` was still on `provider: auto` (routing to local `w_workstation:8090` `Qwen_Qwen3.5-9B-Q4_K_M.gguf`). Unlike the main agent loop (which hits 95–100% KV-cache reuse on Slot 0), the compression prompt has **0% KV-cache overlap** (`7,143` uncached prompt tokens) and contended with Hindsight's background `consolidation` worker on the single RTX 5060 Ti, stalling mid-stream for 60.0s (`96.5s` total) before timing out.
-2. When it fell back to `fallback_providers[0](nous)` (`deepseek/deepseek-v4.1-flash`), `reasoning_effort: none` was not set, so `deepseek/deepseek-v4.1-flash` spent another `94.0s` generating reasoning tokens (`190,814ms` total).
-
-Deployed fixes (all user optimize-sweep settings preserved intact):
-- **`auxiliary.compression` pinned to certified Nous Fast Lane:** `provider: nous`, `model: deepseek/deepseek-v4.1-flash`, `reasoning_effort: none` (plus `reasoning_effort: none` across all auxiliary tasks and `extra_body: {chat_template_kwargs: {enable_thinking: false}}` on local-routed auxiliary tasks). Verified live via `resolve_compression_fast_lane()` (`certified_non_reasoning=True`): a 27,000-char (`~7,000` token) compression window now completes in **2.66–3.49 seconds** (`len_reasoning=0`) and never touches or evicts the local `w_workstation:8090` KV cache.
-- **Hindsight non-thinking & low-budget tuning:** `~/.hindsight/profiles/hermes.env` and `~/.hermes/hindsight/config.json` now run with `HINDSIGHT_API_LLM_EXTRA_BODY={"chat_template_kwargs": {"enable_thinking": false}}`, `HINDSIGHT_API_LLM_REASONING_EFFORT=none`, `HINDSIGHT_API_LLM_MAX_CONCURRENT=1`, `recall_budget: low`.
-- **Prevented Qwen3.5-9B `Using` tool-call repetition loops & fixed `MEMORY.md` path confusion:** Caught a live hang where Hermes Desktop sat on `Using` for 7 minutes (`14,158` streamed chunks / `622 KB` on Slot 2 of `w_workstation:8090`) because Qwen3.5-9B-Q4_K_M entered an infinite token repetition loop inside `tool_calls[0].function.arguments` with `n_predict: -1` and zero repetition penalties after failing to find `/home/hermes/.hermes/MEMORY.md` (actual path `/home/hermes/.hermes/memories/MEMORY.md`) and mistaking `<hindsight-memories>` prefetch entries for `MEMORY.md` text. Added `custom_providers` `extra_body: {n_predict: 4096, repeat_penalty: 1.05, presence_penalty: 0.4, dry_multiplier: 0.8}` for `http://192.168.40.100:8090/v1`, created symlinks `/home/hermes/.hermes/{MEMORY,USER}.md -> memories/{MEMORY,USER}.md`, and cleaned stale canary entries from `MEMORY.md`.
-- **VPS headroom & observability:** Added persistent 4 GiB `/swapfile` on `hermes-vps`, set `Restart=always` (`RestartSec=5`) on `hermes-dashboard.service`, and installed `/usr/local/bin/hermes-status` (on VPS host and inside Docker sandbox) to inspect VPS RAM/swap, active `hermes` processes, `w_workstation:8090` GPU slot utilization, and recent turn/compression latencies. Full details in catalog entities `hermes-resource-and-compression-tuning-2026-10-12`, `hermes-vps-compression-fast-lane-2026-10-12`, and `hermes-vps-tool-loop-and-memory-path-fix-2026-10-12`.
-
-- **VPS**: Hostinger KVM 2, `srv2051520.hstgr.cloud`, `31.220.53.141`. SSH as
-  `root` (key: default `~/.ssh/id_ed25519`). **Vultr is gone, full stop** —
-  destroyed 2026-10-10, not the host, not an LLM provider. Don't reference it.
-- **Self-sufficiency rule (hard)**: hermes-vps must work fully even if
-  fileserver/WireGuard/home-network is unreachable. The *only* sanctioned
-  local-network dependency is the LLM tier itself — `w_workstation`
-  (192.168.40.100:8090, mainline `llama.cpp`, OpenAI-compatible, no auth) as
-  primary, Nous Portal (`deepseek-v4.1-flash`) as cloud fallback, auto-
-  engaging only on technical failure, never on preference. This is NOT just
-  "avoid depending on home network for convenience" — Mark was explicit that
-  WireGuard dropping must not degrade anything except that one LLM tier.
-- **Local model swapped tonight**: Qwen3.6-35B-A3B → `Qwen_Qwen3.5-9B-Q4_K_M`.
-  Check `config.yaml`'s `model.default` for whatever it is *now* — it will
-  keep changing. Verified live at 53.6 tok/s (direct curl) and 23–75 tps
-  (agent's own tool-based benchmark, after the sandbox fix below).
-  **This model name is now duplicated in 3 places that must be kept in sync
-  by hand whenever it's swapped again:**
-  1. `config.yaml` → `model.default` / `model.base_url`
-  2. `~/.hermes/hindsight/config.json` + `~/.hindsight/profiles/hermes.env`
-     → `llm_model` / `HINDSIGHT_API_LLM_MODEL`
-  3. `~/.hermes/.env` → `HERMES_LOCAL_MODEL_BASE_URL` / `HERMES_LOCAL_MODEL_NAME`
-- **Dashboard** (`https://theguylab.duckdns.org`) is now double-gated:
-  - Caddy `basic_auth` (user `mark`) in front — unchanged, existing.
-  - Hermes's **own** `dashboard.basic_auth` (user `mark`, new password
-    generated tonight) — required because setting `HERMES_DASHBOARD_PUBLIC_URL`
-    (needed to fix a WS `origin_mismatch` reconnect loop) makes Hermes refuse
-    to bind at all without its own auth provider configured. First attempt at
-    the public_url fix alone crash-looped the dashboard service 40+ times —
-    both pieces are needed together or it's broken one way or the other.
-  - **New password is only in tonight's chat log, NOT vaulted** —
-    `mcp__vault__set_secret` needs Mark's vault passcode, which this session
-    didn't have. Get it from Mark and vault it as a correction to
-    `hermes-vps-dashboard-basic-auth`.
-  - **Mark has not yet confirmed in his own browser** that login + live
-    chat/websocket actually works end-to-end post-fix. Ask him, or test it
-    yourself if you have a way to drive a real browser session.
-- **Sandbox isolation & controlled SSH access to the VPS host (`hermes@31.220.53.141`).**
-  The `code_execution`/`terminal` sandbox is a separate Docker container
-  (`nousresearch/hermes-sandbox:desktop`) without direct bind-mounts of
-  `~/.hermes/` (direct bind-mounts caused `root:root` `CAP_DAC_OVERRIDE` file
-  ownership corruption on `config.yaml`/`.env`/`auth.json` on 2026-10-08).
-  - Forwarded `HERMES_LOCAL_MODEL_BASE_URL` / `HERMES_LOCAL_MODEL_NAME` into
-    the sandbox via `terminal.docker_forward_env` in `config.yaml`.
-  - **Added 2026-10-12:** Provisioned an `ed25519` SSH keypair in the persistent
-    sandbox home (`/home/hermes/.hermes/sandboxes/docker/default/home/.ssh/id_ed25519`,
-    mounted at `/root/.ssh/id_ed25519` inside the container) and authorized it
-    in `/home/hermes/.ssh/authorized_keys` (UID 1000 `hermes`, **not** `root`,
-    preventing `root:root` ownership hazards). Configured sandbox `~/.ssh/config`
-    and `/usr/local/bin/ssh` wrapper so `ssh 31.220.53.141`, `ssh hermes@31.220.53.141`,
-    and even `ssh root@31.220.53.141` automatically log in as `hermes@31.220.53.141`
-    with `hermes`/`uv`/`uvx`/`node`/`npm` and `XDG_RUNTIME_DIR=/run/user/1000`
-    in non-interactive `PATH`.
-  - **`hermes-doctor-watch`** (`systemd --user` timer, every 6h) also runs
-    `hermes doctor` automatically on the host and Telegram-alerts Mark only on
-    new or resolved warnings vs. baseline.
-- **MEMORY.md / USER.md were wiped again**, separately from the
-  Vultr→Hostinger migration wipe already documented from 2026-10-11. This
-  time it happened during tonight's Hindsight plugin install/restart window
-  (directory mtime lines up exactly); **the actual deletion mechanism was
-  never found** — no log line anywhere shows it, no backup existed. Rewrote
-  both from scratch (same method as before: Claude Code's own knowledge +
-  catalog cross-check), verified live via fresh `hermes -z` round trip.
-  Current sizes: `USER.md` 1,039/1,375 chars, `MEMORY.md` 1,297/2,200 chars.
-  **If they go missing a third time, that's a real pattern worth root-causing
-  properly instead of just rewriting again.**
-
-## Long-term memory provider: Hindsight — fully repaired & verified (explicit + automatic retain/recall)
-
-Direct VPS repair and verification completed 2026-10-12 (~15:12 UTC). The plugin's
-`ready` dashboard badge only checks configuration/client imports; do not use it
-as evidence of successful memory operations.
-
-- **Root cause 1 (missing dummy API key):** the daemon's own log
-  (`~/.hindsight/profiles/hermes.log`, distinct from Hermes's
-  `~/.hermes/logs/hindsight-embed.log`) showed a fatal missing
-  `HINDSIGHT_API_LLM_API_KEY`. The local model requires no authentication, but
-  Hindsight requires a nonempty value. Set the non-secret placeholder
-  `local-no-auth` in `hindsight/config.json` (`llm_api_key`) and the profile env.
-- **Root cause 2 (profile `.env` drift restart loop):** the daemon adds
-  `HINDSIGHT_API_PORT` to its profile env. The plugin compared the entire file
-  against its own settings, so each new plugin instance treated port metadata as
-  drift and restarted the daemon, interrupting writes with HTTP 500. Also,
-  `_materialize_embedded_profile_env` previously overwrote `hermes.env` with only
-  6 hardcoded keys, wiping any custom `HINDSIGHT_API_*` tuning on model swaps.
-  Patched `~/.hermes/plugins/hindsight/__init__.py` and `embedded.py` to compare
-  only Hermes-owned settings, forward `llm_reasoning_effort` / `llm_extra_body` /
-  `llm_max_concurrent` / `llm_max_retries` / `llm_timeout` from `config.json`,
-  and preserve existing keys when rewriting `hermes.env`. Recoverable patch:
-  `patches/hindsight-profile-restart.patch` (apply inside
-  `~/.hermes/plugins/hindsight` with `patch -p1`). Original backups remain with
-  `.before-20261012-repair` suffixes.
-- **Root cause 3 (`Qwen3.5-9B` `<think>` mode causing 120s extraction timeouts):**
-  `llama.cpp` on `w_workstation:8090` defaults Qwen3.5's chat template to
-  `<|im_start|>assistant\n<think>\n` with `max_tokens: 64000`. On Hindsight's
-  ~3.5k-token `retain_extract_facts` prompt, Qwen3.5-9B generated 4,000–5,000+
-  `<think>` tokens before emitting JSON — making single-fact retains take 98s and
-  ordinary automatic chat retains exceed the 120s timeout on all 4 attempts
-  (locking up `w_workstation` slots for 8+ minutes per turn and failing to save).
-  Set `llm_reasoning_effort: "none"`,
-  `llm_extra_body: {"chat_template_kwargs": {"enable_thinking": false}}`,
-  `llm_max_concurrent: 1`, and `llm_max_retries: 2` in
-  `~/.hermes/hindsight/config.json` (and `~/.hindsight/profiles/hermes.env`).
-  **Result:** automatic chat fact extraction dropped from **>480s timeout** to
-  **4.35s**, and consolidation dropped from **15.4s** to **4.90s**.
-- **Root cause 4 (`Command not found: uvx` in dashboard / isolated sessions):**
-  `uv` and `uvx` were only symlinked in `/home/hermes/.local/bin`, which was in
-  `hermes-gateway.service`'s `PATH` but missing from `hermes-dashboard.service`
-  and `tui_gateway` child environments. Symlinked `uv` and `uvx` into
-  `/usr/local/bin` and added the full `Environment="PATH=..."` to
-  `hermes-dashboard.service`.
-- **Root cause 5 (Recall budget & CPU cross-encoder tuning as bank grew to 216+ facts):**
-  When the bank was empty, synchronous recall over `"observation,world,experience"` with `budget: "mid"` (`max_tokens: 4096`) took 0.20s. Once the bank reached 216+ facts, scoring 216–223 candidates through the local CPU cross-encoder on 2 vCPUs took **16.85s** (exceeding Hermes's 8.0s prefetch timeout) and injected **4,092 tokens (96 facts)** per turn. Updated `~/.hermes/hindsight/config.json` to `"recall_budget": "low"`, `"recall_max_tokens": 1024`, `"recall_types": "observation"` (Hindsight's consolidated layer), and `"recall_sync": false` (async prefetch between turns), cutting recall time to **5.56s** off the critical reply path.
-- **Deployment remains self-contained:** `local_embedded`, API loopback
-  `127.0.0.1:9177`, embedded Postgres under
-  `~/.pg0/instances/hindsight-embed-hermes`, local embedding/reranking models.
-  Only inference uses `w_workstation:8090`, matching the active Qwen3.5-9B.
-- **Evidence:** verified live with an ordinary `hermes -z` conversation turn (no
-  explicit memory tool calls): automatic `batch_retain` extracted and stored the
-  fact in 4.35s, consolidation completed in 4.90s, and recall was verified live.
-- **Built-in memory remains complementary:** MEMORY.md and USER.md still
-  exist and were not reset. The dashboard deliberately displays them
-  alongside Hindsight.
-
-## Resource & Responsiveness Tuning — 2026-10-12
-
-- **Fixed 4–8 minute turn stalls caused by local `context_compressor` `<think>` generation:**
-  `agent/context_compressor.py` called `w_workstation:8090` (`Qwen_Qwen3.5-9B-Q4_K_M.gguf`) without `enable_thinking: false` and with uncapped `max_tokens`, spending **239–515s (4–8.5 minutes)** generating 6,000–15,000 `<think>` tokens that `strip_think_blocks()` immediately discarded. Added `extra_body: {chat_template_kwargs: {enable_thinking: false}}` to all local Qwen auxiliary tasks (`compression`, `title_generation`, `skills_hub`, `mcp`, `voice_chat`, `profile_describer`, `curator`). Live compression call latency dropped to **1.28s**.
-- **Fixed compression re-triggering on every turn (`protect_last_n: 20` -> `8`):**
-  With 11 active MCP servers injecting ~35,000–39,000 tokens of tool schemas into every turn out of the 64,000-token slot context (`threshold: 0.5` = `54,400` tokens), `protect_last_n: 20` (~14,000 tokens) left post-compression prompts at ~44,000–50,350 tokens — re-triggering compression every 1–2 turns. Lowered `compression.protect_last_n` to `8` and `protect_first_n` to `1`.
-- **Fixed `auxiliary.background_review` and `nous`-pinned auxiliary tasks:**
-  Hermes Desktop's UI saved `auxiliary.review: {provider: nous}`, whereas `agent/background_review.py` reads `auxiliary.background_review` AND requires both `provider` and `model` (otherwise silently falling back to the main local GPU and running a 50k-token review fork + compression after every turn). Additionally, `agent/auxiliary_client.py` (`resolve_provider_client`) pre-filled `model` from `model.default` (`E:\ik_llama_models\Qwen_Qwen3.5-9B-Q4_K_M.gguf`) whenever a non-vision `nous` task omitted `model`. Explicitly pinned `model: deepseek/deepseek-v4.1-flash` on `approval`, `review`, `background_review`, `triage_specifier`, and `kanban_decomposer`, and `model: google/gemini-3.8-flash` on `vision`.
-- **VPS swap & live resource visibility (`/usr/local/bin/hermes-status`):**
-  Killed 1.1 GiB of orphaned `agent-browser` / headless Chromium processes, provisioned a persistent **4 GiB `/swapfile`** in `/etc/fstab` (was `0B` swap on 7.8 GiB RAM), and installed `/usr/local/bin/hermes-status` on both `hermes-vps` and inside the Docker sandbox containers so resource/GPU-slot utilization can be inspected anytime from SSH or Hermes Desktop chat.
-
-## Configuration audit — 2026-10-12
-
-- Local model endpoint, Nous login/fallback pointer, Telegram polling,
-  gateway, dashboard, and public Caddy authentication challenge all check out.
-  The doctor timer is enabled. The public dashboard's two-auth browser flow
-  has not been verified end to end; the new inner password is still not in
-  the vault (see dashboard note above).
-- Fallback has no dedicated circuit breaker or deliberate failure test. This
-  matters most before trusting automatic paid failover under local outages.
-- Gateway warns that Docker has no host-visible output mount, so files created
-  inside `/workspace` or `/output` may fail as Telegram attachments. Sandbox
-  isolation itself is intentional; resolve media delivery with a narrow
-  output path rather than mounting the whole Hermes home.
-- `hermes doctor --live` reports Playwright missing, but that probe does not
-  diagnose the active browser runtime. A fresh direct launch on 2026-10-12
-  found missing Chromium libraries (installed) and then Ubuntu AppArmor's
-  user-namespace restriction. The managed browser remains unavailable; see
-  the selected-plugin audit below.
-- **MCP servers configured (2026-10-12):** `linear` and `notion` (OAuth
-  authenticated and connected), plus `aws-knowledge`, `context7`, `wolfram`,
-  `deepwiki`, `microsoft-learn`, `twilio-docs`, `trivago`, `kiwi`, and
-  `alltrails`. `gitlab` (`https://gitlab.com/api/v4/mcp`) was set to
-  `enabled: false` after GitLab returned `403 Forbidden - MCP server not enabled
-  for any of your groups` (GitLab Duo group-level requirement; misreported by
-  `humanize_oauth_registration_error` as a DCR 403).
-- The doctor's three reported npm dependency advisories (browser runtime,
-  web build workspace, TUI build workspace) are upstream lockfile issues; a
-  local `npm audit fix` would be overwritten by the next Hermes update.
-- Optional OpenRouter, Codex, xAI, MiniMax, Discord and similar integrations
-  are unset. They are not required for the currently selected local + Nous
-  model path. Skills Hub is uninitialized and `GITHUB_TOKEN` is unset, which
-  matters only if Hermes should use that hub heavily (60 requests/hour
-  unauthenticated GitHub limit).
-
-## Selected-plugin live audit — 2026-10-12
-
-- Verified actual tool calls, not just plugin badges: `web_search`,
-  `web_extract`, Krea image generation, and Nous text-to-speech returned usable
-  results. The TTS default Edge route failed with HTTP 403; live
-  `~/.hermes/config.yaml` now has `tts.provider: nous`, and a test generated a
-  valid MP3. Telegram bot identity and gateway polling, Hindsight health,
-  local-model chat, a direct request to the configured Nous fallback model,
-  and the dashboard's authentication challenge also passed.
-- Vision (`auxiliary.vision`) is now pinned to `provider: nous`, `model: google/gemini-3.8-flash` (fixing the earlier intermittent fallback where an unset `model` let `get_text_auxiliary_client("vision")` pre-fill the local text-only Qwen GGUF path).
-- The local browser is still blocked. The managed Chromium binary was found
-  and its missing Ubuntu runtime libraries installed, but its normal sandbox
-  cannot start under the VPS's AppArmor user-namespace restriction. A proposed
-  unconfined AppArmor profile was rejected by automatic approval review for
-  weakening a host security boundary; no policy bypass was applied.
-- `computer_use` is enabled in the tool list, but `hermes computer-use status`
-  reports `cua-driver: not installed` on this headless VPS.
-- Fallback endpoint availability was tested directly; automatic failover
-  during a local-model outage remains untested. TTS output exists on the host,
-  but Telegram audio attachment delivery was not tested. The separate tool
-  sandbox cannot read `~/.hermes/cache/audio`, as expected from its isolation.
-
-## Carried over, untouched tonight (from 2026-10-10/11 sessions)
-
-1. **No real circuit breaker on the fallback path.** Only the global
-   `agent.api_max_retries` (=1) and jittered retry-storm backoff exist — no
-   actual rate-limit/circuit-breaker to stop a retry storm hammering the
-   *paid* Nous API. No built-in hermes-agent feature for this; would need a
-   wrapper.
-2. **Fallback chain configured but never stress-tested** — `deepseek-v4.1-flash`
-   via Nous is `fallback_providers[0]`, confirmed via `hermes fallback list`,
-   but no one has deliberately forced a Qwen failure to watch it fail over.
-
-## Ground rules reaffirmed/added this session
-
-- **Verify server/process/file state, not the chat response** — see top of
-  this file. This is now the single most important lesson from tonight.
-- **Hermes-first, not Mark-as-go-between.** Before telling Mark to click
-  something in a UI he doesn't know, ask whether Claude Code already has
-  direct access (SSH, API) to just do it, or whether this is a recurring
-  need that should become a standing Hermes capability (cron/timer) instead
-  of a one-off manual trigger.
-- **Sandbox isolation from the real install is intentional** — don't treat
-  it as a bug to "fix" by mounting config/cwd in without discussing the
-  security tradeoff with Mark first (`docker_mount_cwd_to_workspace` is off
-  by default for exactly this reason).
-- **Validate the actually active model, not the config file** — fire a live
-  request after any `config.yaml` change, don't just string-match.
-- **Mission context, restated by Mark**: Hermes is being set up to fully
-  replace Claude Code as the actual working agent. CC is only the bootstrap
-  mechanism configuring its own replacement.
+- Docker Desktop's own disk image (container layers/image cache, separate
+  from Hermes's `/opt/data`) is still on C:, not E:. Relocating it is a
+  built-in Docker Desktop feature (Settings → Resources → Advanced → Disk
+  image location) — safer done via that GUI action than by hand-editing
+  files, deliberately not attempted yet.
+- Whether Docker Desktop's all-users/WSL2 setup actually survives a real
+  logout or reboot (not just idling) hasn't been stress-tested — that's the
+  whole point of this detour from the raw-engine approach, worth actually
+  checking rather than assuming it's fixed.
