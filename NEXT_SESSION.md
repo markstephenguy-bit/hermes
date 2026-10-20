@@ -74,6 +74,47 @@ for Hermes to function at all, in Docker or anywhere else. Progress:
   worth a quick health check on `hermes-vps`'s Hindsight instance; per this
   repo's own `CLAUDE.md` it's the sole memory store with no backup yet, so a
   write failure there is itself notable, not just an inconvenience.
+- **Crash-loop investigation, continued — hypotheses ruled out one by one:**
+  the container restarts every ~15-18s, every time, with `ExitCode=0` and
+  `OOMKilled=false` — a clean, deliberate self-exit, not a crash — regardless
+  of what's changed:
+  - Not the two new env vars (`HERMES_ALLOW_PRIVATE_URLS`,
+    `HERMES_TIMEZONE`): recreated without them, loop continued identically
+    (confirmed via `container-boot.log`, which persists across recreates on
+    the bind mount).
+  - Not the `--health-cmd`: recreated with `--no-healthcheck` entirely, loop
+    continued at the same cadence (RestartCount climbed 0→1→2 within 40s).
+  - Not a stale `gateway_state.json`: it had a dead PID (158) from an earlier
+    cycle and hadn't been updated since 03:37, suggesting a stuck handoff —
+    deleted it (and `runtime/active_sessions.lock`) with the container
+    stopped, restarted clean. Loop continued identically (0→6 within ~70s).
+  - Checked Windows Application/System event logs (CrowdStrike runs a
+    container-sensor component on this host, `CSFalconContainer.exe`) for
+    any correlation with the restart timestamps — found nothing from
+    Falcon/CrowdStrike/Docker in the standard event log. Doesn't rule out
+    kernel-level EDR intervention that wouldn't surface there, but there's no
+    positive evidence for it either. **Do not go looking for ways to work
+    around CrowdStrike if this comes up again — Mark has said twice this
+    session not to go there; if an EDR correlation is ever found, it's a
+    "tell Mark, let him sort it with IT/security" situation, not something to
+    engineer around.**
+  - `/opt/data/*.lock` files exist but are all 0 bytes (pure existence-marker
+    locks); the kanban/state.db ones date to the very first boot (00:53-00:54)
+    and don't look actively contended, so didn't pursue clearing those.
+  - The container's real work happens as the CMD-as-main-program (Architecture
+    B per `/etc/s6-overlay/s6-rc.d/main-hermes/run`'s own comment — the
+    `main-hermes` s6 service is an intentional no-op `sleep infinity`
+    placeholder, not the actual gateway). The orderly s6 stop/start sequence
+    each cycle confirms this is a graceful SIGTERM-driven shutdown of the real
+    CMD process, not an unhandled crash — something sends it SIGTERM on a
+    very regular cadence, cause still unidentified.
+  - **Left the container stopped** (not looping) rather than leave it
+    crash-restarting indefinitely while unresolved — `docker start hermes`
+    to resume testing. Next session: consider `HERMES_DEBUG_INTERRUPT=1` for
+    verbose interrupt/cancel tracing, or comparing against a completely fresh
+    bind-mount directory (new `E:\hermes-data-test`) to rule out anything
+    specific to this one, heavily-reused data volume after ~30+ rapid
+    recreate cycles today.
 - Categories deferred per Mark's explicit redirect, not forgotten: LLM cloud
   providers (he mentioned Nous Portal as the eventual target but said it can
   wait), search/voice/tool APIs, all ~17 messaging platforms, Hindsight as
