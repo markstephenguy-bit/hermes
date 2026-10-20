@@ -180,6 +180,31 @@ fresh next time, don't assume it survived untouched:
   this for real).
 - `config.yaml`'s `local-qwen.base_url` is `http://host.docker.internal:8090/v1`
   (not `localhost`) — load-bearing, don't revert.
+
+## Asked again, same session: "what's left to make this complete?"
+
+Checked whether anything in the current stable config was still untested —
+it wasn't; everything running together now (dashboard auth, API server,
+`SUDO_PASSWORD`, `HERMES_ALLOW_PRIVATE_URLS`, `HERMES_TIMEZONE`, resource
+limits, healthcheck, `gateway run` CMD) is the validated, working baseline.
+Asked Mark directly about the two items that were actually actionable
+(not just "no account, skip" by default) and got explicit "not yet" on both:
+
+- **Telegram** — he confirmed wanting it earlier this session, but when
+  asked whether to get the bot token now, said skip it for now too. Not a
+  reversal of the earlier "yes" in principle, just not today.
+- **Hindsight as Hermes Agent's own memory provider** — would need an SSH
+  tunnel from `w_workstation` to `hermes-vps:9177` (Hindsight binds loopback
+  there) before `HINDSIGHT_API_URL` could even point at it. Offered to build
+  that tunnel now; declined.
+
+Everything else on the original category list (cloud LLM providers,
+search/voice APIs, skill keys, Langfuse, Tool Gateway) has no credential
+behind it, so there's nothing to add-and-test — "no account, skip" is the
+correct final answer for those, not a placeholder. **Current state is as
+complete as it can get without new input from Mark.** Next session should
+check in on whether any of the above (Telegram token, Hindsight tunnel) has
+become actionable, rather than re-deriving this list from scratch.
 - Categories deferred per Mark's explicit redirect, not forgotten: LLM cloud
   providers (he mentioned Nous Portal as the eventual target but said it can
   wait), search/voice/tool APIs, all ~17 messaging platforms, Hindsight as
