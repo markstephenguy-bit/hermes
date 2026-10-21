@@ -262,6 +262,46 @@ canonical "install complete, ready for `hermes`-based configuration" state
 that a non-Docker install would leave behind.** Nothing identified as
 missing from the install side itself; everything remaining is genuinely
 post-install configuration (accounts/credentials), already covered above.
+
+## Auxiliary task model routing — Nous connected, four tasks switched off local Qwen
+
+Mark connected his Nous Portal account (`hermes auth status nous` → logged
+in as `mark.stephen.guy@gmail.com`). With both a working local model and a
+working cloud option, worked out per-task routing: default to local Qwen
+(free, fast) except where a task's correctness/judgment quality matters more
+than its frequency is low. Checked his actual Nous Portal account
+(`portal.nousresearch.com`) for real pricing rather than guessing — Plus
+plan, $20/mo for $22/mo credits, Claude Sonnet 5 priced at $2.00/1M in,
+$10.00/1M out. At realistic call volume for these four tasks (infrequent,
+not every turn) the added cost should land inside the existing monthly
+credit allotment, not as new out-of-pocket spend.
+
+Mark applied the changes himself via the dashboard. Confirmed in
+`config.yaml`:
+
+```yaml
+auxiliary:
+  approval:
+    provider: nous
+    model: anthropic/claude-sonnet-5
+  review:
+    provider: nous
+    model: anthropic/claude-sonnet-5
+  triage_specifier:
+    provider: nous
+    model: anthropic/claude-sonnet-5
+  kanban_decomposer:
+    provider: nous
+    model: anthropic/claude-sonnet-5
+```
+
+Left on local Qwen (`auto`, unchanged): Vision, Compression, Skills Hub, MCP
+routing, Title Gen, Voice Chat, Profile Describer, Curator — all either
+latency-sensitive, high-frequency, or low-stakes enough that Qwen's quality
+is sufficient and the cloud round-trip/cost isn't worth it. Revisit Vision
+specifically if local Qwen's image understanding turns out to be weak in
+practice — `google/gemini-3.8-flash` (fast, cheap, confirmed vision-capable
+in the models.dev-style local catalog) is the fallback.
 - Categories deferred per Mark's explicit redirect, not forgotten: LLM cloud
   providers (he mentioned Nous Portal as the eventual target but said it can
   wait), search/voice/tool APIs, all ~17 messaging platforms, Hindsight as
