@@ -263,6 +263,21 @@ that a non-Docker install would leave behind.** Nothing identified as
 missing from the install side itself; everything remaining is genuinely
 post-install configuration (accounts/credentials), already covered above.
 
+**CORRECTION (2026-10-21, found by a separate migration-planning session) —
+this Docker instance is NOT what's actually serving Mark's public Hermes
+access.** `theguylab.duckdns.org` still routes through Caddy on
+`hermes-vps` itself to a **native** `hermes gateway run` process on the VPS
+(running since 2026-10-17) — the public domain was never repointed to this
+Docker instance. "Done and stable" above is true of the Docker build in
+isolation; it is not yet the thing Mark is actually talking to day to day.
+Cutting over to it (repointing Caddy/DNS) is now a decision bundled into
+the separate Hindsight/Vaultwarden VPS-migration task — see that session's
+seed/findings before assuming this instance is production. This also
+explains the recurring Hindsight `retain()` 500s logged throughout this
+file: the VPS-native gateway's Hindsight config points its fact-extraction
+LLM call at `w_workstation`'s private LAN IP, unreachable from the public
+VPS — not a problem with anything built in this session.
+
 ## Auxiliary task model routing — Nous connected, four tasks switched off local Qwen
 
 Mark connected his Nous Portal account (`hermes auth status nous` → logged
