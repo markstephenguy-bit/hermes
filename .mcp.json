@@ -4,12 +4,9 @@
       "command": "/home/mark/.claude/mcp_servers/bitwarden/run.sh"
     },
     "hindsight": {
-      "command": "ssh",
-      "args": [
-        "-o", "BatchMode=yes",
-        "hermes@srv2051520.hstgr.cloud",
-        "uv", "run", "--script", "/home/hermes/.hermes/mcp_servers/hindsight/hindsight_mcp.py"
-      ]
+      "command": "uv",
+      "args": ["run", "--script", "/home/mark/projects/Hermes/scripts/hindsight_mcp.py"],
+      "env": { "HINDSIGHT_URL": "http://192.168.40.100:8888/hindsight" }
     }
   }
 }

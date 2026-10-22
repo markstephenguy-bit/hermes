@@ -6,10 +6,11 @@
 #     "httpx>=0.27",
 # ]
 # ///
-"""MCP server exposing Hindsight (the hermes-vps memory system, port 9177,
-bound to localhost only) to Claude Code, Codex, and any other MCP-capable
-AI tool. Runs ON hermes-vps - reached over SSH as the `hermes` user, not
-over a network port, so Hindsight's localhost binding never has to change.
+"""MCP server exposing Hindsight (migrated 2026-10-22 from hermes-vps to a
+Docker deployment on w_workstation, port 8888, LAN-reachable at
+192.168.40.100) to Claude Code, Codex, and any other MCP-capable AI tool.
+Runs locally wherever this script is invoked and talks to Hindsight over
+plain HTTP - no SSH hop needed now that Hindsight isn't loopback-bound.
 
 This is the successor to the fileserver Postgres/PostgREST catalog for
 Hermes's own memory: new facts/decisions go here, not to the old catalog.
@@ -19,7 +20,7 @@ import os
 import httpx
 from fastmcp import FastMCP
 
-HINDSIGHT_URL = os.environ.get("HINDSIGHT_URL", "http://127.0.0.1:9177")
+HINDSIGHT_URL = os.environ.get("HINDSIGHT_URL", "http://192.168.40.100:8888")
 DEFAULT_BANK = os.environ.get("HINDSIGHT_BANK", "hermes")
 
 mcp = FastMCP(name="hindsight")
