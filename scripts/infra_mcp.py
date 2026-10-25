@@ -1,4 +1,11 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "fastmcp>=2.0",
+#     "httpx>=0.27",
+# ]
+# ///
 """MCP server exposing home-lab infrastructure control (Salt first; MeshCentral
 and Beszel to follow once their APIs are verified working) as tools for Hermes.
 

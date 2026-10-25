@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+set -a
+source .env
+set +a
+exec uv run --script scripts/infra_mcp.py
