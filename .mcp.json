@@ -10,6 +10,9 @@
     },
     "infra": {
       "command": "/home/mark/projects/Hermes/scripts/infra_mcp_run.sh"
+    },
+    "netbox": {
+      "command": "/home/mark/.claude/mcp_servers/netbox/run.sh"
     }
   }
 }
