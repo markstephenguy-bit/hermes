@@ -14,6 +14,7 @@ the single biggest annoyance of calling Salt's REST API by hand is tokens
 silently expiring mid-session and every call needing a fresh login first.
 """
 import os
+import subprocess
 import time
 
 import httpx
@@ -78,6 +79,22 @@ def salt_run(target: str, function: str, args: list[str] | None = None, powershe
 def salt_minion_status() -> dict:
     """Ping every known minion at once and report which are up/down."""
     return _salt_call({"client": "local", "tgt": "*", "fun": "test.ping"})
+
+
+@mcp.tool
+def netbox_quick_scan(target: str = "*") -> str:
+    """Refresh NetBox's record of one host (or all, if target='*') right now - reachability,
+    interfaces, and IPs only, not the full deep fact set. Call this when you suspect something
+    changed (a host's IP moved, a device seems newly offline/online) and need NetBox's picture
+    current before relying on it, without waiting for the hourly full scan. For a deep refresh
+    with OS/hardware/disk detail, that's the scheduled hourly job, not something to trigger here.
+    """
+    script = os.path.join(os.path.dirname(__file__), "netbox_sync.py")
+    result = subprocess.run(
+        ["uv", "run", "--script", script, "--mode", "quick", "--target", target],
+        capture_output=True, text=True, timeout=120,
+    )
+    return result.stdout + result.stderr
 
 
 if __name__ == "__main__":
