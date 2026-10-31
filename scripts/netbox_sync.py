@@ -8,7 +8,8 @@ home-lab ecosystem rather than a one-time snapshot.
 
 Two modes, matching how an AI agent actually needs this:
   --mode full   Every known minion, every collected fact (interfaces, IPs,
-                 uptime, memory, disk, OS release). Meant to run hourly on a
+                 uptime, memory, disk, OS release, listening TCP ports synced
+                 as NetBox ipam.service objects). Meant to run hourly on a
                  schedule - this is the deep "augment context" pass.
   --mode quick  Reachability + IP/interface delta only, for one minion (or
                  all). Meant to be triggered on demand (e.g. via the MCP
@@ -26,6 +27,7 @@ invoke this directly without SALT_PASS/NETBOX_TOKEN set in the environment.
 import argparse
 import ipaddress
 import os
+import re
 import time
 from datetime import datetime, timezone
 
@@ -99,6 +101,52 @@ class SaltClient:
         return ret.get(target, {})
 
 
+def collect_listening_ports(salt: SaltClient, minion_id: str, platform: str) -> list[dict]:
+    """Returns deduped [{"port": int, "protocol": "tcp", "name": str}, ...] for
+    every TCP socket in LISTEN state - this is "what is this host serving",
+    as opposed to the interface/IP topology collected elsewhere."""
+    services: list[dict] = []
+    if platform == "linux":
+        out = salt.call(minion_id, "cmd.run", ["ss -Htlnp"])
+        for line in out.splitlines():
+            parts = line.split()
+            if len(parts) < 4:
+                continue
+            local_addr = parts[3]
+            port = local_addr.rsplit(":", 1)[-1]
+            if not port.isdigit():
+                continue
+            match = re.search(r'"([^"]+)"', line)
+            name = match.group(1) if match else f"port-{port}"
+            services.append({"port": int(port), "protocol": "tcp", "name": name})
+    else:
+        out = salt.call(
+            minion_id, "cmd.run",
+            ["Get-NetTCPConnection -State Listen | ForEach-Object { "
+             "$p = (Get-Process -Id $_.OwningProcess -ErrorAction SilentlyContinue).ProcessName; "
+             "'{0}|{1}' -f $_.LocalPort,$p }"],
+            powershell=True,
+        )
+        for line in out.splitlines():
+            if "|" not in line:
+                continue
+            port_str, name = line.split("|", 1)
+            port_str = port_str.strip()
+            if not port_str.isdigit():
+                continue
+            services.append({"port": int(port_str), "protocol": "tcp", "name": name.strip() or f"port-{port_str}"})
+
+    seen: set[tuple[int, str]] = set()
+    deduped: list[dict] = []
+    for svc in services:
+        key = (svc["port"], svc["protocol"])
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(svc)
+    return sorted(deduped, key=lambda s: s["port"])
+
+
 def collect_facts(salt: SaltClient, minion_id: str, platform: str, deep: bool) -> dict | None:
     """Returns None if the minion didn't respond at all (treated as offline)."""
     if not salt.call(minion_id, "test.ping"):
@@ -116,6 +164,7 @@ def collect_facts(salt: SaltClient, minion_id: str, platform: str, deep: bool) -
 
     facts["meminfo"] = salt.call(minion_id, "status.meminfo")
     facts["disk"] = salt.call(minion_id, "disk.usage")
+    facts["listening_ports"] = collect_listening_ports(salt, minion_id, platform)
 
     if platform == "linux":
         out = salt.call(minion_id, "cmd.run", ["grep PRETTY_NAME /etc/os-release; uname -r; nproc"])
@@ -253,8 +302,42 @@ def sync_device(nb: NetBoxClient, minion_id: str, meta: dict, facts: dict, mode:
             if primary and primary[1] == addr:
                 nb.http.patch(f"/api/dcim/devices/{device['id']}/", json={"primary_ip4": ip_obj["id"]})
 
+    if mode == "full" and "listening_ports" in facts:
+        sync_services(nb, device["id"], minion_id, facts["listening_ports"])
+
     print(f"  synced {minion_id} ({mode}) -> device {device['id']}"
           + (f", primary_ip {primary[1]}" if primary else ", no primary IP found"))
+
+
+def sync_services(nb: NetBoxClient, device_id: int, minion_id: str, services: list[dict]) -> None:
+    """Upserts NetBox's native ipam.service objects for every listening port
+    found on this device, and removes entries for ports no longer listening -
+    this is what makes a device's "Services" tab show what it's serving."""
+    resp = nb.http.get("/api/ipam/services/", params={"device_id": device_id, "limit": 200})
+    resp.raise_for_status()
+    existing = {(s["protocol"]["value"], tuple(s["ports"])): s for s in resp.json()["results"]}
+
+    seen_keys = set()
+    for svc in services:
+        key = (svc["protocol"], (svc["port"],))
+        seen_keys.add(key)
+        match = existing.get(key)
+        if match:
+            if match["name"] != svc["name"]:
+                nb.http.patch(f"/api/ipam/services/{match['id']}/", json={"name": svc["name"]})
+            continue
+        resp = nb.http.post(
+            "/api/ipam/services/",
+            json={"parent_object_type": "dcim.device", "parent_object_id": device_id,
+                  "name": svc["name"], "ports": [svc["port"]], "protocol": svc["protocol"]},
+        )
+        if resp.status_code >= 400:
+            raise RuntimeError(f"service create failed for {minion_id}:{svc['port']} "
+                                f"({resp.status_code}): {resp.text}")
+
+    for key, svc in existing.items():
+        if key not in seen_keys:
+            nb.http.delete(f"/api/ipam/services/{svc['id']}/")
 
 
 def main() -> None:
