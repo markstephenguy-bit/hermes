@@ -1,6 +1,17 @@
 # Backlog / Open Questions
 
-## Current priority: integration punch-list from live capability testing (2026-10-07)
+## Current priority: see CAPABILITY_PARITY.md
+
+The Claude-Code-parity tracking that used to live inline below (P0-P2 from
+the 2026-10-07 integration test) has been superseded by a full capability
+matrix and roadmap in [CAPABILITY_PARITY.md](CAPABILITY_PARITY.md)
+(2026-10-31), built after Mark's 2026-10-28 decision to make Hermes his
+primary AI harness. The 2026-10-07 findings below are kept for history —
+several (vision, no fallback, destructive-action approval) are re-confirmed
+still open in the new doc; others may be stale given the host moved off the
+VPS entirely since then. Check CAPABILITY_PARITY.md first.
+
+## Historical: integration punch-list from live capability testing (2026-10-07)
 
 29 live probes run against Hermes's real agent API (pure local Qwen3.6-35B-A3B,
 no Codex/cloud fallback) across three batteries — not raw-model benchmarks, the

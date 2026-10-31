@@ -5,8 +5,10 @@ long-term goal is to replace paid ChatGPT Plus / Claude Pro subscriptions with
 something built on hardware already in the house, with a single paid cloud
 account (for frontier-model fallback) instead of two. See
 [VISION.md](VISION.md) for the current state of that vision in plain
-language, [ARCHITECTURE.md](ARCHITECTURE.md) for technical detail, and
-[BACKLOG.md](BACKLOG.md) for what's still undecided.
+language, [ARCHITECTURE.md](ARCHITECTURE.md) for technical detail,
+[BACKLOG.md](BACKLOG.md) for what's still undecided, and
+[CAPABILITY_PARITY.md](CAPABILITY_PARITY.md) for the live-tracked model of
+what Hermes can do vs. Claude Code and what's left to close that gap.
 
 ## Relationship to LocalForge
 
