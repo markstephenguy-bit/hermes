@@ -102,6 +102,25 @@ are narrower than "Hermes can't do X" — mostly:
 - Decide if a structured clarification UI is worth building for chat
   platforms that support rich replies (Telegram/Discord do).
 
+## Host reliability risk (found 2026-10-31)
+
+`server` — the host Hermes now runs natively on — rebooted 3+ times in one
+day (07:07, 13:29, 19:45 CDT), each session only ~6 hours. Root cause:
+`server` is an HP laptop with **no battery installed**
+(`/sys/class/power_supply/` shows only a USB-C PD input, no battery
+device), running AC-only with zero power buffer. Every reboot shows the
+same signature — journal stops abruptly mid-routine-log, no shutdown
+sequence, CPU idle at time of death — consistent with hard unplanned power
+loss, not software/Hermes/Salt-caused. This is the same class of problem as
+the documented 2026-09-29/30 "repeated unclean crashes, no clear root
+cause" that got other services migrated off this host — never actually
+fixed, just avoided by moving work elsewhere. Now Hermes's own uptime
+depends on this same host. **Needs a physical-layer fix (power
+cable/brick/outlet check, and realistically a UPS or a working battery) —
+not something any amount of software hardening here will solve.** Added as
+a new, higher-priority-than-P0 item: an agent that reboots every few hours
+undermines every other capability-parity gain in this doc.
+
 ## Open discrepancies to resolve, not yet acted on
 
 - **Hindsight port mismatch**: live `config.yaml` on `server` points
