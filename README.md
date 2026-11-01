@@ -6,9 +6,12 @@ something built on hardware already in the house, with a single paid cloud
 account (for frontier-model fallback) instead of two. See
 [VISION.md](VISION.md) for the current state of that vision in plain
 language, [ARCHITECTURE.md](ARCHITECTURE.md) for technical detail,
-[BACKLOG.md](BACKLOG.md) for what's still undecided, and
+[BACKLOG.md](BACKLOG.md) for what's still undecided,
 [CAPABILITY_PARITY.md](CAPABILITY_PARITY.md) for the live-tracked model of
-what Hermes can do vs. Claude Code and what's left to close that gap.
+what Hermes can do vs. Claude Code and what's left to close that gap, and
+[SYSTEM_INVENTORY.md](SYSTEM_INVENTORY.md) for the full ground-truth map of
+every host and service — built because the catalog, NetBox, and this
+repo's own docs had all drifted from reality in different ways.
 
 ## Relationship to LocalForge
 
