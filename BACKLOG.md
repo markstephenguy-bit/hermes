@@ -1,15 +1,92 @@
 # Backlog / Open Questions
 
-## Current priority: see CAPABILITY_PARITY.md
+## Current priority: hermes-vps setup master list (2026-11-01)
+
+Hermes moved from `server` to `hermes-vps` (31.220.53.141) this session —
+this is the punch list for getting that instance to a genuinely finished,
+working state. Supersedes nothing below as "wrong," just reflects that the
+ground moved again; check this list first, then CAPABILITY_PARITY.md for
+the broader CC-parity framing (needs its own refresh pass — several items
+here resolve or update things it still describes as on `server`).
+
+**P0 — functional gaps, blocking real use:**
+- **Public dashboard access is broken.** `hermes.markstephenguy.com` over
+  the normal internet/NPM/Authentik path doesn't work — confirmed a Docker
+  bridge "hairpin" issue (SYN packets reach the host and get firewall-accepted,
+  but the connection never completes) between the `npm` container and the
+  dashboard process, root cause not found despite real diagnostic effort.
+  Worked around with two alternate paths that **do** work: direct over the
+  WireGuard mesh (`http://10.60.0.1:9119`, basic-auth protected) for
+  WireGuard-reachable devices, and **SSH** (`hermes@31.220.53.141`, key
+  `~/.ssh/hostinger_hermes_vps_ed25519`, deployed + verified this session) —
+  Hermes Desktop is connected via SSH right now. The public path itself is
+  still unfixed; only matters if non-WireGuard, non-SSH access is wanted
+  (e.g. a browser from anywhere with just a password).
+- **`infra` (Salt) and `netbox` MCP servers were never actually wired into
+  Hermes.** `hermes mcp list` on `hermes-vps` confirms zero MCP servers
+  configured. Instructions were given earlier for this but targeted the old
+  `server` host, before the VPS migration decision — need to redo, this
+  time on `hermes-vps`.
+- **Destructive-action approval gate still unresolved.** Carried
+  `approvals.destructive_slash_confirm: false` over from `server`'s config
+  during the Telegram move (preserving existing behavior, not silently
+  changing it) but the underlying question — does Hermes actually pause for
+  confirmation on dangerous commands from unattended surfaces — was never
+  tested end-to-end.
+- **`server`'s fate is undecided** (explicitly parked — "we will talk about
+  the server later"). Leading theory on its reboot pattern: a flaky USB-C
+  power brick/cable (it's an HP ProDesk 600 G5 Mini, powered via USB-C PD,
+  no battery buffer) — untested. Also still running the hourly netbox-sync
+  cron on that same unstable host; worth deciding whether to move that to
+  `hermes-vps` too regardless of what happens to `server` itself.
+
+**P1 — needed for real confidence, not yet broken but not done:**
+- **Vaultwarden/secrets access blocked.** `bw` CLI requires HTTPS; the only
+  HTTPS path (`vault.markstephenguy.com`) is Authentik-SSO-gated and blocks
+  a CLI login outright. No decision made yet: add an Authentik bypass for
+  Vaultwarden's `/api` path (standard for native clients, but real auth
+  config surgery), build a custom secrets MCP like Claude Code's own
+  (still hits the same wall), or skip for now.
+- **Nous Portal fallback model** — deliberately deferred by Mark, never
+  configured. Main model (local Qwen on `w_workstation`) has no fallback;
+  a tunnel hiccup means Hermes answers but can't think, not a clean outage.
+- **Vision regressed, still not restored** on the new install either (worked
+  before on `deepseek-v4.1-flash`, `vision:` block is commented out here
+  same as it was on `server`).
+- **Telegram round-trip not fully confirmed** — Hermes sent a startup
+  notification and the bot is confirmed connected, but a real two-way
+  message exchange (Mark messages the bot, gets a reply) hasn't been
+  explicitly verified in this conversation.
+- **LAN-wide convenience access** — undecided between per-device host files,
+  a router static route + AdGuard DNS rewrite (LAN-wide, zero per-device
+  config), or fixing the public path. Less urgent now that SSH works, but
+  still open if Mark wants browser-based access without SSH/WireGuard each time.
+
+**P2 — hygiene, not blocking anything today:**
+- **Hindsight has no backup/export cadence** — standing gap noted in
+  CLAUDE.md, more load-bearing now that both Claude Code and Hermes depend
+  on the same bank.
+- **Old `server` Hermes install not decommissioned** — gateway stopped, but
+  nothing uninstalled; revisit once the `server` hardware decision lands.
+- **Docker resource limits** on `hermes-vps`'s 6 containers (Authentik x3,
+  WordPress, WordPress DB, NPM) — done, using official/manufacturer
+  recommended baselines as the starting point; revisit if real usage proves
+  them wrong in either direction.
+- **CAPABILITY_PARITY.md needs a refresh pass** — written while Hermes was
+  on `server`; several things it describes have since moved, resolved, or
+  changed shape (Hindsight is now the native plugin, not a generic MCP
+  entry; host changed; NPM/dashboard findings are new).
+
+## Historical: see CAPABILITY_PARITY.md for the earlier (2026-10-31) capability matrix
 
 The Claude-Code-parity tracking that used to live inline below (P0-P2 from
-the 2026-10-07 integration test) has been superseded by a full capability
+the 2026-10-07 integration test) was superseded by a full capability
 matrix and roadmap in [CAPABILITY_PARITY.md](CAPABILITY_PARITY.md)
 (2026-10-31), built after Mark's 2026-10-28 decision to make Hermes his
 primary AI harness. The 2026-10-07 findings below are kept for history —
 several (vision, no fallback, destructive-action approval) are re-confirmed
-still open in the new doc; others may be stale given the host moved off the
-VPS entirely since then. Check CAPABILITY_PARITY.md first.
+still open above; others may be stale given the host moved off the VPS
+entirely since then.
 
 ## Historical: integration punch-list from live capability testing (2026-10-07)
 
