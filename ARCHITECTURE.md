@@ -5,13 +5,14 @@ Model configuration and the preparation recipe below were reviewed on
 against the catalog. The recipe is a proposed configuration and research
 sequence, not a claim that its settings have been deployed or optimized.
 
-**Infra note (2026-10-11):** the "What's real right now" section below still
-described the Vultr VPS, which was destroyed 2026-10-10 and replaced with a
-Hostinger box — fixed in place below. The Qwen-heavy model prep recipe later
-in this file is mostly provider-agnostic (about `w_workstation`/Qwen tuning,
-not which VPS hosts the gateway) and hasn't been re-audited line-by-line; if
-anything there mentions Vultr or Codex-as-fallback specifically, treat that as
-stale and check [NEXT_SESSION.md](NEXT_SESSION.md) instead.
+**Infra note (2026-11-01):** the "What's real right now" section below was
+fully rewritten from a live, host-by-host verification sweep — not carried
+forward from older notes. It supersedes everything before it, including the
+2026-10-11 note this replaces (Vultr/Hostinger history, now moot). The
+Qwen-heavy model prep recipe later in this file is mostly provider-agnostic
+(about `w_workstation`/Qwen tuning, not which VPS hosts the gateway) and
+hasn't been re-audited line-by-line; treat anything there mentioning Vultr
+or Codex-as-fallback as stale.
 
 ## Core design principle: network resources are agent capabilities
 
@@ -24,71 +25,134 @@ on, doesn't. Keep this in mind when deciding where new pieces live: prefer
 designs where a capability is something Hermes can invoke/control, not just
 something Claude Code wired up once by hand.
 
-## What's real right now
+## What's real right now (verified live, 2026-11-01)
 
-**Inference update (2026-10-13):** `w_workstation:8090` now runs Qwen3.5-9B Q4_K_M on mainline llama.cpp with a 64,000-token serving window. Hermes uses `custom:local-qwen`; its model ID is the Windows GGUF path advertised by `/v1/models`. The older Qwen3.6/ik_llama.cpp descriptions in the research recipe below are historical.
+Everything below was directly re-verified host-by-host on 2026-11-01 —
+`docker ps`, `systemctl`, `ss -tlnp`, live process lists — not carried
+forward from older notes in this file or from memory. Several things
+turned out to not match what was previously documented (noted inline).
+If you're reading this later and something seems off, re-verify rather
+than trust it — this area has changed substantially every few days for
+over a month straight.
 
-- **`hermes-vps`** (Hostinger KVM 2, Phoenix US): `srv2051520.hstgr.cloud`,
-  `31.220.53.141`, 2 vCPU/8GB/100GB NVMe, plain Ubuntu 24.04 (not a vendor
-  app template). **The prior Vultr box (207.148.2.224) was destroyed
-  2026-10-10** — Vultr is gone both as the VPS host and as an LLM provider.
-  Runs hermes-agent v0.21.6 via the official install.sh (not a marketplace
-  image). Main model is local Qwen3.5-9B (`provider: custom:local-qwen`, mainline llama.cpp on
-  `w_workstation:8090`); fallback is `deepseek/deepseek-v4.1-flash` via
-  **Nous Portal** (`provider: nous`) — Codex is not configured as a fallback
-  on this box. `hermes-gateway.service` and `hermes-dashboard.service` are
-  systemd `--user` services under the `hermes` user (not system-level units).
-  **Public dashboard (added 2026-10-11):** Caddy (native apt install, not
-  Docker) reverse-proxies `https://theguylab.duckdns.org` → the dashboard
-  (loopback `127.0.0.1:9119`), HTTP Basic Auth, auto-TLS via Let's Encrypt.
-  Note `theguylab.duckdns.org` was **repointed from the home public IP to
-  this VPS** — home's previously-public WordPress/NPM services are no longer
-  reachable at that domain from the internet (deliberate tradeoff, decided
-  2026-10-11, not an accident). Hostinger has its own hPanel-level firewall
-  *in addition to* ufw — both must allow a port, and hPanel changes need an
-  explicit "Synchronize" click to actually apply. No Dokploy on this box
-  (that was a Vultr-only install, not recreated).
-- **Curated knowledge vault** (added 2026-10-14):
-  `/home/hermes/knowledge-vault` is a VPS-local Markdown folder, mounted
-  read-write into the Hermes Docker sandbox at `/vault`. The bundled Obsidian
-  skill uses `OBSIDIAN_VAULT_PATH=/vault` with file tools. This is separate
-  from Hindsight's conversational memory. The mount is intentionally limited
-  to the vault; the sandbox does not mount the whole Hermes home directory.
-  Sync, backup, and automated curation are not configured yet.
-- **`w_workstation`** (192.168.40.100, Windows 11, Georgia Pacific-managed
-  via `BPNET` domain, Zscaler) currently serves Qwen3.5-9B Q4_K_M
-  through mainline llama.cpp on port 8090. Its `/v1/models` response
-  advertises the Windows GGUF path as the model ID and `n_ctx: 64000`.
-  Hermes pins that exact ID and per-model context limit in its custom provider.
-- **`server`** (192.168.40.250, Ubuntu 24.04) is the Docker host for
-  persistent home services unrelated to the automation/networking backbone
-  — Nginx Proxy Manager, AdGuard (LAN DNS), Portainer, WordPress, Plex,
-  MeshCentral, Beszel, DuckDNS. Previously also ran the catalog, WireGuard
-  tunnel endpoint, Squid, and Salt master/API — all four migrated off
-  after `server` had repeated unclean crashes 2026-09-29/30 with no clear
-  software root cause (still unconfirmed; sleep targets masked as a
-  mitigation/test). Still runs its own `salt-minion`, pointed at the new
-  master like every other minion.
-- **`fileserver`** (192.168.40.2, Ubuntu 24.04) — previously just Samba file
-  shares + a Beszel monitoring agent, now home to the entire migrated
-  automation/networking stack, each piece a separate Docker container for
-  compartmentalization: `catalog-db`/`catalog-api`, Squid (same ACL as
-  before), the WireGuard tunnel endpoint (same keypair/identity preserved
-  from `server` so hermes-vps needed zero config changes — WireGuard
-  peers are keyed by public key, not source IP), and `salt-master`+`salt-api`
-  (`cdalvaro/docker-salt-master`, minion *identity*/accepted-keys preserved
-  from `server`'s PKI, though the container generated its own new master
-  keypair on first start regardless — each of the 6 minions had their
-  cached master-pubkey cleared and `master:` config repointed). All four
-  migrations completed and verified 2026-09-30.
-- **Remote access — decided (2026-09-22):** password-gated web UI behind the
-  existing DuckDNS domain (`theguylab.duckdns.org`) or direct authenticated
-  Hermes web interface / Telegram / Signal interface.
-- `LocalForge`'s bridge already proves out the core idea (Claude Code / an
-  agent process talking to LM Studio's OpenAI-compatible API over LAN) —
-  the code at `Home Claude/LocalForge/bridge/server.py` is a working
-  reference for the HTTP contract, timeouts, and `finish_reason == "length"`
-  gotchas already discovered there.
+### `hermes-vps` (Hostinger KVM2, 31.220.53.141, `srv2051520.hstgr.cloud`)
+
+Public front door for `markstephenguy.com` and all its subdomains, and
+**as of 2026-11-01, where Hermes Agent itself runs** (moved here from
+`server`, which had a recurring hard-power-loss reboot pattern — see
+BACKLOG.md). 2 vCPU (AMD EPYC 9354P host), 7.8GB RAM, 100GB SSD.
+
+- **Hermes Agent**: native git install (not Docker), `terminal.backend: local`.
+  Two systemd `--user` services under the `hermes` user: `hermes-gateway`
+  (messaging platforms — Telegram is live here) and `hermes-dashboard`
+  (web UI / Desktop backend, port 9119, basic-auth protected). Main model
+  is local Qwen3.5-9B on `w_workstation:8090`, reached over the WireGuard
+  tunnel — no fallback provider configured yet (BACKLOG P1). Memory is the
+  native `hindsight` plugin (`memory.provider: hindsight`, mode
+  `local_external`, pointing at the real instance on `w_workstation:8888`,
+  same `hermes` bank Claude Code uses) — not a generic MCP registration.
+- **Docker** (6 containers, all with CPU/RAM limits applied 2026-11-01):
+  `npm` (Nginx Proxy Manager, the actual reverse proxy for every
+  `*.markstephenguy.com` subdomain), `authentik-server`/`authentik-worker`/
+  `authentik-postgresql` (SSO — gates `hermes.`, `hindsight.`, `vault.`,
+  `netbox.markstephenguy.com` behind login), `wordpress`/`wordpress_db`
+  (the public site itself).
+- **Known gap**: the public path `hermes.markstephenguy.com` → NPM →
+  dashboard doesn't actually work — a Docker bridge routing issue between
+  the `npm` container and the native dashboard process that resisted real
+  diagnostic effort (SYN packets reach the host and get firewall-accepted,
+  connection never completes). Working alternatives in daily use instead:
+  SSH (`hermes@31.220.53.141`, key `~/.ssh/hostinger_hermes_vps_ed25519`)
+  and direct WireGuard-mesh access (`http://10.60.0.1:9119`, basic-auth).
+- WireGuard tunnel endpoint: `10.60.0.1` — see Network Topology below.
+
+### `w_workstation` (192.168.40.100, Windows 11 Enterprise, Georgia-Pacific `BPNET` domain, Zscaler)
+
+HP Z4 G4 Workstation, Xeon W-2225 (4c/8t), 64GB RAM — the strongest
+hardware on the network, but a corporate-managed machine, not home-lab
+owned. Runs more than previously documented:
+
+- **`llama-server`** process: Qwen3.5-9B Q4_K_M, port 8090, 64K context —
+  the model every Hermes instance and inference path depends on.
+- **Hindsight** (`hindsight` + `hindsight-postgres` containers): port
+  **8888** (the real one — `.mcp.json`'s own `/hindsight` path and a
+  stray `:8891` reference elsewhere were both checked and ruled out this
+  session) **and also 9999**, not previously documented.
+- **Vaultwarden**: its own container, port 8098 — this is the actual
+  password-manager backend. The public `vault.markstephenguy.com` domain
+  puts Authentik SSO in front of it (on the VPS); the `bw` CLI can't
+  complete a non-browser login through that SSO gate, which is why
+  Hermes's Vaultwarden plugin is currently blocked (BACKLOG P1).
+- **NetBox**: a full 5-container stack (`netbox-netbox-1` on port 8080,
+  `netbox-mcp` sidecar on port 8001, plus a worker, postgres, and two
+  redis containers) — not just the MCP sidecar alone.
+
+### `server` (192.168.40.250, Ubuntu 24.04)
+
+**HP ProDesk 600 G5 Desktop Mini** (small form factor, USB-C PD powered,
+no battery) — previously mischaracterized in this file as a general
+"Docker host for persistent home services" (AdGuard, Portainer, WordPress,
+Plex, MeshCentral, DuckDNS); **none of that is true anymore.** `docker ps -a`
+returns zero containers — not stopped, genuinely absent. All those services
+have migrated to `fileserver` (see below) at some point without this file
+being updated. What's actually here now:
+
+- `salt-minion` (active).
+- `/opt/netbox-sync/` — the hourly NetBox sync cron (`0 * * * *`), still
+  depending on this host even though its reliability is in question.
+- A stopped, not-yet-decommissioned Hermes install (gateway/dashboard
+  services were stopped 2026-11-01 when Hermes moved to `hermes-vps`,
+  not uninstalled).
+- **Reboot pattern under investigation** (BACKLOG P0) — repeated hard
+  power-loss-signature reboots; leading theory is the USB-C power
+  brick/cable, untested. Decision on this host's future is explicitly
+  parked.
+
+### `fileserver` (192.168.40.2, Ubuntu 24.04)
+
+Originally "just Samba shares," now the real home for most of the
+home-lab's Docker-based infrastructure — including several services this
+file never previously documented:
+
+- **Core networking/automation**: `salt-master` (+ Salt API, port 8000),
+  the WireGuard tunnel endpoint (`10.60.0.2`, same keypair/identity
+  preserved from the pre-migration `server` setup), `squid` (port 3128),
+  `catalog-api`/`catalog-db` (port 3003 — narrowed scope per CLAUDE.md:
+  `hosts`/`services` tables only, secrets table retired).
+- **`adguardhome`** — LAN DNS (port 53) and the natural place for any
+  LAN-wide hostname override (DNS rewrite), rather than per-device hosts
+  files. Previously documented as running on `server`; it does not.
+- **`lan-local-proxy`** — a plain-nginx LAN-local mirror of the VPS's NPM
+  routing, for LAN speed. A second source of truth that must be kept in
+  sync with VPS-NPM manually on any backend move.
+- **Not previously documented anywhere in this repo or in memory**:
+  **`guacamole` + `guacd` + `guac-db`** (Apache Guacamole — a full
+  browser-based remote-desktop/SSH gateway stack, up 4+ weeks) and
+  **`meshcentral`** (remote device management, port 8086, migrated here
+  from `server` same as AdGuard). Worth understanding what these are
+  actually used for before assuming they're either safe to ignore or safe
+  to remove.
+- `beszel-agent` (monitoring).
+- Also runs a native (non-Docker) `nginx` bound to host ports 80/443 —
+  likely `lan-local-proxy` using host networking rather than a separate
+  process, but not confirmed; worth a closer look if it ever matters.
+
+### Laptop (this machine, 192.168.40.61)
+
+Mark's daily driver. Not an always-on host by design (suspends on lid
+close). Holds the `hostinger_hermes_vps_ed25519` SSH keypair used for
+Hermes Desktop's SSH connection mode to `hermes-vps`. WireGuard client
+configured but not auto-started — brought up manually when away from
+home, and its current `AllowedIPs` scope is broad enough that bringing it
+up while on the home LAN causes unwanted routing (flagged 2026-11-01,
+not yet narrowed).
+
+### Remote access
+
+Password-gated web UI via `hermes.markstephenguy.com` behind Authentik SSO
+is the intended path but currently broken (see `hermes-vps` above). SSH
+and direct WireGuard-mesh access both work today. Telegram is live and
+connected via the native gateway on `hermes-vps`.
 
 ## Network Topology & Subnet Tunnel
 
