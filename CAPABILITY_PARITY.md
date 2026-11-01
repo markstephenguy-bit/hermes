@@ -10,9 +10,30 @@ BACKLOG.md — update it in place as gaps close, don't let it drift from
 Hindsight (bank `hermes`), and prefer verifying live state over trusting an
 older note here or in ARCHITECTURE.md.
 
-**Sources for the "Hermes today" column:** live inspection of
+**Host update (2026-11-01):** Hermes moved again, from `server` to
+**`hermes-vps`** (31.220.53.141, Hostinger KVM2) — root-caused `server`'s
+repeated unplanned reboots to probable hardware fault, and the VPS matches
+ARCHITECTURE.md's original "Always-On Hub" design anyway (stable public
+IP, survives a home-internet outage, datacenter power). Fresh native
+install (git method, `terminal.backend: local`, no Docker), gateway
+running as a systemd `--user` service with linger. Verified end-to-end:
+real inference round-trip to `w_workstation`'s Qwen model over the
+WireGuard tunnel, Hindsight MCP wired and confirmed via `hermes mcp list`,
+`hermes doctor` clean, NPM's `hermes.markstephenguy.com` repointed to
+`127.0.0.1:9119`. Two open items: the Vaultwarden plugin is blocked (`bw`
+CLI requires HTTPS, the only HTTPS path is Authentik-SSO-gated and blocks
+a CLI login), and the VPS has only 2 vCPUs shared with Authentik/WordPress/
+NPM with zero Docker resource limits on any container — fine at current
+light load, a real contention risk if Hermes does heavy concurrent work.
+Telegram and the Nous Portal fallback still need moving/wiring here from
+`server`. The capability matrix below still applies; it was written while
+Hermes was on `server` and the "Hermes today" column should be re-verified
+against `hermes-vps` as each gap gets revisited, not assumed identical.
+
+**Original sources for the "Hermes today" column (2026-10-31, on `server`):**
+live inspection of
 `/home/hermes/.hermes/config.yaml`, `tools/`, `skills/`, `plugins/` on host
-`server` (192.168.40.250) via Salt on 2026-10-31, cross-checked against
+`server` (192.168.40.250) via Salt, cross-checked against
 Hindsight recall. Where the two disagree, that's flagged explicitly rather
 than silently picked.
 
