@@ -61,18 +61,62 @@ def _salt_call(payload: dict) -> dict:
     return resp.json()
 
 
+def _partition_by_os(target: str) -> tuple[set[str], set[str]] | None:
+    """Split the minions matching target into (windows, non_windows) by kernel grain.
+
+    Windows minions default to cmd.exe, which silently mangles PowerShell/POSIX
+    syntax (e.g. ';' as a separator) instead of erroring - so cmd.run needs to
+    know which targets are Windows rather than relying on the caller to remember.
+    Returns None if the lookup itself fails, so the caller can fall back safely.
+    """
+    try:
+        resp = _salt_call({"client": "local", "tgt": target, "fun": "grains.get", "arg": ["kernel"]})
+        kernels = resp.get("return", [{}])[0]
+    except Exception:
+        return None
+    windows = {m for m, k in kernels.items() if k == "Windows"}
+    return windows, set(kernels) - windows
+
+
 @mcp.tool
-def salt_run(target: str, function: str, args: list[str] | None = None, powershell: bool = False) -> dict:
+def salt_run(target: str, function: str, args: list[str] | None = None, powershell: bool | None = None) -> dict:
     """Run a Salt function (e.g. 'test.ping', 'cmd.run') against a target minion or glob.
 
-    Set powershell=True when running cmd.run on a Windows minion with a PowerShell command.
+    For cmd.run, the right shell is auto-detected per minion (Windows minions get
+    'powershell', everyone else gets their default shell) so mixed-OS targets like
+    '*' work correctly without the caller needing to know which minions are Windows.
+    Pass powershell=True/False to force the shell for every matched minion instead.
     """
     payload = {"client": "local", "tgt": target, "fun": function}
     if args:
         payload["arg"] = args
-    if powershell:
+
+    if function != "cmd.run" or powershell is False:
+        return _salt_call(payload)
+
+    if powershell is True:
         payload["kwarg"] = '{"shell": "powershell"}'
-    return _salt_call(payload)
+        return _salt_call(payload)
+
+    # powershell is None: auto-detect by partitioning the target so each minion
+    # runs the command exactly once, under its own correct shell.
+    partition = _partition_by_os(target)
+    if not partition or not partition[0]:
+        return _salt_call(payload)  # lookup failed, or no Windows minions matched - old behavior
+    windows_minions, other_minions = partition
+
+    merged: dict = {}
+    ps_tgt = " or ".join(f"L@{m}" for m in windows_minions)
+    ps_result = _salt_call({**payload, "tgt": ps_tgt, "tgt_type": "compound",
+                             "kwarg": '{"shell": "powershell"}'})
+    merged.update(ps_result.get("return", [{}])[0])
+
+    if other_minions:
+        other_tgt = " or ".join(f"L@{m}" for m in other_minions)
+        other_result = _salt_call({**payload, "tgt": other_tgt, "tgt_type": "compound"})
+        merged.update(other_result.get("return", [{}])[0])
+
+    return {"return": [merged]}
 
 
 @mcp.tool
