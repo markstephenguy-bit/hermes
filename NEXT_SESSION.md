@@ -147,11 +147,39 @@ through:
    style as the Hindsight sidecars) so Salt can start/stop/restart/deploy it
    like everything else this session was driven through.
 
-**Next step**: resolve Mark's `mcp.markstephenguy.com`/Docker framing
-question first (single-purpose secrets server vs. general capability
-gateway), then the four questions above, then build — the build itself
-should be small once those are answered, closely mirroring the already-
-working Hindsight sidecar.
+**RESOLVED 2026-11-10 (research session)**: one gateway, not two. Mark
+confirmed `mcp.markstephenguy.com` is a single general-capability MCP
+gateway — not a secrets-only service built separately from any Hermes
+control surface. This was triggered by a related ask in the same session:
+exposing *Hermes itself* as an MCP server so outside harnesses (Claude Code,
+Codex, etc.) can call in and control it. Research for that found:
+
+- Hermes's own native `mcp-serve` plugin (`hermes plugins install mcp-serve`)
+  is stdio-only and messaging-tools-only (never exposes terminal/file/
+  code-exec/process/kanban/delegation) — not a fit for a network-reachable
+  Docker gateway.
+- A community proposal to expose Hermes's full tool registry via FastMCP
+  (NousResearch/hermes-agent issue #342) was closed by the maintainer as
+  incomplete/underspecified — treat "wrap everything" as a known hard
+  problem, not a quick build.
+- The viable path: Hermes already runs a complete, documented REST/
+  OpenAI-compatible API server (port 9119, `API_SERVER_KEY` bearer auth —
+  `/v1/chat/completions`, `/v1/runs` family, `/api/sessions` family,
+  `/api/jobs`, `/v1/skills`, `/v1/toolsets`, `/v1/capabilities`). A thin MCP
+  wrapper translating MCP tool calls into calls against *that* REST API —
+  same shape as `scripts/hindsight_mcp.py`/`hindsight_mcp_http.py` — is the
+  sound architecture, not the native plugin.
+
+**Implication for this gateway's scope**: `mcp.markstephenguy.com` should end
+up exposing both tool families — secrets tools (per the design below) *and*
+Hermes-control tools (`hermes_chat`, `hermes_run_*`, `hermes_session_*`,
+`hermes_job_*`, plus `hermes_capabilities`/`hermes_skills_list`/
+`hermes_toolsets_list` as MCP resources) — as one Docker-packaged MCP server,
+not two.
+
+**Next step**: the four secrets-design questions below are still open and
+unresolved. Resolve those, confirm the combined tool surface above, then
+build — closely mirroring the already-working Hindsight sidecar pattern.
 
 ## Standing rules, unchanged
 
