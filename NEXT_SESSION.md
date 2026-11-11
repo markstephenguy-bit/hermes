@@ -177,6 +177,28 @@ Hermes-control tools (`hermes_chat`, `hermes_run_*`, `hermes_session_*`,
 `hermes_toolsets_list` as MCP resources) — as one Docker-packaged MCP server,
 not two.
 
+**Expanded again 2026-11-10**: Mark also wants this gateway to **replace the
+current `infra` MCP server** (`scripts/infra_mcp.py`, registered today as a
+local stdio server in `.mcp.json` via `scripts/infra_mcp_run.sh`). Its real
+tools are `salt_run` (Salt `cmd.run`/any function, with the Windows-vs-POSIX
+shell auto-detection logic worth preserving) and `salt_minion_status`
+(ping-all). It also has a third tool, `netbox_quick_scan`, which calls
+`netbox_sync.py` — **do not carry this one forward**: NetBox itself is
+decommissioned (2026-11-06, see memory), so this tool is already dead code
+pointed at nothing, independent of this consolidation.
+
+So the gateway is now four tool-families: secrets, Hermes-control, vector-RAG
+(from the same session, see memory `project_hermes_vector_rag_research`), and
+infra/Salt control. One real design flag worth surfacing before building: Salt
+gives effectively root-level control over every host on the network, and this
+gateway's other half (secrets, and possibly a public bearer-token HTTP path
+like `hindsight-mcp.markstephenguy.com`'s) implies at least some internet
+exposure — Salt control sitting behind the same bearer-token gate as Hindsight
+recall is a much bigger blast radius if that token ever leaks. Worth an
+explicit look at transport/auth-per-tool-family (e.g. Salt only over the
+stdio/LAN path, never the public HTTP path) rather than one flat auth model
+for everything, when this gets built.
+
 **Next step**: the four secrets-design questions below are still open and
 unresolved. Resolve those, confirm the combined tool surface above, then
 build — closely mirroring the already-working Hindsight sidecar pattern.
