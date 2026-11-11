@@ -5,6 +5,11 @@
       "args": ["run", "--script", "/home/mark/projects/Hermes/scripts/hindsight_mcp.py"],
       "env": { "HINDSIGHT_URL": "http://192.168.40.100:8888/hindsight" }
     },
+    "hermes": {
+      "command": "uv",
+      "args": ["run", "--script", "/home/mark/projects/Hermes/scripts/hermes_mcp.py"],
+      "env": { "HERMES_BASE_URL": "http://192.168.40.250:8642" }
+    },
     "infra": {
       "command": "/home/mark/projects/Hermes/scripts/infra_mcp_run.sh"
     },
