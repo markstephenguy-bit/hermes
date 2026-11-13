@@ -90,6 +90,31 @@ def list_memories(bank_id: str = DEFAULT_BANK, limit: int = 20) -> dict:
 
 
 @mcp.tool
+def curate_memory(memory_id: str, state: str | None = None, text: str | None = None,
+                   context: str | None = None, reason: str | None = None,
+                   bank_id: str = DEFAULT_BANK) -> dict:
+    """Correct or retract a memory that's no longer true. state='invalidated' soft-retires it
+    (excluded from recall/consolidation, reversible via state='valid'); text replaces the fact's
+    wording outright. Pass reason to record why. Use recall/list_memories first to get memory_id."""
+    body: dict = {}
+    if state is not None:
+        body["state"] = state
+    if text is not None:
+        body["text"] = text
+    if context is not None:
+        body["context"] = context
+    if reason is not None:
+        body["reason"] = reason
+    resp = httpx.patch(
+        f"{HINDSIGHT_URL}/v1/default/banks/{bank_id}/memories/{memory_id}",
+        json=body,
+        timeout=30,
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+
+@mcp.tool
 def get_entities(bank_id: str = DEFAULT_BANK, limit: int = 50) -> dict:
     """List entities Hindsight has extracted/tracked for a bank (people, systems, projects, etc.)."""
     resp = httpx.get(
