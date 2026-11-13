@@ -27,40 +27,26 @@ here resolve or update things it still describes as on `server`).
   configured. Instructions were given earlier for this but targeted the old
   `server` host, before the VPS migration decision — need to redo, this
   time on `hermes-vps`.
-- **Destructive-action approval gate still unresolved.** Carried
-  `approvals.destructive_slash_confirm: false` over from `server`'s config
-  during the Telegram move (preserving existing behavior, not silently
-  changing it) but the underlying question — does Hermes actually pause for
-  confirmation on dangerous commands from unattended surfaces — was never
-  tested end-to-end.
-- **`server`'s fate is undecided** (explicitly parked — "we will talk about
-  the server later"). Leading theory on its reboot pattern: a flaky USB-C
-  power brick/cable (it's an HP ProDesk 600 G5 Mini, powered via USB-C PD,
-  no battery buffer) — untested. Also still running the hourly netbox-sync
-  cron on that same unstable host; worth deciding whether to move that to
-  `hermes-vps` too regardless of what happens to `server` itself.
+- **`server`'s fate is undecided** — update 2026-11-12: Mark confirmed
+  `server` and `w_laptop` are turned off **on purpose** and will stay off
+  until he can diagnose their hardware/software issues. Not a thing to fix
+  or wait out; leave both alone until he says otherwise.
 
 **P1 — needed for real confidence, not yet broken but not done:**
-- **Vaultwarden/secrets access blocked.** `bw` CLI requires HTTPS; the only
-  HTTPS path (`vault.markstephenguy.com`) is Authentik-SSO-gated and blocks
-  a CLI login outright. No decision made yet: add an Authentik bypass for
-  Vaultwarden's `/api` path (standard for native clients, but real auth
-  config surgery), build a custom secrets MCP like Claude Code's own
-  (still hits the same wall), or skip for now.
 - **Nous Portal fallback model** — deliberately deferred by Mark, never
-  configured. Main model (local Qwen on `w_workstation`) has no fallback;
-  a tunnel hiccup means Hermes answers but can't think, not a clean outage.
-- **Vision regressed, still not restored** on the new install either (worked
-  before on `deepseek-v4.1-flash`, `vision:` block is commented out here
-  same as it was on `server`).
-- **Telegram round-trip not fully confirmed** — Hermes sent a startup
-  notification and the bot is confirmed connected, but a real two-way
-  message exchange (Mark messages the bot, gets a reply) hasn't been
-  explicitly verified in this conversation.
-- **LAN-wide convenience access** — undecided between per-device host files,
-  a router static route + AdGuard DNS rewrite (LAN-wide, zero per-device
-  config), or fixing the public path. Less urgent now that SSH works, but
-  still open if Mark wants browser-based access without SSH/WireGuard each time.
+  configured. Main model is **gpt-oss-20b, served by LM Studio on
+  `w_workstation`** (2026-11-12 correction — not Qwen/llama.cpp as earlier
+  notes said); no fallback configured, so a tunnel hiccup means Hermes
+  answers but can't think, not a clean outage.
+- ~~Telegram round-trip not fully confirmed~~ — **RESOLVED 2026-11-12**:
+  real two-way exchange verified (Mark messaged the bot, got a reply,
+  confirmed in gateway.log).
+- ~~LAN-wide convenience access~~ — **RESOLVED 2026-11-12** for `hermes-vps`:
+  per-device `/etc/hosts` + Windows hosts entries (`hermes-vps` → the
+  WireGuard IP `10.60.0.1`) plus a persistent route to `10.60.0.0/24` via
+  fileserver, pushed to laptop/fileserver/w_workstation/w_desktop via Salt.
+  Chosen over AdGuard-wide DNS rewrites or fixing the public path, since
+  there aren't many LAN machines. `server`/`w_laptop` excluded — see above.
 
 **P2 — hygiene, not blocking anything today:**
 - **Hindsight has no backup/export cadence** — standing gap noted in
