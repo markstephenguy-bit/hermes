@@ -9,6 +9,10 @@
       "command": "/home/mark/projects/Hermes/scripts/hermes_mcp_run.sh",
       "env": { "HERMES_BASE_URL": "http://10.60.0.1:8642" }
     },
+    "hermes-mcp-serve": {
+      "command": "ssh",
+      "args": ["hermes-vps", "/home/hermes/.hermes/hermes-agent/.hermes/bin/hermes", "mcp-serve", "--tools"]
+    },
     "infra": {
       "command": "/home/mark/projects/Hermes/scripts/infra_mcp_run.sh"
     },
