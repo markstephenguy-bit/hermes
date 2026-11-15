@@ -6,8 +6,8 @@
       "env": { "HINDSIGHT_URL": "http://192.168.40.100:8888/hindsight" }
     },
     "cognee": {
-      "type": "http",
-      "url": "http://192.168.40.2:8767/mcp"
+      "command": "uv",
+      "args": ["run", "--script", "/home/mark/projects/Hermes/scripts/cognee_cloud_mcp.py"]
     },
     "hermes": {
       "command": "/home/mark/projects/Hermes/scripts/hermes_mcp_run.sh",
