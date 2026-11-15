@@ -51,6 +51,11 @@ via `git log -p -- NEXT_SESSION.md` when picking it back up.
    - Active datasets in Cognee Cloud: `default_dataset`, `infrastructure`, `hindsight_migration`.
    - Quota usage: storage remains well within the 10 GB limit (< 0.001% utilized).
 
+7. **Hindsight decommissioned & Hermes memory provider switched**:
+   - Disabled external memory provider on `hermes-vps` (`hermes memory off`), verified `hermes-gateway` restarted cleanly. Hermes now relies on built-in memory (`MEMORY.md`/`USER.md`) plus Cognee Cloud MCP tools.
+   - Stopped `hindsight` and `hindsight-postgres` Docker containers on `w_workstation` via Salt (`docker stop hindsight hindsight-postgres`). Container images and data volumes remain intact on the workstation.
+   - Updated `AGENTS.md`: memory upkeep across all agent harnesses (Codex, Antigravity, Claude Code) now targets Cognee Cloud directly (`remember`).
+
 ## Active Threads & Next Work
 
 1. **Secrets-over-MCP design discussion (Parked)**:

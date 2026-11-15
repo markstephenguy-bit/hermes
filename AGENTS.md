@@ -13,12 +13,9 @@ two files conflicts with NEXT_SESSION.md, **NEXT_SESSION.md wins.** It's
 written as a session-opening brief; read it as a status doc regardless of
 which tool you are.
 
-If the catalog or Hindsight (below) is unreachable — no LAN/WireGuard access,
-e.g. working from outside the home network without the laptop's WireGuard
-tunnel up — this repo's own NEXT_SESSION.md is the only record of project
-state (`memory/catalog-export.json` is a dead backup of the retired catalog,
-not current — see the Hindsight backup note below). Treat NEXT_SESSION.md as
-load-bearing in that case, not a backup.
+If the catalog or Cognee Cloud (below) is unreachable — no internet or LAN/WireGuard access,
+e.g. working without network — this repo's own NEXT_SESSION.md is the only record of project
+state. Treat NEXT_SESSION.md as load-bearing in that case, not a backup.
 
 ## Before assuming anything about the network
 
@@ -44,44 +41,32 @@ secrets going forward, even as a fallback. One secrets source, full stop.
 ## Logging progress — this project's actual memory
 
 Hermes-specific memory (decisions, live inventory snapshots, progress) lives
-in **Hindsight**, the memory system running on a w_workstation Docker
-deployment (192.168.40.100:8888) — not the old fileserver catalog and not
-new markdown files in this repo or prose dumped into a chat session.
-Hindsight is reached through the `hindsight` MCP server
-(`scripts/hindsight_mcp.py`, registered in this repo's `.codex/config.toml`
-and in Antigravity's `~/.gemini/config/mcp_config.json`, talking plain HTTP
-to Hindsight directly — no SSH hop needed) rather than a raw `curl` to the
-fileserver Postgres endpoint. This survives across every future session/tool
-(Codex, Antigravity, Claude Code) without re-explaining itself.
+in **Cognee Cloud** (hosted at `api.aws.cognee.ai`, replaced Hindsight and Graphiti
+on 2026-11-15) — not the old fileserver catalog, not Hindsight on w_workstation
+(turned off), and not new markdown files in this repo or prose dumped into a chat
+session. Cognee Cloud is reached through the `cognee` MCP server
+(`scripts/cognee_cloud_mcp.py`, registered in this repo's `.codex/config.toml`,
+`~/.codex/config.toml`, `~/.claude.json`, `.mcp.json`, and in Antigravity's
+`~/.gemini/config/mcp_config.json`, talking HTTPS to Cognee Cloud using static API
+keys from `~/.config/cognee-cloud/credentials.env`). This survives across every
+future session/tool (Codex, Antigravity, Claude Code, Hermes) without re-explaining itself.
 
-- `retain(content, context, document_id, metadata)` — write a new fact/
-  decision/progress note. One sentence or two in `content`, specifics
-  (numbers, paths, config) in `metadata` as string values, not prose.
-- `recall(query, tags, budget)` — semantic search over stored memory.
-- `reflect(query)` — ask a question and get a synthesized answer instead of
-  raw matches.
-- `list_memories` / `get_entities` / `list_banks` — inspect what's stored.
+- `remember(data, dataset_name, background)` — write a new fact/decision/progress
+  note into Cognee Cloud (defaults to dataset `hindsight_migration` or `main_dataset`).
+- `recall(query, datasets, search_type, top_k)` — semantic / hybrid graph search
+  over stored knowledge.
+- `list_datasets()` — inspect datasets in the workspace.
 
-Migrated 2026-10-15: the fileserver Postgres/PostgREST catalog (previously
-`entities` tagged `hermes`) is retired as Hermes's memory store — do not
-read or write `hermes`-tagged entities there going forward. `hosts`/
-`services` tables on that catalog are a separate, non-Hermes concern and
-are out of scope for this migration (don't touch them as part of Hermes
-work without asking first).
+Migrated 2026-11-15: Hindsight's entire memory store (3,347 facts, 272 batches)
+was exported to `data/hindsight_dump/` and migrated into Cognee Cloud dataset
+`hindsight_migration`. The Hindsight Docker containers on `w_workstation`
+(`hindsight`, `hindsight-postgres`) were stopped via Salt, and Hermes's external
+memory provider on `hermes-vps` was disabled (`hermes memory off`) to rely on
+built-in memory + Cognee Cloud MCP tools.
 
 Keep this repo's own docs (README/ARCHITECTURE/BACKLOG) as a *current-state
 summary* a human can read at a glance — update them in place, don't let them
-drift from Hindsight, but don't treat them as the memory store either.
-
-### Backup: Hindsight is a single point of failure
-
-Hindsight's data only exists on its w_workstation Docker deployment —
-nothing else backs it up yet. The old `scripts/export_catalog_memory.py` /
-`memory/catalog-export.json` pair backed up the retired fileserver catalog
-and is now historical only (dead backup of a dead store — do not treat it
-as current). An equivalent periodic export of the Hindsight `hermes` bank
-(it has its own `GET .../banks/{bank_id}/export` endpoint) has not been
-built yet — this is a known gap, not a solved one.
+drift from Cognee Cloud, but don't treat them as the memory store either.
 
 ## Standing rules inherited from the home lab
 
@@ -97,9 +82,9 @@ listed below, *for this project*:
 
 - **Memory upkeep is Codex's (and Antigravity's) job, not the user's.**
   Never wait to be told to save something. Every decision, correction, or
-  fact that comes up in conversation gets written to Hindsight (bank
-  `hermes`, via the `hindsight` MCP server) as it happens. The user should
-  never have to say "remember this."
+  fact that comes up in conversation gets written to Cognee Cloud (dataset
+  `hindsight_migration` or `main_dataset`, via the `cognee` MCP server's
+  `remember` tool) as it happens. The user should never have to say "remember this."
 - **Git upkeep is Codex's job, not the user's.** Commit as work lands and
   push too, no need to ask first. SSH access was set up 2026-09-23 (key
   registered with GitHub, remote `git@github.com:markstephenguy-bit/hermes.git`)
