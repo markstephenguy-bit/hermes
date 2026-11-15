@@ -33,11 +33,15 @@ here resolve or update things it still describes as on `server`).
   or wait out; leave both alone until he says otherwise.
 
 **P1 — needed for real confidence, not yet broken but not done:**
-- **Nous Portal fallback model** — deliberately deferred by Mark, never
-  configured. Main model is **gpt-oss-20b, served by LM Studio on
-  `w_workstation`** (2026-11-12 correction — not Qwen/llama.cpp as earlier
-  notes said); no fallback configured, so a tunnel hiccup means Hermes
-  answers but can't think, not a clean outage.
+- ~~Nous Portal fallback model~~ — **RESOLVED 2026-11-15**: configured
+  `anthropic/claude-sonnet-5` via Nous as the fallback (`hermes fallback
+  add`), tried on rate-limit/overload/connection errors against the
+  primary (gpt-oss-20b via LM Studio on `w_workstation`). Chosen over a
+  cheaper option because a fallback has to handle the full agentic
+  toolset competently, not a narrow task, and fires rarely enough that
+  paying for real reliability is worth it. Verified live: a direct call
+  against Nous's inference API with this exact model string returned a
+  real, billed completion.
 - ~~Telegram round-trip not fully confirmed~~ — **RESOLVED 2026-11-12**:
   real two-way exchange verified (Mark messaged the bot, got a reply,
   confirmed in gateway.log).
@@ -188,6 +192,30 @@ determines where the code lives and what gets reused.
 
 ## Resolved
 
+- **Auxiliary-task model routing on `hermes-vps` (2026-11-15):** connected
+  Mark's Nous Portal account and routed the auxiliary tasks where the free
+  local model (gpt-oss-20b) either structurally can't do the job or where a
+  bad call is high-stakes/hard-to-notice: Vision → `qwen/qwen3.8-flash`,
+  Compression → `google/gemini-3.7-flash`, Approval →
+  `anthropic/claude-sonnet-5`, Review → `anthropic/claude-haiku-4.5`,
+  Curator → `google/gemini-3.7-flash`. The other 6 auxiliary task types
+  (MCP routing, title generation, voice chat, triage specifier, kanban
+  decomposer, profile describer) stay on `auto` — all low-stakes/text-only,
+  no structural reason to pay for them. Every non-auto model was verified
+  with a real, billed call against Nous's inference API (not just checked
+  against the `/v1/models` catalog) before trusting it. Estimated added
+  cost: roughly $1-2/month at current usage, dominated by whichever task
+  fires most often in practice — worth re-checking against `hermes
+  insights` after a few weeks of real use rather than trusting the
+  projection.
+- **Hermes dashboard is now systemd-persistent (2026-11-15):** was a bare
+  `nohup`/background process that wouldn't survive a reboot or crash.
+  Added `~/.config/systemd/user/hermes-dashboard.service` on `hermes-vps`,
+  mirroring `hermes-gateway.service`'s structure (`Restart=always`, journal
+  logging). Linger was already enabled for the `hermes` user, so — like
+  the gateway — it now also survives a reboot with no active login
+  session. Verified live: reachable at `http://10.60.0.1:9119` and stays
+  up through a manual restart.
 - **Remote access mechanism (2026-09-22):** password-gated web UI behind
   existing DuckDNS + Nginx Proxy Manager, path-based location. No VPN/tunnel
   client on the connecting device — see ARCHITECTURE.md for the reasoning

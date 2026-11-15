@@ -5,6 +5,10 @@
       "args": ["run", "--script", "/home/mark/projects/Hermes/scripts/hindsight_mcp.py"],
       "env": { "HINDSIGHT_URL": "http://192.168.40.100:8888/hindsight" }
     },
+    "cognee": {
+      "type": "http",
+      "url": "http://192.168.40.2:8767/mcp"
+    },
     "hermes": {
       "command": "/home/mark/projects/Hermes/scripts/hermes_mcp_run.sh",
       "env": { "HERMES_BASE_URL": "http://10.60.0.1:8642" }
