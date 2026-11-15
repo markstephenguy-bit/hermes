@@ -51,10 +51,12 @@ query or reference Vaultwarden for secrets.
    - Active datasets in Cognee Cloud: `default_dataset`, `infrastructure`, `hindsight_migration`.
    - Quota usage: storage remains well within the 10 GB limit (< 0.001% utilized).
 
-7. **Hindsight decommissioned & Hermes memory provider switched**:
+7. **Hindsight completely decommissioned and purged everywhere**:
    - Disabled external memory provider on `hermes-vps` (`hermes memory off`), verified `hermes-gateway` restarted cleanly. Hermes now relies on built-in memory (`MEMORY.md`/`USER.md`) plus Cognee Cloud MCP tools.
-   - Stopped `hindsight` and `hindsight-postgres` Docker containers on `w_workstation` via Salt (`docker stop hindsight hindsight-postgres`). Container images and data volumes remain intact on the workstation.
-   - Updated `AGENTS.md`: memory upkeep across all agent harnesses (Codex, Antigravity, Claude Code) now targets Cognee Cloud directly (`remember`).
+   - Uninstalled Hindsight plugin on `hermes-vps` (`hermes plugins uninstall hindsight`) and deleted `~/.hermes/hindsight` and locks.
+   - Removed containers (`docker rm -f hindsight hindsight-postgres`), deleted volume (`hindsight-pgdata`), deleted images (`ghcr.io/vectorize-io/hindsight:latest`, `timescale/timescaledb:latest-pg18`), and deleted `C:\hindsight-migration` on `w_workstation` via Salt.
+   - Removed all obsolete local Hindsight scripts, migration scripts, dumps, and patches from this repository (`scripts/hindsight_mcp*.py`, `scripts/export_hindsight.py`, `scripts/migrate_*.py`, `data/hindsight_*`, `patches/hindsight-*.patch`).
+   - Swept and updated all repo documentation (`AGENTS.md`, `CLAUDE.md`, `ARCHITECTURE.md`, `BACKLOG.md`, `CAPABILITY_PARITY.md`, `SYSTEM_INVENTORY.md`, `README.md`) to reflect that Cognee Cloud is the active memory system and Hindsight is permanently gone.
 
 ## Active Threads & Next Work
 

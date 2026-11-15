@@ -47,16 +47,14 @@ BACKLOG.md). 2 vCPU (AMD EPYC 9354P host), 7.8GB RAM, 100GB SSD.
   (messaging platforms — Telegram is live here) and `hermes-dashboard`
   (web UI / Desktop backend, port 9119, basic-auth protected). Main model
   is local Qwen3.5-9B on `w_workstation:8090`, reached over the WireGuard
-  tunnel — no fallback provider configured yet (BACKLOG P1). Memory is the
-  native `hindsight` plugin (`memory.provider: hindsight`, mode
-  `local_external`, pointing at the real instance on `w_workstation:8888`,
-  same `hermes` bank Claude Code uses) — not a generic MCP registration.
+  tunnel — no fallback provider configured yet (BACKLOG P1). Memory is Hermes's
+  built-in memory (`memory.provider: ''`) augmented by the Cognee Cloud MCP server
+  (`cognee_cloud_mcp.py`) — not an external plugin.
 - **Docker** (6 containers, all with CPU/RAM limits applied 2026-11-01):
   `npm` (Nginx Proxy Manager, the actual reverse proxy for every
   `*.markstephenguy.com` subdomain), `authentik-server`/`authentik-worker`/
-  `authentik-postgresql` (SSO — gates `hermes.`, `hindsight.`, `vault.`,
-  `netbox.markstephenguy.com` behind login), `wordpress`/`wordpress_db`
-  (the public site itself).
+  `authentik-postgresql` (SSO — gates `hermes.` and `netbox.markstephenguy.com` behind login),
+  `wordpress`/`wordpress_db` (the public site itself).
 - **Known gap**: the public path `hermes.markstephenguy.com` → NPM →
   dashboard doesn't actually work — a Docker bridge routing issue between
   the `npm` container and the native dashboard process that resisted real
@@ -74,8 +72,9 @@ owned. Runs more than previously documented:
 
 - **`llama-server`** process: Qwen3.5-9B Q4_K_M, port 8090, 64K context —
   the model every Hermes instance and inference path depends on.
-- **Hindsight** (`hindsight` + `hindsight-postgres` containers): stopped
-  2026-11-15 after full data migration to Cognee Cloud (dataset `hindsight_migration`).
+- **Cognee Cloud migration**: Hindsight was completely decommissioned and
+  removed on 2026-11-15 after full migration of all facts into Cognee Cloud
+  (containers, images, and volumes permanently purged).
 - **NetBox**: a full 5-container stack (`netbox-netbox-1` on port 8080,
   `netbox-mcp` sidecar on port 8001, plus a worker, postgres, and two
   redis containers) — not just the MCP sidecar alone.

@@ -22,9 +22,8 @@ list) · 🔶 catalog/doc claims it, not independently re-verified today ·
 - **This repo's docs** (ARCHITECTURE.md etc.) — rewritten 2026-11-01 from
   live verification, but everything written before that point had drifted
   from reality repeatedly, sometimes within days.
-- **Hindsight memory** — has the richest history but also the most
-  conflicting claims across time (several ports/hosts cited differently in
-  different entries, not always flagged as superseded).
+- **Cognee Cloud memory** — hosted at `api.aws.cognee.ai`, replaced Hindsight on 2026-11-15
+  as this project's single source of truth for conversational and architectural memory.
 
 None of these should be trusted blind going forward — re-verify live.
 
@@ -35,7 +34,7 @@ None of these should be trusted blind going forward — re-verify live.
 | `hermes-vps` | 31.220.53.141 | VPS, Hostinger KVM2 — public front door + Hermes Agent | NetBox only; **not in the catalog at all** |
 | `server` | 192.168.40.250 | HP ProDesk 600 G5 Mini — reboot problem under investigation, formerly a Docker host, now runs almost nothing | Catalog + NetBox |
 | `fileserver` | 192.168.40.2 | Dell, weakest hardware, but now home to most Docker infra | Catalog + NetBox |
-| `w_workstation` | 192.168.40.100 | HP Z4 G4, GP-managed Windows 11 Enterprise domain — runs the Qwen model, Hindsight, Vaultwarden, NetBox | Catalog + NetBox |
+| `w_workstation` | 192.168.40.100 | HP Z4 G4, GP-managed Windows 11 Enterprise domain — runs the Qwen model, NetBox (Hindsight & Vaultwarden removed) | Catalog + NetBox |
 | `w_desktop` | 192.168.40.154 | Windows 10 Pro — **Salt-alive, otherwise unused**, no Docker installed | Catalog only, **not in NetBox** |
 | `w_laptop` | 192.168.40.54 | Windows 10 Pro — Salt-registered but **currently offline/unreachable** | Catalog only, **not in NetBox** |
 | `laptop` (this machine) | 192.168.40.61 | HP ZBook 15 G5 — Mark's daily driver | Catalog + NetBox |
@@ -47,7 +46,7 @@ None of these should be trusted blind going forward — re-verify live.
 |---|---|---|---|
 | Hermes Agent (native) | 9119 (dashboard), gateway via Telegram | ✅ | Moved here 2026-11-01; see ARCHITECTURE.md |
 | NPM | 80/81/443 | ✅ | Public front door for `*.markstephenguy.com` |
-| Authentik (server/worker/postgresql) | — | ✅ | SSO gate in front of hermes/hindsight/vault/netbox subdomains |
+| Authentik (server/worker/postgresql) | — | ✅ | SSO gate in front of hermes/netbox subdomains |
 | WordPress + its MariaDB | — | ✅ | The public site |
 
 ### `server` (192.168.40.250)
@@ -85,8 +84,8 @@ None of these should be trusted blind going forward — re-verify live.
 | Service | Port | Status | Notes |
 |---|---|---|---|
 | llama-server (Qwen3.5-9B) | 8090 | ✅ | The model every Hermes instance depends on |
-| Hindsight + hindsight-postgres | 8888, **9999** | ✅ | Second port (9999) previously undocumented |
-| Vaultwarden | 8098 | ✅ | Backend for `vault.markstephenguy.com`, gated by Authentik on the VPS |
+| Hindsight | — | ❌ purged | Decommissioned 2026-11-15; containers, images, volumes deleted |
+| Vaultwarden | — | ❌ tombstoned | Tombstoned 2026-11-12; containers and images deleted |
 | NetBox (full stack: netbox-1, worker, mcp sidecar, postgres, 2x redis) | 8080 (UI), 8001 (MCP) | ✅ | Previously described as just "the MCP sidecar" — it's a full 5-container stack |
 | Win32-OpenSSH | 22 | 🔶 | Catalog claim |
 | Salt minion | — | ✅ | |
@@ -98,7 +97,7 @@ None of these should be trusted blind going forward — re-verify live.
 | Salt minion | — | ✅ | Confirmed alive via `test.ping` just now |
 | Docker | — | ❌ confirmed absent | `docker` command not found |
 | Portainer Agent | 9001 | 🔶 | Catalog claim |
-| Nothing AI-related | — | ✅ | No llama/hermes/hindsight processes found |
+| Nothing AI-related | — | ✅ | No llama or hermes processes found |
 
 ### `w_laptop` (192.168.40.54) — newly discovered this turn
 | Service | Port | Status | Notes |

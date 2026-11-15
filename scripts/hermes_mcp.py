@@ -12,7 +12,7 @@ basic-auth web UI with no REST surface) to Claude Code, Codex, and any other
 MCP-capable AI tool, so an outside harness can call into a running Hermes
 instance instead of only the other way around.
 
-Same shape as scripts/hindsight_mcp.py: a thin wrapper over an existing HTTP
+A thin wrapper over an existing HTTP
 API, no new architecture. Reuses the exact env var names already established
 in testing/README.md and testing/stress_test_*.py (HERMES_BASE_URL,
 HERMES_API_KEY, HERMES_MODEL) rather than inventing new ones, since those
@@ -36,7 +36,7 @@ to verify shapes against, rather than guessing payload keys here.
 Where this actually runs, and what HERMES_BASE_URL/HERMES_API_KEY point at
 (hermes-vps direct, WireGuard mesh, or folded into the shared
 mcp.markstephenguy.com gateway container) is a deployment decision for
-Infra/Ops, not baked in here - same as HINDSIGHT_URL in hindsight_mcp.py.
+Infra/Ops, not baked in here.
 """
 import os
 

@@ -57,11 +57,10 @@ future session/tool (Codex, Antigravity, Claude Code, Hermes) without re-explain
 - `list_datasets()` — inspect datasets in the workspace.
 
 Migrated 2026-11-15: Hindsight's entire memory store (3,347 facts, 272 batches)
-was exported to `data/hindsight_dump/` and migrated into Cognee Cloud dataset
-`hindsight_migration`. The Hindsight Docker containers on `w_workstation`
-(`hindsight`, `hindsight-postgres`) were stopped via Salt, and Hermes's external
-memory provider on `hermes-vps` was disabled (`hermes memory off`) to rely on
-built-in memory + Cognee Cloud MCP tools.
+was migrated into Cognee Cloud dataset `hindsight_migration`. Hindsight has been
+completely decommissioned and permanently removed: all containers, images, volumes,
+plugins, scripts, and configurations have been purged from `w_workstation`,
+`hermes-vps`, and this repository. Hermes relies on built-in memory + Cognee Cloud MCP tools.
 
 Keep this repo's own docs (README/ARCHITECTURE/BACKLOG) as a *current-state
 summary* a human can read at a glance — update them in place, don't let them

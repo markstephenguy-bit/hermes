@@ -9,8 +9,8 @@
 """HTTP-transport sidecar exposing Hermes Agent's REST API as an MCP server -
 same tool surface as hermes_mcp.py (used over stdio by Claude Code/Codex) but
 served over streamable-HTTP, for Hermes's own `mcp_servers:` config or for
-registration into a shared gateway container (e.g. mcp.markstephenguy.com)
-the way hindsight_mcp_http.py already is. See hermes_mcp.py's module docstring
+registration into a shared gateway container (e.g. mcp.markstephenguy.com).
+See hermes_mcp.py's module docstring
 for the full rationale and the endpoints that are live-verified vs. not.
 
 HERMES_BASE_URL/HERMES_API_KEY must point at wherever this instance's

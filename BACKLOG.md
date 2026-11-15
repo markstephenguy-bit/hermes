@@ -53,9 +53,8 @@ here resolve or update things it still describes as on `server`).
   there aren't many LAN machines. `server`/`w_laptop` excluded — see above.
 
 **P2 — hygiene, not blocking anything today:**
-- **Hindsight has no backup/export cadence** — standing gap noted in
-  CLAUDE.md, more load-bearing now that both Claude Code and Hermes depend
-  on the same bank.
+- **Cognee Cloud memory backup/export cadence** — periodically snapshot
+  Cognee Cloud datasets (replaced Hindsight on 2026-11-15).
 - **Old `server` Hermes install not decommissioned** — gateway stopped, but
   nothing uninstalled; revisit once the `server` hardware decision lands.
 - **Docker resource limits** on `hermes-vps`'s 6 containers (Authentik x3,
@@ -64,8 +63,7 @@ here resolve or update things it still describes as on `server`).
   them wrong in either direction.
 - **CAPABILITY_PARITY.md needs a refresh pass** — written while Hermes was
   on `server`; several things it describes have since moved, resolved, or
-  changed shape (Hindsight is now the native plugin, not a generic MCP
-  entry; host changed; NPM/dashboard findings are new).
+  changed shape (Cognee Cloud replaced Hindsight; host changed; NPM/dashboard findings are new).
 
 ## Historical: see CAPABILITY_PARITY.md for the earlier (2026-10-31) capability matrix
 

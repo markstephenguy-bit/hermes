@@ -12,7 +12,7 @@ stdio - no OAuth dance per client. Cognee Cloud's hosted MCP endpoint
 (https://mcp.aws.cognee.ai/mcp) requires OAuth 2.1 and does not accept static API
 keys; this wrapper instead talks to Cognee Cloud's REST API directly, which does
 accept a static X-Api-Key/X-Tenant-Id pair, and re-exposes it as a normal
-unauthenticated local MCP server - same shape as hindsight_mcp.py.
+unauthenticated local MCP server.
 
 Credentials read from ~/.config/cognee-cloud/credentials.env (0600, not in any
 git repo) unless overridden by environment variables of the same names.

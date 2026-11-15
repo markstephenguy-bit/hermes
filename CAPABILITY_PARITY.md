@@ -7,7 +7,7 @@ Code can do, what Hermes can actually do *today* (live-verified where
 possible, not just configured-but-untested), and what to build/restore/
 harden to close the gap. Treat this as a living doc, same spirit as
 BACKLOG.md — update it in place as gaps close, don't let it drift from
-Hindsight (bank `hermes`), and prefer verifying live state over trusting an
+Cognee Cloud, and prefer verifying live state over trusting an
 older note here or in ARCHITECTURE.md.
 
 **Host update (2026-11-01):** Hermes moved again, from `server` to
@@ -18,11 +18,10 @@ IP, survives a home-internet outage, datacenter power). Fresh native
 install (git method, `terminal.backend: local`, no Docker), gateway
 running as a systemd `--user` service with linger. Verified end-to-end:
 real inference round-trip to `w_workstation`'s Qwen model over the
-WireGuard tunnel, Hindsight MCP wired and confirmed via `hermes mcp list`,
+WireGuard tunnel, Cognee Cloud MCP wired and confirmed via `hermes mcp list`,
 `hermes doctor` clean, NPM's `hermes.markstephenguy.com` repointed to
-`127.0.0.1:9119`. Two open items: the Vaultwarden plugin is blocked (`bw`
-CLI requires HTTPS, the only HTTPS path is Authentik-SSO-gated and blocks
-a CLI login), and the VPS has only 2 vCPUs shared with Authentik/WordPress/
+`127.0.0.1:9119`. Two open items: Vaultwarden is tombstoned (secrets live in
+secure env files), and the VPS has only 2 vCPUs shared with Authentik/WordPress/
 NPM with zero Docker resource limits on any container — fine at current
 light load, a real contention risk if Hermes does heavy concurrent work.
 Telegram and the Nous Portal fallback still need moving/wiring here from
@@ -34,7 +33,7 @@ against `hermes-vps` as each gap gets revisited, not assumed identical.
 live inspection of
 `/home/hermes/.hermes/config.yaml`, `tools/`, `skills/`, `plugins/` on host
 `server` (192.168.40.250) via Salt, cross-checked against
-Hindsight recall. Where the two disagree, that's flagged explicitly rather
+Cognee Cloud recall. Where the two disagree, that's flagged explicitly rather
 than silently picked.
 
 ## Headline finding: this isn't a from-zero build
@@ -44,20 +43,19 @@ terminal execution with multiple backends, browser automation, computer
 use, scheduling, a large skill library, MCP client support). The real gaps
 are narrower than "Hermes can't do X" — mostly:
 
-1. **Not wired up on this host** — e.g. only the `hindsight` MCP server is
-   registered in config.yaml; `infra` (Salt), `netbox`, and Vaultwarden
+1. **Not wired up on this host** — e.g. `cognee` MCP server is
+   registered in config.yaml; `infra` (Salt) and `netbox`
    aren't, despite Hermes supporting generic MCP servers just fine.
-2. **Lost in migration, not never-built** — Hindsight recall turned up
+2. **Lost in migration, not never-built** — Cognee Cloud recall turned up
    Hermes's vision auxiliary route (`deepseek-v4.1-flash`, confirmed working
-   2026-10-13) and a working Vaultwarden plugin (confirmed 2026-10-24), both
-   from the old VPS/Docker install. The current native-on-`server` install's
+   2026-10-13) from the old VPS/Docker install. The current native-on-`server` install's
    `plugins/` directory is empty and `vision:` is fully commented out in
    config.yaml — these look dropped during the move to `server`, not
    something that needs inventing from scratch. A 2026-10-22 "fresh start"
    incident is on record losing cron jobs, kanban/state DBs, sessions, and
-   vault memories the same way — this is a pattern, not a one-off.
+   memories the same way — this is a pattern, not a one-off.
 3. **Genuinely missing or needs hardening** — no fallback model, no
-   confirmed destructive-action approval gate, no backup for Hindsight.
+   confirmed destructive-action approval gate.
 
 ## Capability matrix
 
@@ -74,7 +72,7 @@ are narrower than "Hermes can't do X" — mostly:
 | NetBox | `netbox` MCP server registered | **Missing from config** — same situation as infra | Not wired up | **P0** |
 | Secrets | Direct env / secure credentials files | **Tombstoned** — Vaultwarden tombstoned 2026-11-12; secrets managed directly via secure local env files | Retired | — |
 | Scheduling / cron | CronCreate/schedule skill, ScheduleWakeup | **Has it, arguably ahead** — native `cron:` config + kanban review dispatch; add the netbox-sync-style cron work directly as a Hermes-owned job once infra MCP is wired | At parity+ | — |
-| Memory | File-based auto-memory (this repo) | **Has it, arguably ahead** — Hindsight MCP (already the project's memory system) + built-in memory (disabled) + optional Honcho cross-session modeling | At parity+ | — |
+| Memory | File-based auto-memory (this repo) | **Has it, arguably ahead** — Cognee Cloud MCP (hybrid graph/semantic memory, dataset `hindsight_migration`/`default_dataset`) + built-in memory | At parity+ | — |
 | Messaging/channel presence | None (chat-session only) | **Exceeds CC** — native Telegram/Discord/WhatsApp/Slack/Signal/QQ/Teams/Google Chat platform toolsets configured in `platform_toolsets:` | Hermes ahead | — |
 | Skills library (general) | ~40 bundled skills | **Has it, broader in places** — large bundled library (apple/creative/devops/email/media/productivity/research/social-media/software-development/web); includes `claude-code` and `codex` skills, i.e. Hermes can shell out to CC/Codex itself when it needs that power | At parity / escape-hatch built in | — |
 | Skills library (devops/engineering meta) | schedule, loop, run, init, security-review, update-config, keybindings-help, fewer-permission-prompts | **Thin** — only `sdlc-review` under `devops/`; `software-development/` has codebase-inspection, github, debugging, TDD, code-review, simplify-code but nothing like CC's harness-config meta-skills | Partial | P1 |
@@ -83,7 +81,7 @@ are narrower than "Hermes can't do X" — mostly:
 | Artifact/web-page publishing | Artifact tool — versioned, shareable, optional live runtime | **No direct equivalent** — closest is browser + computer-use, not a hosting primitive | Minor gap | P2 |
 | Structured mid-task clarification | AskUserQuestion (typed multi-choice UI) | Chat-native (any message can ask a question); no dedicated structured-choice UI confirmed | Minor UX gap | P2 |
 | Google/Office connectors (Gmail, Calendar, Drive, Notion, Slack, Docs) | OAuth connectors, live in this session | **Partial, native-flavored** — bundled skills exist (`google-workspace`, `notion`, `email`/himalaya, `docx`/`pdf`/`xlsx`/`powerpoint`) but need real credentials provisioned; not a build gap, a configuration/credentials gap | Needs provisioning | P1 |
-| Backup/redundancy of Hermes's own state | N/A (stateless per-session) | **Missing** — Hindsight has no export/backup cadence (known gap, see CLAUDE.md); Hermes/Hindsight centralization raises single-point-of-failure risk | Genuinely missing | P1 |
+| Backup/redundancy of Hermes's own state | N/A (stateless per-session) | **Addressed** — Cognee Cloud SaaS handles retention; export cadence tracked in BACKLOG | Handled | P2 |
 
 ## Priority roadmap
 
@@ -112,8 +110,7 @@ are narrower than "Hermes can't do X" — mostly:
   `update-config`/`security-review`/`fewer-permission-prompts`) so Hermes
   can maintain its own harness config the way it's starting to maintain its
   own runtime.
-- Stand up a periodic Hindsight export/backup (tracked gap in CLAUDE.md
-  already — this migration history is exactly why it matters now).
+- Stand up a periodic Cognee Cloud export/backup (tracked in BACKLOG).
 
 **P2 — nice-to-have, revisit once P0/P1 land:**
 - Re-verify the old tilde-path and terminal-backend bugs are actually moot
@@ -144,10 +141,6 @@ undermines every other capability-parity gain in this doc.
 
 ## Open discrepancies to resolve, not yet acted on
 
-- **Hindsight port mismatch**: live `config.yaml` on `server` points
-  Hindsight's MCP client at `192.168.40.100:8891`; this repo's own memory
-  cites `:8888`. Could be two different components (raw Hindsight API vs.
-  an HTTP-MCP sidecar) — confirm which before relying on either number.
 - **Migration pattern risk**: this is now the *second* documented instance
   (2026-10-22 "fresh start" data loss, and the vision/Vaultwarden
   regression found here) of Hermes losing working configuration across a

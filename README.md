@@ -43,7 +43,7 @@ Hermes has an empty Obsidian-compatible Markdown vault at
 `/home/hermes/knowledge-vault` on the VPS. Its Docker sandbox sees the folder
 at `/vault` through a dedicated bind mount, and the bundled Obsidian skill can
 read, search, and write notes there. This is curated subject knowledge,
-separate from Hindsight's conversational memory. Device sync, vault backups,
+separate from Cognee Cloud's conversational memory. Device sync, vault backups,
 automatic curation, and migration of existing chats are future work. See
 [NEXT_SESSION.md](NEXT_SESSION.md) for the verified live configuration.
 
