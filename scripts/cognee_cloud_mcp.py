@@ -103,7 +103,8 @@ def list_datasets() -> dict:
     """List datasets in this Cognee Cloud workspace."""
     resp = httpx.get(f"{API_BASE_URL}/api/v1/datasets/", headers=HEADERS, timeout=30)
     resp.raise_for_status()
-    return resp.json()
+    body = resp.json()
+    return {"datasets": body} if isinstance(body, list) else body
 
 
 if __name__ == "__main__":
