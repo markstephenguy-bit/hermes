@@ -37,21 +37,23 @@ API_KEY = os.environ["COGNEE_CLOUD_API_KEY"]
 TENANT_ID = os.environ["COGNEE_CLOUD_TENANT_ID"]
 
 HEADERS = {"X-Api-Key": API_KEY, "X-Tenant-Id": TENANT_ID}
+DEFAULT_DATASET = os.environ.get("COGNEE_DEFAULT_DATASET", "main_dataset")
 
 mcp = FastMCP(name="cognee-cloud")
 
 
 @mcp.tool
-def remember(data: str, dataset_name: str = "main_dataset", background: bool = False) -> dict:
+def remember(data: str, dataset_name: str = DEFAULT_DATASET, background: bool = False) -> dict:
     """Store text in Cognee Cloud's knowledge graph (dataset created if it doesn't exist).
     Blocks until graph extraction finishes unless background=True, which returns immediately
-    with a dataset_id/status and leaves the pipeline running - check it later with the
-    dataset_id against Cognee Cloud's /api/v1/datasets/status."""
+    with a dataset_id/status and leaves the pipeline running. Use ingestion_status
+    with the returned dataset_id to check completion."""
     resp = httpx.post(
         f"{API_BASE_URL}/api/v1/remember",
         headers=HEADERS,
-        data={"raw_data": data, "datasetName": dataset_name},
-        timeout=60,
+        data={"raw_data": data, "datasetName": dataset_name,
+              "run_in_background": str(background).lower()},
+        timeout=60 if background else 300,
     )
     resp.raise_for_status()
     submitted = resp.json()
@@ -62,18 +64,27 @@ def remember(data: str, dataset_name: str = "main_dataset", background: bool = F
         return submitted
     deadline = time.monotonic() + 300
     while time.monotonic() < deadline:
-        status_resp = httpx.get(
-            f"{API_BASE_URL}/api/v1/datasets/status",
-            headers=HEADERS,
-            params={"dataset": [dataset_id]},
-            timeout=30,
-        )
-        status_resp.raise_for_status()
-        status = status_resp.json().get(dataset_id)
+        status = ingestion_status(dataset_id).get("status")
         if status in ("DATASET_PROCESSING_COMPLETED", "DATASET_PROCESSING_ERRORED"):
             return {**submitted, "final_status": status}
         time.sleep(3)
     return {**submitted, "final_status": "TIMED_OUT_WAITING"}
+
+
+@mcp.tool
+def ingestion_status(dataset_id: str) -> dict:
+    """Check whether a background remember call has finished processing.
+
+    Pass the dataset_id returned by remember(background=True).
+    """
+    resp = httpx.get(
+        f"{API_BASE_URL}/api/v1/datasets/status",
+        headers=HEADERS,
+        params={"dataset": [dataset_id]},
+        timeout=30,
+    )
+    resp.raise_for_status()
+    return {"dataset_id": dataset_id, "status": resp.json().get(dataset_id)}
 
 
 @mcp.tool

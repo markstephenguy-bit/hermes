@@ -10,6 +10,12 @@ Vaultwarden is **retired and tombstoned** (as of 2026-11-12). Secrets are manage
 directly via secure local environment files (mode 0600) — never in git. Do not
 query or reference Vaultwarden for secrets.
 
+## Cognee MCP integration update (2026-11-15)
+
+The shared `scripts/cognee_cloud_mcp.py` now sends `run_in_background` to Cognee Cloud, exposes `ingestion_status(dataset_id)`, and defaults new writes to `main_dataset`. Codex, Claude Code, and Antigravity point to that one local script; the same version was deployed to the Hermes gateway on `hermes-vps` and the gateway restarted. A fresh MCP client listed all four tools and read dataset statuses. A no-network test verified the outgoing background flag. A live write test was rejected by automatic approval review because its proposed payload described internal service state; background ingestion remains unverified end to end.
+
+Current datasets include `main_dataset`, `default_dataset`, `infrastructure`, and `hindsight_migration`. Migrated Hindsight facts can still report former service states as current; search `main_dataset` for current-state facts and use `hindsight_migration` for historical recall.
+
 ## Multi-Harness Status: Antigravity, Codex, Hermes, Claude Code
 
 | Client | Config Location | Status |
@@ -40,7 +46,7 @@ query or reference Vaultwarden for secrets.
    - Grouped all 3,347 facts into **272 batches** (243 document groups + 29 ungrouped chunks of 50 facts, sorted chronologically).
    - Ingested into Cognee Cloud dataset `hindsight_migration` with the standard framing note and explicit replacement facts.
    - All 272 batches processed to completion in Cognee Cloud (`272/272 completed, 0 pending`).
-   - Verified via live hybrid graph recall: queries against `hindsight_migration` accurately synthesize Hermes's memory architecture (Hindsight as active memory provider, Cognee Cloud as infrastructure knowledge graph).
+   - Verified via live hybrid graph recall, but `hindsight_migration` contains historical statements that can incorrectly describe Hindsight as still active. Current configuration and `main_dataset` take precedence for present state.
 
 5. **Self-hosted Docker stack decommissioned on `fileserver`**:
    - Executed `docker compose down -v` in `/home/mark/services/cognee/` on `fileserver`.

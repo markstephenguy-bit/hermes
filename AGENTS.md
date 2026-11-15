@@ -51,10 +51,13 @@ keys from `~/.config/cognee-cloud/credentials.env`). This survives across every
 future session/tool (Codex, Antigravity, Claude Code, Hermes) without re-explaining itself.
 
 - `remember(data, dataset_name, background)` — write a new fact/decision/progress
-  note into Cognee Cloud (defaults to dataset `hindsight_migration` or `main_dataset`).
+  note into Cognee Cloud (defaults to the shared `main_dataset`; use `hindsight_migration` explicitly to search or append historical migration material).
 - `recall(query, datasets, search_type, top_k)` — semantic / hybrid graph search
   over stored knowledge.
 - `list_datasets()` — inspect datasets in the workspace.
+- `ingestion_status(dataset_id)` — check a background `remember` call until processing completes or errors.
+
+The `hindsight_migration` dataset contains historical statements that may describe retired services as active. Use current configuration and `main_dataset` for current-state answers.
 
 Migrated 2026-11-15: Hindsight's entire memory store (3,347 facts, 272 batches)
 was migrated into Cognee Cloud dataset `hindsight_migration`. Hindsight has been
