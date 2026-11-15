@@ -74,15 +74,8 @@ owned. Runs more than previously documented:
 
 - **`llama-server`** process: Qwen3.5-9B Q4_K_M, port 8090, 64K context —
   the model every Hermes instance and inference path depends on.
-- **Hindsight** (`hindsight` + `hindsight-postgres` containers): port
-  **8888** (the real one — `.mcp.json`'s own `/hindsight` path and a
-  stray `:8891` reference elsewhere were both checked and ruled out this
-  session) **and also 9999**, not previously documented.
-- **Vaultwarden**: its own container, port 8098 — this is the actual
-  password-manager backend. The public `vault.markstephenguy.com` domain
-  puts Authentik SSO in front of it (on the VPS); the `bw` CLI can't
-  complete a non-browser login through that SSO gate, which is why
-  Hermes's Vaultwarden plugin is currently blocked (BACKLOG P1).
+- **Hindsight** (`hindsight` + `hindsight-postgres` containers): stopped
+  2026-11-15 after full data migration to Cognee Cloud (dataset `hindsight_migration`).
 - **NetBox**: a full 5-container stack (`netbox-netbox-1` on port 8080,
   `netbox-mcp` sidecar on port 8001, plus a worker, postgres, and two
   redis containers) — not just the MCP sidecar alone.

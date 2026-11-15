@@ -6,9 +6,9 @@ plus replacement facts are live in Cognee Cloud with recall empirically tested.
 The self-hosted Docker stack on `fileserver` has been torn down with volumes
 removed.
 
-The prior secrets-over-MCP design discussion (Vaultwarden replacement,
-`mcp.markstephenguy.com` gateway) remains **parked, not abandoned** — find it
-via `git log -p -- NEXT_SESSION.md` when picking it back up.
+Vaultwarden is **retired and tombstoned** (as of 2026-11-12). Secrets are managed
+directly via secure local environment files (mode 0600) — never in git. Do not
+query or reference Vaultwarden for secrets.
 
 ## Multi-Harness Status: Antigravity, Codex, Hermes, Claude Code
 
@@ -58,9 +58,7 @@ via `git log -p -- NEXT_SESSION.md` when picking it back up.
 
 ## Active Threads & Next Work
 
-1. **Secrets-over-MCP design discussion (Parked)**:
-   - Vaultwarden replacement, `mcp.markstephenguy.com` gateway. Documented in git history for `NEXT_SESSION.md`.
-2. **GPU Thermal Throttling on `w_workstation`**:
+1. **GPU Thermal Throttling on `w_workstation`**:
    - Flagged for Mark to revisit cooling/fans. Self-hosting Cognee on this hardware was averted by pivoting to Cognee Cloud, but the GPU thermal slowdown (92-94°C) remains physical host state on `w_workstation`.
-3. **Hermes core development**:
+2. **Hermes core development**:
    - Normal Hermes roadmap resumed.

@@ -31,12 +31,11 @@ curl "http://192.168.40.2:3003/services"
 curl "http://192.168.40.2:3003/entities?search=fts.hermes"
 ```
 
-Secrets (API keys, tokens, passwords) live in **Vaultwarden on the VPS only**
-(`https://theguylab.duckdns.org/vault/`, via the `bw` CLI or the `bitwarden`
-MCP connector) — never hardcoded here or committed to this repo. The
-fileserver catalog's old `secrets` table is retired as of 2026-10-14; all 16
-entries were migrated to Vaultwarden and it must not be used or queried for
-secrets going forward, even as a fallback. One secrets source, full stop.
+Secrets (API keys, tokens, credentials) live in secure local environment files
+(mode 0600, e.g. `~/.config/.../credentials.env` or local profile `.env`) —
+**never hardcoded in code or committed to this repo**. Vaultwarden and the
+old catalog secrets table are both retired/tombstoned; do not query or reference
+Vaultwarden for secrets.
 
 ## Logging progress — this project's actual memory
 

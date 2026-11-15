@@ -72,7 +72,7 @@ are narrower than "Hermes can't do X" — mostly:
 | Vision / screenshot understanding | Native (Sonnet 5 is multimodal) | **Regressed** — `vision:` block fully commented out in live config; historically working on `deepseek-v4.1-flash` (2026-10-13) before migration | Lost in migration | **P0** |
 | Infra control (Salt) | `infra` MCP server registered | **Missing from config** — `infra_mcp.py` exists and works (proven by this CC session), just not in Hermes's `mcp_servers:` | Not wired up | **P0** |
 | NetBox | `netbox` MCP server registered | **Missing from config** — same situation as infra | Not wired up | **P0** |
-| Secrets (Vaultwarden) | `bitwarden` MCP server registered | **Regressed** — native plugin confirmed working 2026-10-24, `plugins/` dir on `server` is now empty | Lost in migration | **P0** |
+| Secrets | Direct env / secure credentials files | **Tombstoned** — Vaultwarden tombstoned 2026-11-12; secrets managed directly via secure local env files | Retired | — |
 | Scheduling / cron | CronCreate/schedule skill, ScheduleWakeup | **Has it, arguably ahead** — native `cron:` config + kanban review dispatch; add the netbox-sync-style cron work directly as a Hermes-owned job once infra MCP is wired | At parity+ | — |
 | Memory | File-based auto-memory (this repo) | **Has it, arguably ahead** — Hindsight MCP (already the project's memory system) + built-in memory (disabled) + optional Honcho cross-session modeling | At parity+ | — |
 | Messaging/channel presence | None (chat-session only) | **Exceeds CC** — native Telegram/Discord/WhatsApp/Slack/Signal/QQ/Teams/Google Chat platform toolsets configured in `platform_toolsets:` | Hermes ahead | — |
