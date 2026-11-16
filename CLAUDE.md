@@ -70,9 +70,22 @@ listed below, *for this project*:
 
 - **Memory upkeep is Claude's job, not the user's.** Never wait to be told
   to save something. Every decision, correction, or fact that comes up in
-  conversation gets written to Cognee Cloud (dataset `hindsight_migration`
-  or `main_dataset`, via the `cognee` MCP server) as it happens. The user
-  should never have to say "remember this."
+  conversation gets written to Cognee Cloud's `main_dataset` (not
+  `hindsight_migration` — that's historical-only, see above) via the
+  `cognee` MCP server's `remember()` tool. The user should never have to
+  say "remember this."
+  - **Write as each finding lands, not in one batch at the end.** Concretely:
+    call `remember()` right after (a) confirming a root cause, (b) applying
+    or verifying a fix, (c) discovering something that contradicts existing
+    memory, (d) closing out a discrete sub-task — don't wait to accumulate
+    several of these into one end-of-session write.
+  - **Never say "I saved this" / "I've logged that" without actually having
+    called `remember()` first.** This happened for real in this project
+    (2026-11-15): a finding was narrated as saved and wasn't, which could
+    have silently lost it. If in doubt, make the call before claiming it.
+  - After a long or multi-part task, do a quick `recall()` sanity check that
+    the key findings actually landed — don't just trust that prior
+    `remember()` calls succeeded.
 - **Git upkeep is Claude's job, not the user's.** Commit as work lands and
   push too, no need to ask first. SSH access was set up 2026-09-23 (key
   registered with GitHub, remote `git@github.com:markstephenguy-bit/hermes.git`)
