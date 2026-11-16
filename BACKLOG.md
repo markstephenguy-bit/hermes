@@ -259,6 +259,13 @@ determines where the code lives and what gets reused.
 
 ## Local inference direction (2026-10-02)
 
+**Superseded 2026-11-15**: the Qwen3.6-35B-A3B/ik_llama.cpp setup described
+below was an intermediate experiment, not the lasting choice — live-verified
+2026-11-15 that the local model reverted to `gpt-oss-20b` via **LM Studio**
+(port 1234), matching the original 2026-09-25 "Model choice, local tier"
+decision below. See ARCHITECTURE.md's 2026-11-15 model note. Kept for
+history; don't treat anything below as current.
+
 User excludes Ollama-based hosting for the future local inference setup. Evaluate
 vLLM and other runtimes that use GPU plus system RAM for larger models, including
 ik_llama.cpp and KTransformers. Near-100-token/s reports are an evaluation target,
@@ -274,11 +281,14 @@ Steps 1-3 below (connect, onboard Codex, Dokploy+WireGuard) are done as of
 as originally planned here, per explicit user request once the Desktop
 app's OAuth flow proved too fragile to debug live. Current next steps:
 
-1. **Validate Qwen's complete Hermes tool loop** using the existing ik_llama.cpp
-   endpoint; the former Ollama model-pull step is superseded.
-2. **Implement and measure the model-use recipe** above. Live config already
-   selects local Qwen as main and Codex as fallback; quality routing, auxiliary
-   policy and end-to-end reliability still need validation.
+1. ~~**Validate Qwen's complete Hermes tool loop**~~ — **moot 2026-11-15**,
+   the local model reverted to `gpt-oss-20b` via LM Studio; Qwen/ik_llama.cpp
+   is no longer the local setup, see the "Local inference direction" note above.
+2. **Implement and measure the model-use recipe** above, adjusted for the
+   actual current local model (`gpt-oss-20b` via LM Studio, not Qwen).
+   Auxiliary-task routing to Nous Portal was resolved 2026-11-15 (see
+   "Resolved" above); end-to-end reliability of the main/fallback split
+   still needs validation.
 3. **Write `SOUL.md`/`USER.md`** on hermes-vps — drafted in conversation,
    never committed.
 4. **Signal/Telegram gateway** (G7) — `hermes-gateway` running, no channel
@@ -286,8 +296,11 @@ app's OAuth flow proved too fragile to debug live. Current next steps:
 
 ## Other open decisions
 - **Cloud capability mix** — reopened 2026-10-07: linked Codex is the current
-  fallback, but the user wants Qwen-preferred routing that reduces quota use;
-  external API spending is accepted when justified by capability and results.
+  fallback, but the user wants local-preferred routing that reduces quota use
+  (the local model was Qwen when this was written, now `gpt-oss-20b` — the
+  preference for local-first routing itself still stands, just not tied to
+  Qwen specifically); external API spending is accepted when justified by
+  capability and results.
 - **UI implementation** — the *access path* is decided (above); the UI
   itself (Hermes Desktop / web interface on port 9119) is available out of the box with `hermes serve`.
 - **Auth mechanism at the NPM Custom Location** — plain HTTP Basic Auth

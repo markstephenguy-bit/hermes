@@ -8,11 +8,27 @@ sequence, not a claim that its settings have been deployed or optimized.
 **Infra note (2026-11-01):** the "What's real right now" section below was
 fully rewritten from a live, host-by-host verification sweep — not carried
 forward from older notes. It supersedes everything before it, including the
-2026-10-11 note this replaces (Vultr/Hostinger history, now moot). The
-Qwen-heavy model prep recipe later in this file is mostly provider-agnostic
-(about `w_workstation`/Qwen tuning, not which VPS hosts the gateway) and
-hasn't been re-audited line-by-line; treat anything there mentioning Vultr
-or Codex-as-fallback as stale.
+2026-10-11 note this replaces (Vultr/Hostinger history, now moot).
+
+**Model note (2026-11-15):** the local model on `w_workstation` has changed
+again and the "Qwen-heavy model preparation recipe" section below (written
+from a 2026-10-07 point-in-time inspection) is now stale on more than just
+Vultr/Codex-as-fallback — **the model itself is no longer Qwen.** Live-
+verified 2026-11-15: `w_workstation` runs **LM Studio** (`provider:
+"lmstudio"` in Hermes's own `config.yaml`) serving **`gpt-oss-20b`** on port
+**1234** (LM Studio's default — not port 8090/11500, and not ik_llama.cpp or
+mainline llama.cpp as either the "What's real right now" or "Execution &
+Routing Tiers" sections below separately (and inconsistently with each
+other) used to claim). This matches BACKLOG.md's "Model choice, local tier
+(2026-09-25)" decision — gpt-oss-20b was the original pick; Qwen3.6-35B-A3B
+was an intermediate experiment per BACKLOG.md's 2026-10-07 "Local inference
+direction" notes, since reverted. The capability-routing *framework* in the
+recipe below (which task category routes to which tier) may still be
+directionally useful, but every model-specific detail in it (quantization,
+vision-encoder notes, HF model-card links, context-length numbers) was
+written for Qwen specifically and doesn't carry over to gpt-oss-20b without
+a fresh pass — treat the recipe section as a superseded proposal, not
+current configuration, until someone redoes it for the actual running model.
 
 ## Core design principle: network resources are agent capabilities
 
@@ -46,8 +62,10 @@ BACKLOG.md). 2 vCPU (AMD EPYC 9354P host), 7.8GB RAM, 100GB SSD.
   Two systemd `--user` services under the `hermes` user: `hermes-gateway`
   (messaging platforms — Telegram is live here) and `hermes-dashboard`
   (web UI / Desktop backend, port 9119, basic-auth protected). Main model
-  is local Qwen3.5-9B on `w_workstation:8090`, reached over the WireGuard
-  tunnel — no fallback provider configured yet (BACKLOG P1). Memory is Hermes's
+  is local `gpt-oss-20b` via LM Studio on `w_workstation:1234`, reached over
+  the WireGuard tunnel — no fallback provider configured yet (BACKLOG P1;
+  separately, auxiliary-task routing to Nous Portal models was resolved
+  2026-11-15, see BACKLOG.md "Resolved"). Memory is Hermes's
   built-in memory (`memory.provider: ''`) augmented by the Cognee Cloud MCP server
   (`cognee_cloud_mcp.py`) — not an external plugin.
 - **Docker** (6 containers, all with CPU/RAM limits applied 2026-11-01):
@@ -70,8 +88,15 @@ HP Z4 G4 Workstation, Xeon W-2225 (4c/8t), 64GB RAM — the strongest
 hardware on the network, but a corporate-managed machine, not home-lab
 owned. Runs more than previously documented:
 
-- **`llama-server`** process: Qwen3.5-9B Q4_K_M, port 8090, 64K context —
-  the model every Hermes instance and inference path depends on.
+- **LM Studio** (`llmster` process) serving `gpt-oss-20b` (+ `openai/gpt-oss-20b`
+  alias, + `text-embedding-nomic-embed-text-v1.5`) via its OpenAI-compatible
+  API on port **1234** — the model every Hermes instance and inference path
+  depends on. Confirmed live 2026-11-15 via `/v1/models` and Hermes's own
+  `config.yaml` (`model.provider: lmstudio`, `model.default: gpt-oss-20b`).
+  LM Studio spawns its own `llama-server` child process bound to a loopback-
+  only, non-fixed port (not port 8090 — that number was never actually
+  reachable) purely as its internal inference backend; it isn't a separate
+  service and nothing else should target it directly.
 - **Cognee Cloud migration**: Hindsight was completely decommissioned and
   removed on 2026-11-15 after full migration of all facts into Cognee Cloud
   (containers, images, and volumes permanently purged).
@@ -207,8 +232,11 @@ ensuring zero bandwidth penalties on the VPS.
 
 1. **Always-On Hub (VPS - Hostinger KVM 2):** Runs `hermes serve` and
    CLI/chat interfaces. No Dokploy on this box (Vultr-only, not recreated).
-2. **Local Inference (Home LAN):** Qwen3.5-9B Q4_K_M via mainline llama.cpp;
-   no per-token API charge, with electricity and shared-compute costs.
+2. **Local Inference (Home LAN):** `gpt-oss-20b` via LM Studio on
+   `w_workstation` (port 1234) — no per-token API charge, with electricity
+   and shared-compute costs. (This tier has changed models more than once;
+   see the 2026-11-15 model note near the top of this file before trusting
+   any specific model name elsewhere in this doc.)
 3. **External Models:** Fallback is `deepseek/deepseek-v4.1-flash` via Nous
    Portal, not Codex — Vultr/Codex-as-fallback is retired. The user wants
    capability-based selection, not an automatic single destination.

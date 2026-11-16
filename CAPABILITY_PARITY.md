@@ -17,8 +17,10 @@ ARCHITECTURE.md's original "Always-On Hub" design anyway (stable public
 IP, survives a home-internet outage, datacenter power). Fresh native
 install (git method, `terminal.backend: local`, no Docker), gateway
 running as a systemd `--user` service with linger. Verified end-to-end:
-real inference round-trip to `w_workstation`'s Qwen model over the
-WireGuard tunnel, Cognee Cloud MCP wired and confirmed via `hermes mcp list`,
+real inference round-trip to `w_workstation`'s local model (Qwen at the
+time; since reverted to `gpt-oss-20b` via LM Studio — see ARCHITECTURE.md's
+2026-11-15 model note, don't trust "Qwen" as current anywhere in this repo)
+over the WireGuard tunnel, Cognee Cloud MCP wired and confirmed via `hermes mcp list`,
 `hermes doctor` clean, NPM's `hermes.markstephenguy.com` repointed to
 `127.0.0.1:9119`. Two open items: Vaultwarden is tombstoned (secrets live in
 secure env files), and the VPS has only 2 vCPUs shared with Authentik/WordPress/
