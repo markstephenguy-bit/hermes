@@ -24,18 +24,50 @@ Secrets (API keys, tokens, credentials) live in secure local environment files
 old catalog secrets table are both retired/tombstoned; do not query or reference
 Vaultwarden for secrets.
 
+## One gateway for every harness — `mcp_proxy`
+
+As of 2026-11-15, every harness (Claude Code, Codex, Antigravity, Hermes)
+reaches Salt (`infra`), Cognee Cloud, and Hermes's own REST API through a
+**single MCP registration**, `mcp_proxy`, instead of one registration per
+server per harness. Two pieces, both on `fileserver` (192.168.40.2):
+
+1. **MCPHub/UplinkCrate** (Docker, port 3100) — the public-facing gateway
+   every harness registers: `http://192.168.40.2:3100/mcp` (LAN) /
+   `http://10.60.0.2:3100/mcp` (from `hermes-vps`, over the existing
+   WireGuard tunnel), `Authorization: Bearer` auth. Bearer token and the
+   auto-generated admin password live in
+   `/home/mark/.config/mcp-proxy/credentials.env` on fileserver.
+2. **The sidecar** (`scripts/mcp_proxy_sidecar.py`, systemd `--user` service
+   on fileserver, loopback-only on `127.0.0.1`/`172.17.0.1:8700`) — composes
+   the existing `cognee_cloud_mcp.py`, `infra_mcp.py`, and `hermes_mcp.py`
+   servers into one FastMCP process via `mount()`. This is MCPHub's one
+   registered upstream today; it's also where any future bespoke internal
+   tool should get added, since MCPHub itself only proxies, it doesn't host
+   custom logic.
+
+Registered as `mcp_proxy` in: `.mcp.json` / `~/.claude.json` (Claude Code),
+`.codex/config.toml` / `~/.codex/config.toml` (Codex — bearer token read
+from the `MCP_PROXY_GATEWAY_TOKEN` env var via
+`~/.config/environment.d/mcp-proxy.conf` + `~/.bashrc`), `~/.gemini/config/mcp_config.json`
+(Antigravity), and `~/.hermes/config.yaml` on `hermes-vps`. `hermes-mcp-serve`
+(stdio-only, SSH-spawned, messaging tools) is **not** folded in yet — stays
+registered separately.
+
+New capability, including for other harnesses to call (Salt, Hermes-REST,
+any future custom tool): add it to the sidecar, not to a fourth per-harness
+config file.
+
 ## Logging progress — this project's actual memory
 
 Hermes-specific memory (decisions, live inventory snapshots, progress) lives
 in **Cognee Cloud** (hosted at `api.aws.cognee.ai`, replaced Hindsight and Graphiti
 on 2026-11-15) — not the old fileserver catalog, not Hindsight on w_workstation
 (turned off), and not new markdown files in this repo or prose dumped into a chat
-session. Cognee Cloud is reached through the `cognee` MCP server
-(`scripts/cognee_cloud_mcp.py`, registered in this repo's `.codex/config.toml`,
-`~/.codex/config.toml`, `~/.claude.json`, `.mcp.json`, and in Antigravity's
-`~/.gemini/config/mcp_config.json`, talking HTTPS to Cognee Cloud using static API
-keys from `~/.config/cognee-cloud/credentials.env`). This survives across every
-future session/tool (Claude Code, Codex, Antigravity, Hermes) without re-explaining itself.
+session. Cognee Cloud is reached through the `mcp_proxy` gateway above (its
+sidecar mounts `scripts/cognee_cloud_mcp.py`, which talks HTTPS to Cognee
+Cloud using static API keys from `~/.config/cognee-cloud/credentials.env`).
+This survives across every future session/tool (Claude Code, Codex,
+Antigravity, Hermes) without re-explaining itself.
 
 - `remember(data, dataset_name, background)` — write a new fact/decision/progress
   note into Cognee Cloud (defaults to the shared `main_dataset`; use `hindsight_migration` explicitly to search or append historical migration material).

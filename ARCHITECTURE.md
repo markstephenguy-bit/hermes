@@ -125,6 +125,15 @@ file never previously documented:
   actually used for before assuming they're either safe to ignore or safe
   to remove.
 - `beszel-agent` (monitoring).
+- **`mcp-proxy-gateway`** (MCPHub/UplinkCrate, port 3100) — added
+  2026-11-15, the single MCP registration every harness (Claude Code,
+  Codex, Antigravity, Hermes) now points at instead of one registration per
+  server per harness. Its one upstream is `mcp_proxy_sidecar.py`, a systemd
+  `--user` service (loopback `172.17.0.1:8700`) composing the `cognee`,
+  `infra` (Salt), and `hermes`-REST MCP servers into one process. Chosen
+  over `w_workstation` deliberately: that host is domain-joined and GP
+  could remove Docker from it at any time — see CLAUDE.md for the full
+  registration details per harness.
 - Also runs a native (non-Docker) `nginx` bound to host ports 80/443 —
   likely `lan-local-proxy` using host networking rather than a separate
   process, but not confirmed; worth a closer look if it ever matters.

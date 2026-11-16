@@ -68,8 +68,8 @@ are narrower than "Hermes can't do X" — mostly:
 | Browser automation | Two surfaces (in-app + Chrome ext.), full DOM/console/network access | **Has it** — bundled `agent-browser` + `chromium` tools | At parity, re-verify DOM/console/network parity | P2 |
 | Computer use (desktop) | computer-use tools | **Has it** — bundled `cua-driver` + `computer-use` skill | At parity | — |
 | Vision / screenshot understanding | Native (Sonnet 5 is multimodal) | **Regressed** — `vision:` block fully commented out in live config; historically working on `deepseek-v4.1-flash` (2026-10-13) before migration | Lost in migration | **P0** |
-| Infra control (Salt) | `infra` MCP server registered | **Missing from config** — `infra_mcp.py` exists and works (proven by this CC session), just not in Hermes's `mcp_servers:` | Not wired up | **P0** |
-| NetBox | `netbox` MCP server registered | **Missing from config** — same situation as infra | Not wired up | **P0** |
+| Infra control (Salt) | Reached via the `mcp_proxy` gateway | **Closed 2026-11-15** — Hermes's `mcp_servers:` now registers `mcp_proxy` (one entry, http://10.60.0.2:3100/mcp over WireGuard), whose sidecar mounts `infra_mcp.py`; verified live via `hermes mcp list` | At parity | — |
+| NetBox | — | **Decommissioned** — NetBox itself no longer exists in this home lab; not a gap to close | N/A | — |
 | Secrets | Direct env / secure credentials files | **Tombstoned** — Vaultwarden tombstoned 2026-11-12; secrets managed directly via secure local env files | Retired | — |
 | Scheduling / cron | CronCreate/schedule skill, ScheduleWakeup | **Has it, arguably ahead** — native `cron:` config + kanban review dispatch; add the netbox-sync-style cron work directly as a Hermes-owned job once infra MCP is wired | At parity+ | — |
 | Memory | File-based auto-memory (this repo) | **Has it, arguably ahead** — Cognee Cloud MCP (hybrid graph/semantic memory, dataset `hindsight_migration`/`default_dataset`) + built-in memory | At parity+ | — |
@@ -86,11 +86,9 @@ are narrower than "Hermes can't do X" — mostly:
 ## Priority roadmap
 
 **P0 — do first, these are the load-bearing gaps:**
-1. Wire `infra` (Salt) and `netbox` MCP servers into Hermes's
-   `mcp_servers:` block on `server` — mechanically identical to what's
-   already registered for Claude Code in `.mcp.json`, just needs adding to
-   `/home/hermes/.hermes/config.yaml`. Lowest-effort, highest-value item
-   here.
+1. ~~Wire `infra` (Salt) and `netbox` MCP servers into Hermes's
+   `mcp_servers:` block~~ — **done 2026-11-15** via the `mcp_proxy` gateway
+   (see CLAUDE.md); NetBox itself is decommissioned, no longer applicable.
 2. Restore the Vaultwarden plugin (confirmed working 2026-10-24, missing
    from the current `plugins/` dir) and the vision auxiliary route
    (confirmed working 2026-10-13 on `deepseek-v4.1-flash`, now commented

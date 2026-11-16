@@ -1,19 +1,13 @@
 {
   "mcpServers": {
-    "cognee": {
-      "command": "uv",
-      "args": ["run", "--script", "/home/mark/projects/Hermes/scripts/cognee_cloud_mcp.py"]
-    },
-    "hermes": {
-      "command": "/home/mark/projects/Hermes/scripts/hermes_mcp_run.sh",
-      "env": { "HERMES_BASE_URL": "http://10.60.0.1:8642" }
+    "mcp_proxy": {
+      "type": "http",
+      "url": "http://192.168.40.2:3100/mcp",
+      "headers": { "Authorization": "Bearer ${MCP_PROXY_GATEWAY_TOKEN}" }
     },
     "hermes-mcp-serve": {
       "command": "ssh",
       "args": ["hermes-vps", "/home/hermes/.hermes/hermes-agent/.hermes/bin/hermes", "mcp-serve", "--tools"]
-    },
-    "infra": {
-      "command": "/home/mark/projects/Hermes/scripts/infra_mcp_run.sh"
     }
   }
 }
