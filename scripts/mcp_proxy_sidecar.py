@@ -10,15 +10,21 @@
 
 Composes the existing cognee/infra/hermes MCP servers into one process over
 streamable-HTTP so every harness (Claude Code, Codex, Antigravity, Hermes)
-can reach all three through a single gateway registration instead of one
+can reach all four through a single gateway registration instead of one
 registration per server per harness. See scripts/cognee_cloud_mcp.py,
 scripts/infra_mcp.py, and scripts/hermes_mcp.py for what each namespace
 actually does - this file only wires them together, it doesn't reimplement
 any of their tools.
 
+The fourth, `hermes_serve`, proxies the native `hermes mcp-serve --tools`
+stdio plugin on hermes-vps (messaging/conversation tools plus web search,
+vision, image-gen, skills, TTS) via FastMCP's create_proxy() - this host
+needs its own `hermes-vps` SSH alias and a dedicated key authorized on that
+host's `hermes` user (not reusing this host's general-purpose key).
+
 Tools are namespaced on mount: cognee_recall, infra_salt_run, hermes_chat,
-etc. (FastMCP's mount() prefixes every tool/resource/prompt name with
-"<namespace>_" automatically.)
+hermes_serve_messages_send, etc. (FastMCP's mount() prefixes every
+tool/resource/prompt name with "<namespace>_" automatically.)
 
 Binds to 127.0.0.1 only - the MCPHub gateway container on the same host is
 the sole intended caller, reached via the docker bridge gateway IP, not the
@@ -50,6 +56,7 @@ if CREDS_FILE.exists():
 sys.path.insert(0, str(Path(__file__).parent))
 
 from fastmcp import FastMCP  # noqa: E402
+from fastmcp.server import create_proxy  # noqa: E402
 
 import cognee_cloud_mcp  # noqa: E402
 import infra_mcp  # noqa: E402
@@ -59,6 +66,21 @@ mcp = FastMCP(name="mcp_proxy_sidecar")
 mcp.mount(cognee_cloud_mcp.mcp, namespace="cognee")
 mcp.mount(infra_mcp.mcp, namespace="infra")
 mcp.mount(hermes_mcp.mcp, namespace="hermes")
+
+hermes_serve_proxy = create_proxy({
+    "mcpServers": {
+        "hermes_serve": {
+            "command": "ssh",
+            "args": [
+                "hermes-vps",
+                "/home/hermes/.hermes/hermes-agent/.hermes/bin/hermes",
+                "mcp-serve",
+                "--tools",
+            ],
+        }
+    }
+})
+mcp.mount(hermes_serve_proxy, namespace="hermes_serve")
 
 if __name__ == "__main__":
     host = os.environ.get("MCP_PROXY_SIDECAR_HOST", "127.0.0.1")

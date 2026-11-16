@@ -27,9 +27,11 @@ Vaultwarden for secrets.
 ## One gateway for every harness — `mcp_proxy`
 
 As of 2026-11-15, every harness (Claude Code, Codex, Antigravity, Hermes)
-reaches Salt (`infra`), Cognee Cloud, and Hermes's own REST API through a
-**single MCP registration**, `mcp_proxy`, instead of one registration per
-server per harness. Two pieces, both on `fileserver` (192.168.40.2):
+reaches Salt (`infra`), Cognee Cloud, Hermes's own REST API, and the native
+`hermes mcp-serve` plugin (messaging/conversation tools, web search/extract,
+vision, image-gen, skills, TTS) through a **single MCP registration**,
+`mcp_proxy`, instead of one registration per server per harness. Two
+pieces, both on `fileserver` (192.168.40.2):
 
 1. **MCPHub/UplinkCrate** (Docker, port 3100) — the public-facing gateway
    every harness registers: `http://192.168.40.2:3100/mcp` (LAN) /
@@ -40,18 +42,21 @@ server per harness. Two pieces, both on `fileserver` (192.168.40.2):
 2. **The sidecar** (`scripts/mcp_proxy_sidecar.py`, systemd `--user` service
    on fileserver, loopback-only on `127.0.0.1`/`172.17.0.1:8700`) — composes
    the existing `cognee_cloud_mcp.py`, `infra_mcp.py`, and `hermes_mcp.py`
-   servers into one FastMCP process via `mount()`. This is MCPHub's one
-   registered upstream today; it's also where any future bespoke internal
-   tool should get added, since MCPHub itself only proxies, it doesn't host
-   custom logic.
+   servers into one FastMCP process via `mount()`, plus a fourth,
+   `hermes_serve`, proxying the native stdio `hermes mcp-serve --tools`
+   plugin on `hermes-vps` via FastMCP's `create_proxy()` (fileserver has its
+   own dedicated SSH key + `hermes-vps` alias for this, separate from any
+   other host's key to that box). This is MCPHub's one registered upstream
+   today; it's also where any future bespoke internal tool should get
+   added, since MCPHub itself only proxies, it doesn't host custom logic.
 
 Registered as `mcp_proxy` in: `.mcp.json` / `~/.claude.json` (Claude Code),
 `.codex/config.toml` / `~/.codex/config.toml` (Codex — bearer token read
 from the `MCP_PROXY_GATEWAY_TOKEN` env var via
 `~/.config/environment.d/mcp-proxy.conf` + `~/.bashrc`), `~/.gemini/config/mcp_config.json`
-(Antigravity), and `~/.hermes/config.yaml` on `hermes-vps`. `hermes-mcp-serve`
-(stdio-only, SSH-spawned, messaging tools) is **not** folded in yet — stays
-registered separately.
+(Antigravity), and `~/.hermes/config.yaml` on `hermes-vps`. No harness has
+any other MCP server registered for home-lab capabilities — `mcp_proxy` is
+the only one, everywhere, including on Hermes itself.
 
 New capability, including for other harnesses to call (Salt, Hermes-REST,
 any future custom tool): add it to the sidecar, not to a fourth per-harness
