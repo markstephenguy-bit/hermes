@@ -2,7 +2,7 @@
   "mcpServers": {
     "mcp_proxy": {
       "type": "http",
-      "url": "http://192.168.40.2:3100/mcp",
+      "url": "http://192.168.40.2:8800/mcp",
       "headers": { "Authorization": "Bearer ${MCP_PROXY_GATEWAY_TOKEN}" }
     }
   }
