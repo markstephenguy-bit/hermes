@@ -87,6 +87,13 @@ def salt_run(target: str, function: str, args: list[str] | None = None, powershe
     Pass powershell=True/False to force the shell for every matched minion instead.
     """
     payload = {"client": "local", "tgt": target, "fun": function}
+    if "," in target and not any(ch in target for ch in "*?[]"):
+        # Salt's default glob matcher hangs indefinitely on a comma-separated
+        # tgt instead of erroring or splitting it - confirmed live against the
+        # fileserver master (single targets return in ~1s, the same names
+        # joined by commas never return, with or without a real wildcard
+        # present). List targeting handles the identical comma string correctly.
+        payload["tgt_type"] = "list"
     if args:
         payload["arg"] = args
 
