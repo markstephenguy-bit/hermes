@@ -82,11 +82,14 @@ Antigravity, Hermes) without re-explaining itself.
 - `remember(data, dataset_name, background)` — write a new fact/decision/progress
   note into Cognee Cloud (defaults to the shared `main_dataset`; use `hindsight_migration` explicitly to search or append historical migration material).
 - `recall(query, datasets, search_type, top_k)` — semantic / hybrid graph search
-  over stored knowledge. **Always pass `datasets=["main_dataset"]` explicitly**
-  unless `hindsight_migration` is the deliberate target — leaving `datasets`
-  unscoped lets Cognee's auto-routing rank a near-empty `hindsight_migration`
-  result above the real answer in `main_dataset`, with no error to flag it
-  (confirmed live 2026-11-21, same failure mode on `search()` too).
+  over stored knowledge. **Defaults to `main_dataset` in code** (as of
+  2026-11-21) — pass an explicit `datasets` list (e.g. `["hindsight_migration"]`)
+  only when that's the deliberate target. Before this, an unscoped call let
+  Cognee's auto-routing rank a near-empty `hindsight_migration` result above
+  the real answer in `main_dataset`, with no error to flag it (confirmed live,
+  same failure mode on `search()` below) — fixed at the tool level rather than
+  left as a remember-every-time instruction, per the "don't add a tool/param
+  surface that won't get safely used by default" principle.
 - `list_datasets()` — inspect datasets in the workspace.
 - `ingestion_status(dataset_id)` — check a background `remember` call until processing completes or errors.
 
@@ -100,7 +103,7 @@ session-aware, auto-routed `search`):
   graph from data already added via `add_data()`.
 - `search(query, search_type, datasets, top_k, only_context)` — one explicit
   `SearchType` (see Cognee's enum — `GRAPH_COMPLETION`, `CYPHER`, `CODE`, `TEMPORAL`,
-  etc.), no session semantics.
+  etc.), no session semantics. Same `main_dataset` default as `recall()` above.
 - `forget(dataset, data_id, everything, memory_only, clean_history)` —
   **destructive, cannot be undone.** Confirm with the user before calling with
   `everything=True` or without `data_id`.
