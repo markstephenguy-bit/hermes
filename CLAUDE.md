@@ -26,29 +26,34 @@ Vaultwarden for secrets.
 
 ## One gateway for every harness — `mcp_proxy`
 
-As of 2026-11-15, every harness (Claude Code, Codex, Antigravity, Hermes)
-reaches Salt (`infra`), Cognee Cloud, Hermes's own REST API, and the native
+Every harness (Claude Code, Codex, Antigravity, Hermes) reaches Salt
+(`infra`), Cognee Cloud, Hermes's own REST API, and the native
 `hermes mcp-serve` plugin (messaging/conversation tools, web search/extract,
 vision, image-gen, skills, TTS) through a **single MCP registration**,
-`mcp_proxy`, instead of one registration per server per harness. Two
-pieces, both on `fileserver` (192.168.40.2):
+`mcp_proxy`, instead of one registration per server per harness.
 
-1. **MCPHub/UplinkCrate** (Docker, port 3100) — the public-facing gateway
-   every harness registers: `http://192.168.40.2:3100/mcp` (LAN) /
-   `http://10.60.0.2:3100/mcp` (from `hermes-vps`, over the existing
-   WireGuard tunnel), `Authorization: Bearer` auth. Bearer token and the
-   auto-generated admin password live in
-   `/home/mark/.config/mcp-proxy/credentials.env` on fileserver.
-2. **The sidecar** (`scripts/mcp_proxy_sidecar.py`, systemd `--user` service
-   on fileserver, loopback-only on `127.0.0.1`/`172.17.0.1:8700`) — composes
-   the existing `cognee_cloud_mcp.py`, `infra_mcp.py`, and `hermes_mcp.py`
-   servers into one FastMCP process via `mount()`, plus a fourth,
-   `hermes_serve`, proxying the native stdio `hermes mcp-serve --tools`
-   plugin on `hermes-vps` via FastMCP's `create_proxy()` (fileserver has its
-   own dedicated SSH key + `hermes-vps` alias for this, separate from any
-   other host's key to that box). This is MCPHub's one registered upstream
-   today; it's also where any future bespoke internal tool should get
-   added, since MCPHub itself only proxies, it doesn't host custom logic.
+As of 2026-11-20, this is a single Docker container, **`mcpserver`**
+(image `mcpserver:local`, built out-of-band from
+`/home/mark/services/mcpserver/` on `fileserver`, not from this repo),
+listening on `fileserver` (192.168.40.2) port **8800**:
+`http://192.168.40.2:8800/mcp` (LAN) / `http://10.60.0.2:8800/mcp` (from
+`hermes-vps`, over the existing WireGuard tunnel), `Authorization: Bearer`
+auth using the same `MCP_PROXY_GATEWAY_TOKEN` value as before. It composes
+Cognee Cloud, `infra_mcp` (Salt), and `hermes_mcp` tools, plus a
+`hermes_serve` namespace proxying the native stdio `hermes mcp-serve
+--tools` plugin on `hermes-vps` (over a dedicated SSH key/config bind-mounted
+into the container). Reads the same `/home/mark/.config/mcp-proxy/credentials.env`
+on fileserver for its secrets.
+
+This replaces the earlier two-hop architecture (MCPHub/UplinkCrate Docker
+gateway on port 3100, fronting a separate systemd-`--user` sidecar
+`scripts/mcp_proxy_sidecar.py` on loopback `172.17.0.1:8700`) — both pieces
+were cut over to `mcpserver` on 2026-11-17 (commit `ca4b06d`) and fully
+removed (container + image + systemd unit) on 2026-11-20 after verifying
+every harness worked through the new container alone. `scripts/mcp_proxy_sidecar.py`
+in this repo is no longer what's running in production; treat it as
+historical reference unless `mcpserver`'s own source (on fileserver,
+outside this repo) is what you actually need to change.
 
 Registered as `mcp_proxy` in: `.mcp.json` / `~/.claude.json` (Claude Code),
 `.codex/config.toml` / `~/.codex/config.toml` (Codex — bearer token read
@@ -59,8 +64,8 @@ any other MCP server registered for home-lab capabilities — `mcp_proxy` is
 the only one, everywhere, including on Hermes itself.
 
 New capability, including for other harnesses to call (Salt, Hermes-REST,
-any future custom tool): add it to the sidecar, not to a fourth per-harness
-config file.
+any future custom tool): add it to `mcpserver`'s own source on fileserver,
+not to a fourth per-harness config file.
 
 ## Logging progress — this project's actual memory
 
