@@ -1,72 +1,80 @@
-# Session Brief — Cognee Cloud migration COMPLETE
+# Session Brief — Migrate mcp_proxy off MCPHub to sidecar-only FastMCP
 
-The Cognee Cloud migration is **fully finished, verified, and decommissioned**.
-All 3,347 Hindsight facts (272 batches) and all 6 infrastructure snapshot files
-plus replacement facts are live in Cognee Cloud with recall empirically tested.
-The self-hosted Docker stack on `fileserver` has been torn down with volumes
-removed.
+**This replaces the prior brief (Cognee Cloud migration), which is long
+finished — see CLAUDE.md and git history for that. This file now seeds the
+next active piece of work.**
 
-Vaultwarden is **retired and tombstoned** (as of 2026-11-12). Secrets are managed
-directly via secure local environment files (mode 0600) — never in git. Do not
-query or reference Vaultwarden for secrets.
+## Why
 
-## Cognee MCP integration update (2026-11-15)
+MCPHub (the Docker gateway fronting `mcp_proxy`, port 3100 on `fileserver`)
+has been judged too heavy/cumbersome for fast access. Decision: drop
+MCPHub, expose `mcp_proxy_sidecar.py` directly as a standalone FastMCP
+server instead of running it behind MCPHub. Raised 2026-11-18–20 in a
+Claude Code research/thinking session — **not started anywhere yet**. The
+2026-11-16 memory marking `mcp_proxy` "COMPLETE" describes the MCPHub+
+sidecar architecture that this migration replaces, not the new target —
+don't read that as this already being done.
 
-The shared `scripts/cognee_cloud_mcp.py` now sends `run_in_background` to Cognee Cloud, exposes `ingestion_status(dataset_id)`, and defaults new writes to `main_dataset`. Codex, Claude Code, and Antigravity point to that one local script; the same version was deployed to the Hermes gateway on `hermes-vps` and the gateway restarted. A fresh MCP client listed all four tools and read dataset statuses. A no-network test verified the outgoing background flag. A live write test was rejected by automatic approval review because its proposed payload described internal service state; background ingestion remains unverified end to end.
+## Current state (last verified live 2026-11-16, re-verify before trusting)
 
-Current datasets include `main_dataset`, `default_dataset`, `infrastructure`, and `hindsight_migration`. Migrated Hindsight facts can still report former service states as current; search `main_dataset` for current-state facts and use `hindsight_migration` for historical recall.
+- **MCPHub/UplinkCrate**: Docker container on `fileserver`, port 3100,
+  bearer auth, the single upstream every harness registers
+  (`http://192.168.40.2:3100/mcp` LAN / `http://10.60.0.2:3100/mcp` from
+  `hermes-vps` over the existing WireGuard tunnel).
+- **`mcp_proxy_sidecar.py`**: systemd `--user` service on `fileserver`,
+  currently loopback-only (`127.0.0.1` / `172.17.0.1:8700`). Mounts
+  `cognee_cloud_mcp.py`, `infra_mcp.py`, `hermes_mcp.py` via FastMCP's
+  `mount()`, plus `hermes_serve` proxying `hermes-vps`'s native
+  `mcp-serve --tools` plugin via `create_proxy()`.
+- **Four harness registrations all point at MCPHub, not the sidecar
+  directly**: Claude Code (`.mcp.json` / `~/.claude.json`), Codex
+  (`.codex/config.toml` + `~/.codex/config.toml`, bearer token via
+  `MCP_PROXY_GATEWAY_TOKEN` env var), Antigravity
+  (`~/.gemini/config/mcp_config.json`), Hermes (`hermes-vps`
+  `~/.hermes/config.yaml`, bearer token literal in `headers`).
 
-## Multi-Harness Status: Antigravity, Codex, Hermes, Claude Code
+## What needs to happen
 
-| Client | Config Location | Status |
-|---|---|---|
-| Codex (global) | `~/.codex/config.toml` | ✅ Verified via real `codex exec` call |
-| Codex (repo) | `.codex/config.toml` | ✅ Same entry, verified |
-| Hermes | `hermes-vps` `~/.hermes/config.yaml` | ✅ Verified via real `hermes_chat` call, gateway updated |
-| Antigravity | `~/.gemini/config/mcp_config.json` | ✅ **Verified live** inside Antigravity (fixed `list_datasets` dict wrapping, recall tested) |
-| Claude Code | `~/.claude.json` / `.mcp.json` | Registered ("✔ Connected"), shares identical stdio wrapper |
+1. Give the sidecar its own network-reachable listener (not just
+   loopback). Decide port (reuse 8700, or pick a new one) and bind
+   address — needs to stay reachable the same way MCPHub currently is:
+   `fileserver`'s LAN IP and over the WireGuard tunnel from `hermes-vps`.
+2. Give the sidecar its own auth. MCPHub was providing bearer-token
+   auth/RBAC; FastMCP has its own bearer-auth middleware/token-provider
+   options. Reuse the existing `MCP_PROXY_GATEWAY_TOKEN` value so harness
+   configs only need a new URL, not a new secret.
+3. Confirm FastMCP's HTTP/streamable-HTTP server mode doesn't inherit the
+   Docker-bridge-gateway reachability problem MCPHub's SSRF-allowlist fix
+   was working around (`172.17.0.1`) — likely moot once MCPHub itself is
+   gone, but verify nothing else in the sidecar's own networking assumed
+   MCPHub as a hop.
+4. Repoint all four harness registrations (the files listed above) from
+   the MCPHub URL to the sidecar's new direct URL.
+5. Test each harness against the new direct path **before** touching
+   MCPHub: tool listing + one real call (e.g. `infra_salt_minion_status`)
+   per harness, from both LAN and over WireGuard from `hermes-vps`.
+6. Only after all four harnesses are verified on the new path: stop/remove
+   the MCPHub container on `fileserver`. Don't decommission it earlier —
+   it's currently the only thing providing MCP access to any harness,
+   including whichever session runs this migration.
 
-## What Was Done & Verified (2026-11-15)
+## Open decisions for the execution session
 
-1. **Antigravity verification & FastMCP structured_content fix**:
-   - Live testing in Antigravity revealed that FastMCP's schema validation requires `structured_content` in tool execution results to be a `dict or None`. `list_datasets()` previously returned a raw `list`, which caused a validation exception.
-   - Updated `scripts/cognee_cloud_mcp.py` to wrap the dataset list (`{"datasets": body}`).
-   - Deployed the fix to `hermes-vps` (`~/.hermes/mcp_servers/cognee-cloud/cognee_cloud_mcp.py`) and cleanly restarted `hermes-gateway`.
-   - Verified live in Antigravity via subagent tool calls for both `list_datasets` and `recall`.
+- Exact port/bind address for the sidecar's direct listener.
+- Which FastMCP auth mechanism replaces MCPHub's bearer-auth/RBAC.
+- Whether to keep MCPHub installed-but-stopped for a rollback window, or
+  remove it outright once every harness is confirmed working.
 
-2. **Infrastructure dataset ingested & recall verified**:
-   - Ingested all 6 Graphiti migration snapshot files (`infra-2026-11-14-*.txt`) from `fileserver` plus the explicit "Cognee replaced Graphiti" fact into Cognee Cloud dataset `infrastructure`.
-   - All items processed to completion (`pending: 0`, status `DATASET_PROCESSING_COMPLETED`).
-   - Verified via live recall: queries against `infrastructure` accurately synthesize the fileserver service topology and correctly apply historical snapshot caveats.
+## Source material
 
-3. **Full Hindsight export saved locally**:
-   - Re-exported all **3,347 memories** fresh from Hindsight's `hermes` bank via paginated API into `data/hindsight_dump/page_*.json` (7 pages, 0 to 3000 offset).
+- Original MCPHub+sidecar build details, gotchas, and the SSRF-allowlist
+  fix: Claude Code project memory `project_hermes_mcp_proxy_gateway.md`
+  and this repo's CLAUDE.md, "One gateway for every harness" section.
+- This migration decision was raised in a Claude Code research session
+  2026-11-18–20 and had not been recorded anywhere until this file.
 
-4. **Full Hindsight → Cognee Cloud data migration completed**:
-   - Grouped all 3,347 facts into **272 batches** (243 document groups + 29 ungrouped chunks of 50 facts, sorted chronologically).
-   - Ingested into Cognee Cloud dataset `hindsight_migration` with the standard framing note and explicit replacement facts.
-   - All 272 batches processed to completion in Cognee Cloud (`272/272 completed, 0 pending`).
-   - Verified via live hybrid graph recall, but `hindsight_migration` contains historical statements that can incorrectly describe Hindsight as still active. Current configuration and `main_dataset` take precedence for present state.
+## Explicitly out of scope for whichever session picks this up
 
-5. **Self-hosted Docker stack decommissioned on `fileserver`**:
-   - Executed `docker compose down -v` in `/home/mark/services/cognee/` on `fileserver`.
-   - All 5 containers (`cognee`, `cognee-mcp`, `cognee-ui`, `cognee-postgres`, `cognee-neo4j`) and all 5 persistent volumes removed cleanly. Zero leftover containers.
-
-6. **Cleanup**:
-   - Deleted throwaway validation datasets (`cognee_cloud_validation`, `cognee_cloud_timing_test`) from Cognee Cloud.
-   - Active datasets in Cognee Cloud: `default_dataset`, `infrastructure`, `hindsight_migration`.
-   - Quota usage: storage remains well within the 10 GB limit (< 0.001% utilized).
-
-7. **Hindsight completely decommissioned and purged everywhere**:
-   - Disabled external memory provider on `hermes-vps` (`hermes memory off`), verified `hermes-gateway` restarted cleanly. Hermes now relies on built-in memory (`MEMORY.md`/`USER.md`) plus Cognee Cloud MCP tools.
-   - Uninstalled Hindsight plugin on `hermes-vps` (`hermes plugins uninstall hindsight`) and deleted `~/.hermes/hindsight` and locks.
-   - Removed containers (`docker rm -f hindsight hindsight-postgres`), deleted volume (`hindsight-pgdata`), deleted images (`ghcr.io/vectorize-io/hindsight:latest`, `timescale/timescaledb:latest-pg18`), and deleted `C:\hindsight-migration` on `w_workstation` via Salt.
-   - Removed all obsolete local Hindsight scripts, migration scripts, dumps, and patches from this repository (`scripts/hindsight_mcp*.py`, `scripts/export_hindsight.py`, `scripts/migrate_*.py`, `data/hindsight_*`, `patches/hindsight-*.patch`).
-   - Swept and updated all repo documentation (`AGENTS.md`, `CLAUDE.md`, `ARCHITECTURE.md`, `BACKLOG.md`, `CAPABILITY_PARITY.md`, `SYSTEM_INVENTORY.md`, `README.md`) to reflect that Cognee Cloud is the active memory system and Hindsight is permanently gone.
-
-## Active Threads & Next Work
-
-1. **GPU Thermal Throttling on `w_workstation`**:
-   - Flagged for Mark to revisit cooling/fans. Self-hosting Cognee on this hardware was averted by pivoting to Cognee Cloud, but the GPU thermal slowdown (92-94°C) remains physical host state on `w_workstation`.
-2. **Hermes core development**:
-   - Normal Hermes roadmap resumed.
+This was raised in a session explicitly framed as understanding/research-
+only — no SSH, Salt, or live config changes happened there. This file is
+the full handoff; nothing beyond it should be assumed already done.
