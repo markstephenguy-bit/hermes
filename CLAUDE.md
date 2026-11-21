@@ -82,7 +82,11 @@ Antigravity, Hermes) without re-explaining itself.
 - `remember(data, dataset_name, background)` — write a new fact/decision/progress
   note into Cognee Cloud (defaults to the shared `main_dataset`; use `hindsight_migration` explicitly to search or append historical migration material).
 - `recall(query, datasets, search_type, top_k)` — semantic / hybrid graph search
-  over stored knowledge.
+  over stored knowledge. **Always pass `datasets=["main_dataset"]` explicitly**
+  unless `hindsight_migration` is the deliberate target — leaving `datasets`
+  unscoped lets Cognee's auto-routing rank a near-empty `hindsight_migration`
+  result above the real answer in `main_dataset`, with no error to flag it
+  (confirmed live 2026-11-21, same failure mode on `search()` too).
 - `list_datasets()` — inspect datasets in the workspace.
 - `ingestion_status(dataset_id)` — check a background `remember` call until processing completes or errors.
 
