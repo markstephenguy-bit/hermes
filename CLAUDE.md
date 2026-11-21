@@ -86,6 +86,28 @@ Antigravity, Hermes) without re-explaining itself.
 - `list_datasets()` — inspect datasets in the workspace.
 - `ingestion_status(dataset_id)` — check a background `remember` call until processing completes or errors.
 
+Added 2026-11-21, same `cognee_cloud_mcp.py` wrapper, lower-level than the four
+above (`remember` = `add_data`+`cognify`+improve in one call; `recall` = a
+session-aware, auto-routed `search`):
+
+- `add_data(raw_data, dataset_name, labels, run_in_background)` — ingest without
+  building the graph yet.
+- `cognify(datasets, run_in_background, custom_prompt, chunk_size)` — build the
+  graph from data already added via `add_data()`.
+- `search(query, search_type, datasets, top_k, only_context)` — one explicit
+  `SearchType` (see Cognee's enum — `GRAPH_COMPLETION`, `CYPHER`, `CODE`, `TEMPORAL`,
+  etc.), no session semantics.
+- `forget(dataset, data_id, everything, memory_only, clean_history)` —
+  **destructive, cannot be undone.** Confirm with the user before calling with
+  `everything=True` or without `data_id`.
+- `list_dataset_data(dataset_id)` — list the data items inside one dataset
+  (paginated).
+- `quotas_usage()` — storage used vs. the workspace quota.
+
+Full endpoint reference: [docs.cognee.ai/cognee-cloud/http-api](https://docs.cognee.ai/cognee-cloud/http-api).
+Skills/agents/auth/integrations endpoints exist on the same API but aren't
+wrapped here — different auth model, out of scope for this memory gateway.
+
 The `hindsight_migration` dataset contains historical statements that may describe retired services as active. Use current configuration and `main_dataset` for current-state answers.
 
 Migrated 2026-11-15: Hindsight's entire memory store (3,347 facts, 272 batches)
